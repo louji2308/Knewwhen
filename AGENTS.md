@@ -320,6 +320,15 @@ Check that the harness can use worktrees before relying on it. Otherwise keep on
 
 12.5 **Evidence.** Save command output, results, commit SHA and seeds to `evidence/` (Scope C-12). Say exactly what ran. If a command could not run, say so and why.
 
+12.6 **Repository organisation and maintenance.** Treat repository organisation, documentation quality and `.gitignore` maintenance as continuous engineering responsibilities, not one-time cleanup tasks. Maintain the project with exceptionally high engineering discipline and organisation throughout its lifecycle:
+- Keep the repository clean, structured and predictable. Organise source code, tests, configuration, scripts, assets and supporting files into appropriate directories based on their responsibilities.
+- Avoid unnecessary files, duplicate implementations, abandoned code, temporary artefacts, scattered configuration and redundant documentation.
+- Maintain `.gitignore` carefully: exclude generated files, dependencies, build outputs, local environment files, secrets, caches and temporary artefacts without hiding required source files.
+- Keep directory names, file names, module boundaries, dependencies and configuration conventions consistent across the repository.
+- Before moving, renaming or deleting existing project files, inspect their references and dependencies and update all affected imports, scripts, configuration and documentation.
+- Do not reorganise for appearance alone. Every structural change must improve maintainability, clarity or engineering quality without disrupting working functionality (§5.6).
+- Maintain clear, accurate and useful documentation for architecture, setup, development, testing, configuration and operational workflows wherever relevant. Update documentation whenever an implementation change makes existing instructions or technical descriptions inaccurate (§18.1).
+
 ---
 
 ## 13. Independent verification and phase acceptance
@@ -354,7 +363,7 @@ Before marking a phase Accepted, the orchestrator: opens the evidence; re-runs t
 
 ## 14. TODO.md — the execution ledger
 
-14.1 **`TODO.md` records progress. It is not proof.** The orchestrator is its only writer (§9.2).
+14.1 **`TODO.md` records progress. It is not proof.** It is created and maintained by the agent working inside the project — the orchestrator (§9.2) — not generated in advance; the orchestrator is its only writer.
 14.2 **Required structure:**
 1. **Phase index:** every phase — ID, name, status, entry condition, exit condition, owner, link.
 2. **Active phase:** a full checklist. Each task: ID, requirement IDs, owner, dependencies, status, evidence link, blockers.
@@ -362,8 +371,10 @@ Before marking a phase Accepted, the orchestrator: opens the evidence; re-runs t
 4. **Blockers and Unresolved** (with IDs) and decisions pending with the owner.
 5. **Handoff block** (§6.6) and the last verified commit.
 
-14.3 **Task status:** Not started · Ready (dependencies met) · In progress · In review · Blocked · Done (evidence attached). **Phase status:** Not started · Active · Awaiting verification · Accepted (A and B passed and confirmed).
-14.4 **Truthfulness.** Mark Done only when the task's ACs pass and the evidence exists. Mark a phase Accepted only after §13. At each session start, check `TODO.md` against the repository. If they differ, the repository and fresh evidence win; correct `TODO.md` and note the correction. Update status when it changes, not in batches.
+14.3 **Task status:** Not Started · Ready (dependencies met) · In Progress · In review · Blocked · Completed (evidence attached). **Phase status:** Not started · Active · Awaiting verification · Accepted (A and B passed and confirmed).
+14.4 **Truthfulness.** Mark a task Completed only when the task's ACs pass and the evidence exists. Mark a phase Accepted only after §13. At each session start, check `TODO.md` against the repository. If they differ, the repository and fresh evidence win; correct `TODO.md` and note the correction. Update status when it changes, not in batches.
+14.5 **Phase sections.** At the beginning of every implementation phase defined in `Implementation plan.md`, create a completely new, clearly titled section in `TODO.md` for that phase. Initially list every task in that phase with status `Not Started`. Preserve all previous phase sections: never overwrite or reset historical progress.
+14.6 **Continuous status updates.** Update task statuses as work progresses — `Not Started` → `In Progress` → `Completed`, or `Blocked` when a named dependency requires it (§3). Never leave a task's status stale. Mark `Completed` only under §14.4, after the required implementation, testing and independent verification (§13) are finished.
 
 ---
 
