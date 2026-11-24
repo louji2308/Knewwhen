@@ -401,3 +401,13 @@ No Forge token, developer site, clean install site, outside organisation, verifi
 | **E-4** | May code-only fixes be deployed while a Marketplace listing is under review? | **Assume no.** Freeze code at submission; publish a patched version after approval. No official statement grants the permission. | An official Atlassian answer (external contact needs §10.2 approval), or an explicit owner risk decision. |
 
 **Futuristic readiness, not futuristic scope.** No speculative feature was added: that would be Kind C scope creep and would consume the Core-only runway. Instead the seams that make later additions cheap were built or planned — the `PRODUCT_NAME` constant (R-9), rules-as-versioned-data (I-7), the import-boundary and dependency guards, and the planned manifest renderer with parity and scope-snapshot checks. The four calls above stay reversible until the manifest freeze.
+
+---
+
+## D-013 — P2 contract signature change: no roles in GateContext (orchestrator, 24 Nov 2026)
+
+- **Class:** single-writer announcement required by the P2.D2 ledger entry; a kind-B technical choice inside the approved architecture (AGENTS §5.3), **not** an owner approval and **not** a product decision. Proposer and implementer: the orchestrator.
+- **Change:** `GateContext` no longer carries `roles`. Roles were never read by the gate (the injected server-side `RoleResolver` supplies them), so the field was dead and dangerous: a caller could populate it with a claimed role. `contextFromPlatform()` now builds the context from platform facts alone and discards any `roles` claim; the resolver is the only role source.
+- **Why:** Architecture §13.3 steps 1 and 3 and I-4 require identity and roles to come from the platform/server, never from a request payload. Making a spoofed role unrepresentable at the boundary is a fail-closed guarantee, not a UI convention.
+- **Compatibility:** no deployed resolver used the field; `tests/authorisation.test.ts` and the P2.D2 contract tests were updated in the same change set (AGENTS §7.6). No scope, role, tier, module, permission or dependency changes; D-008/D-009/D-012 still govern.
+- **Evidence:** `npm run check` PASS, 128 tests, including the full 12 action × 4 role × 2 browse cross-product and a test that a supplied role claim is dropped.

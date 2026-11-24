@@ -1,20 +1,36 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
+  assertRegistryMatchesMatrix,
+  contextFromPlatform,
+  createGate,
   type AuditSink,
+  type GatedHandler,
+  type HandlerRegistry,
   type RoleResolver,
   decide,
   isRegisteredHandler,
 } from '../src/handlers/authorisation';
-import { type Action, type GateContext } from '../src/contracts/authorisation';
+import {
+  ACTIONS,
+  HANDLER_ACTIONS,
+  ROLES,
+  ROLE_MATRIX,
+  type Action,
+  type GateContext,
+  type Role,
+} from '../src/contracts/authorisation';
 
 const ctx = (overrides: Partial<GateContext> = {}): GateContext => ({
   accountId: 'acct-check-1',
-  roles: ['VIEWER'],
   canBrowseResource: true,
   ...overrides,
 });
 
 const roles: RoleResolver = async () => ['VIEWER'];
+const fullRegistry = (): HandlerRegistry =>
+  Object.fromEntries(
+    HANDLER_ACTIONS.map((action) => [action, async () => action]),
+  ) as unknown as HandlerRegistry;
 
 describe('P2.D1 authorisation gate (G-4, I-4; Arch §13.3)', () => {
   it('allows an action for a role the matrix grants', async () => {
@@ -22,12 +38,12 @@ describe('P2.D1 authorisation gate (G-4, I-4; Arch §13.3)', () => {
     expect(result.allow).toBe(true);
   });
 
-  it('denies an action the role does not have, and writes an audit event', async () => {
+  it('denies an action the role does not have, and writes a code-only audit event', async () => {
     const events: Array<Record<string, string>> = [];
     const sink: AuditSink = async (event) => {
       events.push({ ...event });
     };
-    const result = await decide(ctx({ roles: ['VIEWER'] }), 'DECIDE', roles, sink);
+    const result = await decide(ctx(), 'DECIDE', roles, sink);
     expect(result.allow).toBe(false);
     expect(events).toHaveLength(1);
     expect(events[0]!.actionCode).toBe('DECIDE');
@@ -36,11 +52,9 @@ describe('P2.D1 authorisation gate (G-4, I-4; Arch §13.3)', () => {
   });
 
   it('denies when the caller cannot browse the resource', async () => {
-    const result = await decide(
-      ctx({ canBrowseResource: false, roles: ['QUALIFIED_PERSON'] }),
-      'DECIDE',
-      roles,
-    );
+    const result = await decide(ctx({ canBrowseResource: false }), 'DECIDE', async () => [
+      'QUALIFIED_PERSON',
+    ]);
     expect(result.allow).toBe(false);
   });
 
@@ -54,12 +68,73 @@ describe('P2.D1 authorisation gate (G-4, I-4; Arch §13.3)', () => {
   });
 
   it('fails closed on an empty role set (first-run state)', async () => {
-    const result = await decide(ctx({ roles: [] }), 'VIEW_CASE', async () => []);
+    const result = await decide(ctx(), 'VIEW_CASE', async () => []);
     expect(result.allow).toBe(false);
   });
 
   it('rejects unknown actions: unregistered handlers cannot be gated', () => {
     expect(isRegisteredHandler('DEFINITELY_NOT_AN_ACTION' as Action)).toBe(false);
     expect(isRegisteredHandler('DECIDE')).toBe(true);
+  });
+
+  it('enforces the full handler × role × browse matrix (Arch §13.3)', async () => {
+    for (const action of ACTIONS) {
+      for (const role of ROLES) {
+        for (const canBrowseResource of [true, false]) {
+          const outcome = await decide(ctx({ canBrowseResource }), action, async () => [role]);
+          expect(outcome.allow, `${action}/${role}/browse=${canBrowseResource}`).toBe(
+            canBrowseResource && ROLE_MATRIX[action].includes(role),
+          );
+        }
+      }
+    }
+  });
+
+  it('drops any role claim supplied with platform context (I-4)', async () => {
+    const built = contextFromPlatform({
+      accountId: 'acct-check-2',
+      canBrowseResource: true,
+      roles: ['QUALIFIED_PERSON'],
+    });
+    expect(built).toEqual({ accountId: 'acct-check-2', canBrowseResource: true });
+    const outcome = await decide(built, 'DECIDE', async () => ['VIEWER']);
+    expect(outcome.allow).toBe(false);
+  });
+});
+
+describe('P2.D1 handler registry equality (Arch §13.3; plan P2.D1)', () => {
+  it('accepts a registry with exactly the twelve matrix handlers', () => {
+    expect(() => assertRegistryMatchesMatrix(fullRegistry())).not.toThrow();
+  });
+
+  it('rejects a missing handler and an extra handler', () => {
+    const missing = { ...fullRegistry() };
+    delete (missing as Record<string, GatedHandler>)['DECIDE'];
+    expect(() => assertRegistryMatchesMatrix(missing)).toThrow('REGISTRY_MATRIX_MISMATCH');
+    expect(() =>
+      assertRegistryMatchesMatrix({ ...fullRegistry(), EXTRA_ACTION: async () => null }),
+    ).toThrow('REGISTRY_MATRIX_MISMATCH');
+  });
+
+  it('refuses to construct a gate from a mismatched registry', () => {
+    expect(() => createGate({} as HandlerRegistry, roles)).toThrow('REGISTRY_MATRIX_MISMATCH');
+  });
+
+  it('runs the registered handler only when the gate allows the call', async () => {
+    const handler = vi.fn(async () => 'done') as GatedHandler;
+    const registry = { ...fullRegistry(), DECIDE: handler } as HandlerRegistry;
+    const gate = createGate(registry, async () => ['QUALIFIED_PERSON']);
+
+    await expect(gate.dispatch('DECIDE', ctx())).resolves.toEqual({
+      decision: { allow: true, role: 'QUALIFIED_PERSON' },
+      result: 'done',
+    });
+    expect(handler).toHaveBeenCalledTimes(1);
+
+    const denied = createGate(registry, async () => ['VIEWER'] as readonly Role[]);
+    await expect(denied.dispatch('DECIDE', ctx())).resolves.toEqual({
+      decision: { allow: false, code: 'DENIED' },
+    });
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 });

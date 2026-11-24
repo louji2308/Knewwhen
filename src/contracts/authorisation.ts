@@ -57,9 +57,13 @@ export type GateDecision =
   | { readonly allow: true; readonly role: Role }
   | { readonly allow: false; readonly code: 'DENIED' | 'DEPENDENCY_FAILED' };
 
-/** Platform context only. A request payload must never supply a role or identity. */
+/**
+ * Platform context only. A request payload must never supply a role or identity.
+ * Roles are deliberately absent: they are resolved fresh for every request by
+ * the server-side RoleResolver. Keeping them out makes a spoofed role claim
+ * unrepresentable at the gate boundary (Arch §13.3 steps 1 and 3, I-4).
+ */
 export interface GateContext {
   readonly accountId: string;
-  readonly roles: readonly Role[];
   readonly canBrowseResource: boolean;
 }

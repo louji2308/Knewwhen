@@ -1,8 +1,8 @@
 /**
- * P2.D1 — the single authorisation gate (IF-7, Arch §13.3). Deny by default.
- * Roles are resolved server-side for each request; identity and roles come
- * from platform context, never from a request payload (I-4). Audit events
- * carry only codes, never account ids as text (I-6).
+ * P2.D1 — the single authorisation gate and handler registry (IF-7, Arch §13.3).
+ * Deny by default. Identity and the browse result come from the platform; roles
+ * are resolved server-side for each request and are never accepted from a
+ * caller (I-4). Audit events carry only codes, never account ids as text (I-6).
  */
 
 import {
@@ -28,6 +28,21 @@ const registered = new Set<string>(HANDLER_ACTIONS);
 /** A resolver handler may exist only if it is in the matrix (deny by default). */
 export function isRegisteredHandler(action: Action | string): boolean {
   return registered.has(String(action));
+}
+
+/** Raw platform invocation fields. Any extra `roles` claim is discarded. */
+export interface PlatformInvocation {
+  readonly accountId: string;
+  readonly canBrowseResource: boolean;
+  readonly roles?: readonly Role[];
+}
+
+/** Build the gate context from platform facts alone; never copy a role claim. */
+export function contextFromPlatform(invocation: PlatformInvocation): GateContext {
+  return {
+    accountId: invocation.accountId,
+    canBrowseResource: invocation.canBrowseResource,
+  };
 }
 
 /**
@@ -60,4 +75,43 @@ export async function decide(
   const role = roles.find((candidate) => granted.includes(candidate));
   if (!role) return deny('DENIED');
   return { allow: true, role };
+}
+
+export type GatedHandler = (context: GateContext) => Promise<unknown>;
+export type HandlerRegistry = Readonly<Record<Action, GatedHandler>>;
+
+/** Matrix FK: the handler list and the role matrix must not drift apart. */
+export function assertRegistryMatchesMatrix(
+  registry: Readonly<Record<string, GatedHandler>>,
+): void {
+  const actual = Object.keys(registry).sort();
+  const expected = [...HANDLER_ACTIONS].sort();
+  if (actual.length !== expected.length || actual.some((key, index) => key !== expected[index])) {
+    throw new Error('REGISTRY_MATRIX_MISMATCH');
+  }
+}
+
+export interface GateOutcome {
+  readonly decision: GateDecision;
+  readonly result?: unknown;
+}
+
+/**
+ * The only way to call a resolver handler: construct the gate from a complete
+ * registry, then dispatch through the decision. An unregistered action cannot
+ * be constructed or dispatched.
+ */
+export function createGate(
+  registry: HandlerRegistry,
+  resolveRoles: RoleResolver,
+  audit?: AuditSink,
+): { dispatch(action: Action, context: GateContext): Promise<GateOutcome> } {
+  assertRegistryMatchesMatrix(registry);
+  return {
+    async dispatch(action, context) {
+      const decision = await decide(context, action, resolveRoles, audit);
+      if (!decision.allow) return { decision };
+      return { decision, result: await registry[action](context) };
+    },
+  };
 }
