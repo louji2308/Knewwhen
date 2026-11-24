@@ -30,14 +30,7 @@ export const APPROVED_MODULES = Object.freeze([
 ]);
 
 /** Owner decisions only. A platform fact is evidence, not an approval (review F6). */
-export const APPROVAL_IDS = Object.freeze([
-  'N-03(a)',
-  'N-08',
-  'Arch-3.2',
-  'D-008',
-  'D-009',
-  'D-011',
-]);
+export const APPROVAL_IDS = Object.freeze(['N-03(a)', 'N-08', 'Arch-3.2', 'D-008', 'D-009']);
 
 /** Verified platform facts cited by the model; deliberately not approval markers. */
 export const EVIDENCE_IDS = Object.freeze(['PF-RUN-1']);
@@ -71,13 +64,14 @@ const PROJECTION_VALUES = Object.freeze([
   { path: 'daysLeftAsOf', type: 'date', searchAlias: 'knewwhenDaysLeftAsOf' },
 ]);
 
+// Verified official identifiers (PF-Q-3/PF-Q-4): `commented:issue` covers both
+// comment creation and editing; the link event has no hyphen. See VER-B-P1.
 const TRIGGER_EVENTS = Object.freeze([
   'avi:jira:created:issue',
   'avi:jira:updated:issue',
-  'avi:jira:created:comment',
-  'avi:jira:updated:comment',
+  'avi:jira:commented:issue',
   'avi:jira:deleted:comment',
-  'avi:jira:created:issue-link',
+  'avi:jira:created:issuelink',
 ]);
 
 /**

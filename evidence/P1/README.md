@@ -15,6 +15,22 @@ All files are raw command output saved at capture time. Nothing here contains a 
 | `eligibility-app-a-2026-11-24T10-14-44-987Z.txt` | `forge eligibility` PASS for deployed development v2.0.0. **Eligibility, not an award** (I-13). | P1.B3, I-13 |
 | `app-ids-2026-11-24.md` | Both owner-created app ARIs, recorded under P1.B4. | P1.B4, Arch §17.2 |
 
+## Verification and correction evidence (24 Nov 2026, later pass)
+
+| Evidence | What it proves | Requirement |
+|---|---|---|
+| `check-2026-11-24T11-52-20-648Z.txt` | `npm run check` **PASS** after the trigger-event correction: **37 tests** in 6 files, strict types, lint, manifest parity + root tie, format, `forge lint` "No issues found". | D-VB-01, N-06, N-08, RV-15 |
+| `deploy-app-a-events-fix-2026-11-24T11-55-13-759Z.txt` | App A redeployed to **development** as v2.2.0 with the five official Jira event identifiers; lint clean; eligible for Runs on Atlassian. | D-VB-01, C-01, P1.B3 |
+| `deploy-app-b-events-fix-2026-11-24T11-57-52-997Z.txt` | App B redeployed to **development** as v2.1.0 from the same corrected model. | D-VB-01, N-08 |
+| `upgrade-app-a-events-fix-2026-11-24T11-57-18-891Z.txt`, `upgrade-app-b-events-fix-2026-11-24T11-58-59-150Z.txt` | Both demo-site installs upgraded; "Site is already at the latest version" after the deploys. | P1.B2 |
+| `orchestrator-confirm-2026-11-24T11-37-03-990Z.txt` | Orchestrator's own re-run of `npm run check` on commit `16ae7bd` before the correction: PASS, 36 tests. | §13.5 |
+
+**Verification outcomes (reports are in the session record):**
+- **Verification B initial: FAIL**, one Major (D-VB-01 — invalid Jira event identifiers). **B re-review after fix: PASS** on closure, no new Blocker or Major. B is a read-only context with no shell; its command claims are Inferred, not independently run.
+- **Verification A: Blocked**, not Passed. Blind browser journey confirmed both apps present as `DEV` installs with reachable admin/panel shells, the exact decision-support sentence, and no verdict wording on reachable surfaces (Partial Pass). No sample data, no functional Core surfaces, no clean outside-organisation install and no mutating judge steps. The shell-only state is expected for P1; full Core acceptance stays Blocked.
+
+**Manifest candidate hashes for M-1 (SHA-256, after the correction, 24 Nov 2026):** App A and root `manifest.yml` `296315D7594656E76C6240128D983E50075CBFC2547B64F4B3195EFF30BECD62` (byte-identical, RV-15); App B `37A0CF54665E8E13701F9E1F9E81F21F022543C67C9278E9E07371E7F40AF5BA`; `manifests/baseline.json` `67C618FC831EF1383D095F66E838949F6E141933EF70535C44130274AF11BC69`. These are a candidate record only — the manifest is **not frozen** until M-1.
+
 ## Retained failure probes (root cause fixed; not claims of success)
 
 | Evidence | Failure and fix |
@@ -32,6 +48,7 @@ All files are raw command output saved at capture time. Nothing here contains a 
 
 ## Not verified here
 
-- Browser confirmation that the app appears under Jira Apps, the admin page opens, and the panel shows its loading state — installation records exist, but no clean-site UI journey was run.
-- Live execution of the empty SQL migration: the runner is deployed on the approved daily trigger, but no invocation was observed (PF-SQL-2 **Unresolved**).
-- Verification A and Verification B, outside-organisation install, production deploy, listing, publish and share. These remain conditional (AGENTS §13, §10.2).
+- A **clean** outside-organisation install and the full mutating judge journey (steps 1–9): Verification A observed the apps and shells but was Blocked on both (PF-V-3).
+- Live execution of the empty SQL migration: `forge logs -e development -f scheduled -s 2d` returned no invocation (PF-SQL-2 **Unresolved**).
+- P1 phase acceptance: B passes after the fix, A is Blocked, and no different model family was available for the two verifier contexts. P1 stays **Active, not Accepted** (PF-V-4, AGENTS §13.5).
+- Production deploy, listing, publish and share — owner-gated (§10.2).

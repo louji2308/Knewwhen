@@ -20,6 +20,6 @@
     "llm",
     "sql"
   ],
-  "approval": ["N-03(a)", "N-08", "Arch-3.2", "D-008", "D-009", "D-011"],
+  "approval": ["N-03(a)", "N-08", "Arch-3.2", "D-008", "D-009"],
   "evidence": ["PF-RUN-1"]
 }

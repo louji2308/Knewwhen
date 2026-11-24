@@ -34,7 +34,20 @@ const EXPECTED_MODULES = [
   'sql',
 ];
 
-const EXPECTED_APPROVAL = ['N-03(a)', 'N-08', 'Arch-3.2', 'D-008', 'D-009', 'D-011'];
+// PF-Q-3/PF-Q-4 (docs/platform-facts.md) are the Verified official Jira event
+// identifiers. A comment edit is covered by `commented:issue`, not a separate
+// `updated:comment` event; the link identifier has no hyphen.
+const EXPECTED_TRIGGER_EVENTS = [
+  'avi:jira:created:issue',
+  'avi:jira:updated:issue',
+  'avi:jira:commented:issue',
+  'avi:jira:deleted:comment',
+  'avi:jira:created:issuelink',
+];
+
+// Only owner decisions belong here. D-011 is an orchestrator-recorded technical
+// implementation, not an owner ruling (docs/08-decisions.md).
+const EXPECTED_APPROVAL = ['N-03(a)', 'N-08', 'Arch-3.2', 'D-008', 'D-009'];
 const EXPECTED_EVIDENCE = ['PF-RUN-1'];
 
 type Baseline = {
@@ -102,6 +115,18 @@ describe('P1.B1 approved manifest baseline (N-03(a), N-08, D-008, D-009)', () =>
       function: 'daily-reconcile',
       interval: 'day',
     });
+  });
+
+  it('subscribes only to Jira event identifiers that Atlassian emits (PF-Q-3, PF-Q-4)', () => {
+    const trigger = buildManifest({ appId: 'app-a' }).modules.trigger![0]!;
+    expect(trigger.events).toEqual(EXPECTED_TRIGGER_EVENTS);
+    for (const invalid of [
+      'avi:jira:created:comment',
+      'avi:jira:updated:comment',
+      'avi:jira:created:issue-link',
+    ]) {
+      expect(trigger.events).not.toContain(invalid);
+    }
   });
 
   it('uses the official licensing.enabled shape and leaves App B unlicensed', () => {

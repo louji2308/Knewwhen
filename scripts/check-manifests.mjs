@@ -14,6 +14,16 @@ const dir = join(root, 'manifests');
 const read = (name) => readFileSync(join(dir, name), 'utf8');
 const findings = [];
 
+// Independent guard for VER-B-P1: forge lint does not validate event names.
+// These are the official identifiers from PF-Q-3/PF-Q-4, not derived from the model.
+const EXPECTED_TRIGGER_EVENTS = [
+  'avi:jira:created:issue',
+  'avi:jira:updated:issue',
+  'avi:jira:commented:issue',
+  'avi:jira:deleted:comment',
+  'avi:jira:created:issuelink',
+];
+
 const config = JSON.parse(read('app-config.json'));
 const a = buildManifest({
   appId: config.appA?.id,
@@ -22,6 +32,15 @@ const a = buildManifest({
 const b = buildManifest({ appId: config.appB?.id });
 
 if (!isParityCompatible(a, b)) findings.push('PARITY_FAIL: apps differ beyond app.id/licensing');
+for (const [name, manifest] of [
+  ['app-a', a],
+  ['app-b', b],
+]) {
+  const events = manifest.modules.trigger?.[0]?.events;
+  if (JSON.stringify(events) !== JSON.stringify(EXPECTED_TRIGGER_EVENTS)) {
+    findings.push(`TRIGGER_EVENTS_INVALID: ${name} subscribes to non-official Jira events`);
+  }
+}
 if (read('app-a.yml') !== renderYaml(a)) findings.push('APP_A_YAML_OUT_OF_DATE');
 if (read('app-b.yml') !== renderYaml(b)) findings.push('APP_B_YAML_OUT_OF_DATE');
 

@@ -99,10 +99,9 @@ modules:
       events:
         - "avi:jira:created:issue"
         - "avi:jira:updated:issue"
-        - "avi:jira:created:comment"
-        - "avi:jira:updated:comment"
+        - "avi:jira:commented:issue"
         - "avi:jira:deleted:comment"
-        - "avi:jira:created:issue-link"
+        - "avi:jira:created:issuelink"
   consumer:
     - key: "scan-queue"
       queue: "knewwhen-scan"

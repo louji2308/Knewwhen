@@ -359,6 +359,16 @@ No Forge token, developer site, clean install site, outside organisation, verifi
 - **Bundler correction:** `tsconfig.json` uses `module: ESNext` and `moduleResolution: Bundler`. `NodeNext` with `.js` specifiers passed `tsc` but failed the real Forge bundle (`Can't resolve './adapters/forge-resolver.js'`); extensionless imports fixed it and the deploy then succeeded.
 - **Local CLI telemetry:** `forge settings set usage-analytics false` was applied after Sentry telemetry caused `getaddrinfo ENOTFOUND o55978.ingest.sentry.io` during install. This is a reversible local CLI preference, not an app check, hook, permission or scope, and no repository file records a credential.
 - **Explicitly not included:** no production deploy, Marketplace listing, publish or share; no new site, organisation or verifier context; no phase acceptance. Deploy and install evidence is in `evidence/P1/` and indexed in `evidence/P1/README.md`.
+- **Correction GV-1 (orchestrator self-audit, 24 Nov 2026):** D-011 was wrongly used as `KW_APPROVAL_TAG` for the locked-file commit and added to `APPROVAL_IDS`/`manifests/baseline.json`, whose own contract is "Owner decisions only". D-011 is **not** an owner ruling. It was removed from both lists; the corrective commit uses genuine owner decision D-008 as its tag. Residual (Minor): `scripts/hooks/pre-commit.mjs:39` checks only the tag's `/^D-\d+$/` format, and the `D-` numbering no longer exclusively denotes owner rulings. Both are recorded for the owner; neither was used to justify a scope change.
+
+---
+
+## VER-B-P1 — trigger event identifiers corrected (technical correction, 24 Nov 2026)
+
+- **Finding D-VB-01 (Major, Verification B initial report):** `TRIGGER_EVENTS` declared `avi:jira:created:comment`, `avi:jira:updated:comment` and `avi:jira:created:issue-link`, none of which Atlassian emits. The repo's own Verified facts PF-Q-3/PF-Q-4 and the canonical Workflow doc give `avi:jira:commented:issue` (creation **and** edit), `avi:jira:deleted:comment` and `avi:jira:created:issuelink`. Saved `forge lint` output did not detect this, so a linter pass is not evidence of event correctness (A-11).
+- **Fix:** the five official identifiers were written into `scripts/lib/manifest-model.mjs`; both templates and root `manifest.yml` were re-rendered; two independent literals now guard them (`tests/manifest.test.ts`, `scripts/check-manifests.mjs`). The two new tests were confirmed failing for the intended reason before the implementation change. This restores already-Verifiable facts; it adds no module, scope or tier and needs no owner decision.
+- **Re-review:** Verification B's second pass returned **PASS** on closure, no new Blocker or Major, with static `file:line` evidence in model, both templates and root manifest. Orchestrator re-ran `npm run check` (PASS, 37 tests) and redeployed both apps to **development**: App A v2.2.0, App B v2.1.0, both eligible for Runs on Atlassian (program check, not an award — I-13). Evidence is indexed in `evidence/P1/README.md`.
+- **Not Verified by B itself:** B has no shell in its context; command output remains Inferred from saved files there. Independence of context was available; a different model family remains unavailable and is recorded as a limitation.
 
 ---
 
