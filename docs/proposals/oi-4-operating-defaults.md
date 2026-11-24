@@ -1,29 +1,35 @@
-# Draft — OI-4 operating defaults
+# OI-4 operating defaults
 
-**Version:** 0.1 (Draft) · **Date:** 24 Nov 2026 · **Status:** **Proposed**, not Approved operating settings and not regulatory rule data
-**Authority:** D-008 owner ruling, 24 Nov 2026 (`docs/08-decisions.md`); `AGENTS.md` §3, §5.3, §7.2, §7.4, §12.4
+**Version:** 1.0 · **Date:** 24 Nov 2026 · **Status:** **Approved** operating defaults by D-009; **not** regulatory rule data and **not** a performance SLA
+**Authority:** D-008 owner ruling supplied the values; D-009 owner blanket approval approved them (`docs/08-decisions.md`); `AGENTS.md` §3, §5.3, §7.2, §7.4, §12.4
 **Requirement IDs:** OI-4; C-01, C-02, C-03, C-05, C-06, C-08, C-11, C-12; N-04, N-06
-**Purpose:** give the builder a single, reviewable list of the numeric limits the owner supplied, and the invariants that must hold when they are implemented.
+**Purpose:** define the approved numerical limits and the invariants that must hold when they are implemented.
 
 ---
 
 ## 1. Status and use
 
-The owner supplied the numbers below and instructed the orchestrator to **prepare proposed operating defaults subject to benchmarking and approval**. They are **not** approved values in `rules/*.json`, are **not** regulatory content, and must not be represented as a performance SLA or a validated rule set.
+The owner supplied the numbers below in D-008 and approved the draft in D-009. They are **Approved operating defaults**. They may be implemented as configuration/settings when the relevant service exists.
 
-No file under `docs/Project/` or `rules/` was changed to create this draft. The `rules/` directory currently contains no JSON rule files.
+They remain:
 
-| Class | Who approves before use | Where it may eventually live |
+- **not regulatory content** under I-7;
+- **not written to `rules/*.json`** until qualified QA/RA rule data exists and owner approves that separate step;
+- **not a performance SLA** under OI-7 — instrumentation and benchmarking are still required before any SLA claim.
+
+No file under `docs/Project/` or `rules/` was changed by this document.
+
+| Class | Status | Where it may live |
 |---|---|---|
-| Engineering limits (debounce, LLM caps, scan caps, lookback caps, display cap, quote length) | Owner, after benchmark evidence | Settings service / versioned configuration; not a regulatory rule file |
-| Regulatory-adjacent thresholds (reminder days) | Owner after QA/RA confirmation that the values are acceptable | Proposed configuration first; only a QA/RA-approved rule set may control deadline calculation |
-| Behavioural invariants | Already Approved in D-008; implement as tests | Core/services and tests |
+| Engineering limits (debounce, LLM caps, scan caps, lookback caps, display cap, quote length) | **Approved operating defaults** | Settings service / versioned configuration |
+| Regulatory-adjacent thresholds (reminder days) | **Approved as operating defaults only**; QA/RA confirmation still needed before regulatory reliance | Proposed configuration first; only a QA/RA-approved rule set may control deadline calculation |
+| Behavioural invariants | **Approved in D-008** | Core/services and tests |
 
 ---
 
-## 2. Proposed defaults
+## 2. Operating defaults
 
-| ID | Setting | Proposed value | Applies to | Verification intended |
+| ID | Setting | Approved value | Applies to | Verification intended |
 |---|---|---:|---|---|
 | **OI-4.1** | UI debounce | 5 seconds | Manual scan / search inputs | Unit test: one action after 5 s of quiet, not one per keystroke |
 | **OI-4.2** | Automatic LLM calls per unique content version | 1 | Signal Finder | Unit/service test with a fake LLM: same content version reuses the captured result; changed content version is eligible |
@@ -38,7 +44,7 @@ No file under `docs/Project/` or `rules/` was changed to create this draft. The 
 
 ---
 
-## 3. Approved behavioural constraints (not merely defaults)
+## 3. Approved behavioural constraints
 
 These are binding because D-008 approved them; they must be covered by tests before implementation acceptance.
 
@@ -50,13 +56,13 @@ These are binding because D-008 approved them; they must be covered by tests bef
 
 ---
 
-## 4. Conflicts and limits held open
+## 4. Limits held open
 
 | ID | Issue | Handling |
 |---|---|---|
-| **OI-4-A** | Values are called “defaults” but no benchmark data exists. | Keep Proposed. Instrument first; owner approves final values. Do not call them a performance SLA (OI-7). |
+| **OI-4-A** | Values are approved defaults, but no benchmark data exists. | Do not call them an SLA. Instrument first (OI-7). |
 | **OI-4-B** | Reminder thresholds are numeric and deadline-adjacent. | Do not write them into `rules/*.json` until a qualified QA/RA-approved rule set exists (OI-1, I-7). |
-| **OI-4-C** | `daily` reset needs a time zone. | No time zone is supplied. Use the rule time zone only when rule data defines it; until then, display “not calculated” and hold reminder scheduling. |
+| **OI-4-C** | `daily` reset needs a time zone. | Use the rule time zone only when rule data defines it; until then, display “not calculated” and hold reminder scheduling. |
 | **OI-4-D** | Budget counters must survive retries and restarts. | Implementation must use the owning SQL service with idempotency keys; this is a technical choice, not a new scope. |
 | **OI-4-E** | Live model call evidence is approved (DR-18) but access is absent. | One synthetic controlled call only after Forge access exists; record usage and cost; automated tests never call the model. |
 
@@ -70,5 +76,3 @@ These are binding because D-008 approved them; they must be covered by tests bef
 - A negative test proving `NO_SIGNAL_FOUND` is never emitted on LLM failure or budget exhaustion.
 - A test proving a `PREVIEW` or `UNREVIEWED` rule set produces no deadline number.
 - Evidence saved under `evidence/` with command output, commit SHA and seeds.
-
-**Approval needed:** owner approval of the final values after benchmarks; QA/RA approval before any regulatory content or deadline calculation is enabled.

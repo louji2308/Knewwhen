@@ -291,14 +291,44 @@
 
 ### Not verified by D-008
 
-No Forge token, developer site, clean install site, outside organisation, verifier contexts, QA/RA rule data, trademark evidence or partner verification was supplied. No runtime proof was claimed. The Codegeist resources page was opened in the connected browser on 24 Nov 2026 (`HTTP 200`); a plain fetch returned `403`, recorded in `docs/platform-facts.md` §12.
+No Forge token, developer site, clean install site, outside organisation, verifier contexts, QA/RA rule data, trademark evidence or partner verification was supplied. No runtime proof was claimed. The Codegeist resources page was opened in the connected browser on 24 Nov 2026 (`HTTP 200`); an earlier plain fetch returned `403`, but a later `webfetch` re-check succeeded, recorded in `docs/platform-facts.md` §12.
 
 ### Draft deliverables produced under D-008 (24 Nov 2026)
 
 - **OI-4:** `docs/proposals/oi-4-operating-defaults.md` v0.1 records every supplied numeric default as **Proposed**, plus the already-Approved behavioural constraints. No value was written to `rules/*.json`; no benchmark or SLA is claimed.
-- **WF-14:** `docs/proposals/wf-14-case-index-projection.md` v0.1 records the proposed property, aliases, JQL examples, SQL-authoritative rule and tests. It is **not approved**.
+- **WF-14:** `docs/proposals/wf-14-case-index-projection.md` v0.1 recorded the proposed property, aliases, JQL examples, SQL-authoritative rule and tests. It was **not approved at D-008**; D-009 below approved it and resolved both conflicts.
 - **New conflicts held open:** WF-14-C1 — owner's `knewwhen.case-index` vs canonical `knewwhen.case` (`Architecture.md` §11.3, `Scope.md` C-07). WF-14-C2 — owner's `jira:entityPropertySet` vs canonical `jira:entityProperty` (`Architecture.md` §3.6/§13.2, `Scope.md` C-07). Both need an owner ruling before manifest work; neither was silently changed.
 - **Platform gap added:** PF-JIRA-9 records that official `jira:issueContext` documentation does not state a Viewers/read-only permission rule. D-008's preference is therefore conditional on a clean-site permission check.
+
+---
+
+## D-009 — Blanket approval of outstanding rulings (Approved)
+
+- **Date:** 24 Nov 2026
+- **Status:** **Approved.** The owner's exact reply is reproduced below.
+- **Scope of interpretation:** the orchestrator treats “every decision” as approval of the four outstanding decisions listed in the preceding final report: push of local commit `9214e28`; WF-14-C1; WF-14-C2; and the OI-4 draft values. Each is resolved below using the **recommended option** that was presented to the owner. If the owner meant something narrower, the record must be corrected before dependent work proceeds.
+- **Not included:** supplying Forge credentials, a site URL, test users, an outside organisation or verifier contexts is not a decision and remains Blocked. Supplying QA/RA rule data and canonical plan sections also remains Blocked.
+
+### Owner reply (verbatim)
+
+> i approved every decision and what are the forge access details you need can you tell me clearly, i also need you to what site url you yourself fetch instead of uinsg browser use web fetch or web search and then tell me the clear steps for codegeist url for about the api key
+
+### Approved resolutions
+
+| ID | Decision now Approved | Effect |
+|---|---|---|
+| **PUSH-1** | Push local commit `9214e2830edf476ea2d2b8ca639b30042776aff8` and this D-009 checkpoint to `origin/master`. | Integration-branch push is authorised. |
+| **WF-14-C1** | Retain the canonical property key **`knewwhen.case`**. The `knewwhen.case-index` name in D-008 is superseded. | No canonical key rename. Pending wording update only if needed; `docs/Project/` untouched here. |
+| **WF-14-C2** | Use **`jira:entityPropertySet`** for the searchable projection. This is an explicit owner-approved module change from the canonical `jira:entityProperty` baseline. | Record as Type C approval under AGENTS §7.4. Manifest, scope snapshot and parity tests must be updated when P1.B1/B2 are implemented. |
+| **OI-4** | The ten OI-4 numeric defaults are **Approved operating defaults**. | They may be implemented as configuration/settings when the relevant service exists. They are **not** regulatory rule data, are not written to `rules/*.json`, and are not a performance SLA. Benchmarking still required before any SLA claim. |
+| **WF-14 draft** | The property/alias schema in `docs/proposals/wf-14-case-index-projection.md` is approved in principle, subject to the two resolutions above and to QA/RA approval of enum vocabulary. | Can be used as the implementation contract. No record text or personal data in the property. |
+
+### Pending after D-009
+
+- Update `Architecture.md`/`Scope.md` wording for the approved `jira:entityPropertySet` module at the next owner-authorized canonical update; do not edit them here.
+- Keep `knewwhen.case` in all manifests, tests, JQL and docs.
+- Complete the Forge access checklist before any deploy, install or Verification A.
+- Confirm the `jira:issueContext` read-only permission on a clean site (PF-JIRA-9) before the 1 Dec manifest freeze.
 
 ---
 

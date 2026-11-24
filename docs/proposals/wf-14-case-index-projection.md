@@ -1,24 +1,20 @@
-# Draft — WF-14 Jira case-index projection
+# WF-14 Jira case-index projection
 
-**Version:** 0.1 (Draft) · **Date:** 24 Nov 2026 · **Status:** **Proposed**, awaiting owner approval; not a canonical schema
-**Authority:** D-008 owner ruling, 24 Nov 2026 (`docs/08-decisions.md`); `AGENTS.md` §3, §5.3, §7.3–7.4, §12.4
+**Version:** 1.0 · **Date:** 24 Nov 2026 · **Status:** **Approved in principle** by D-009; enum vocabulary still requires qualified QA/RA rule data
+**Authority:** D-008 owner ruling requested the draft; D-009 approved it and resolved WF-14-C1/C2 (`docs/08-decisions.md`); `AGENTS.md` §3, §5.3, §7.3–7.4, §12.4
 **Requirement IDs:** WF-14; C-07, C-09, N-03, N-04, N-08; CF-1, CF-6, CF-7
-**Purpose:** propose the searchable Jira entity-property projection and JQL aliases. Forge SQL remains authoritative; the Jira property is only a reduced search mirror.
+**Purpose:** define the searchable Jira entity-property projection and JQL aliases. Forge SQL remains authoritative; the Jira property is only a reduced search mirror.
 
 ---
 
-## 1. Decisions this draft implements, and conflicts it must not hide
+## 1. Resolved decisions
 
-D-008 ruled: draft the `knewwhen.case-index` property schema and JQL aliases; use `jira:entityPropertySet` for searchable metadata; SQL remains authoritative; entity properties are only a searchable projection; property data is non-sensitive; comments fail closed.
+| ID | Ruling | Effect |
+|---|---|---|
+| **WF-14-C1** | D-009 retains the canonical key **`knewwhen.case`**. The `knewwhen.case-index` name in D-008 is superseded. | Use `knewwhen.case` in manifests, tests, JQL and docs. |
+| **WF-14-C2** | D-009 approves **`jira:entityPropertySet`** for the searchable projection. This is an explicit owner-approved change from the canonical `jira:entityProperty` baseline. | Implement with `jira:entityPropertySet`. Update manifest/scope snapshot and parity tests when P1.B1/B2 are built. Pending canonical wording update in `Architecture.md`/`Scope.md`; those files were not edited here. |
 
-Two conflicts are **Unresolved** and must be settled by the owner before implementation:
-
-| ID | Conflict | Evidence | Proposed resolution |
-|---|---|---|---|
-| **WF-14-C1** | Owner says key `knewwhen.case-index`; canonical documents say `knewwhen.case`. | D-008 §3 vs `Architecture.md` §11.3 and `Scope.md` C-07.1 | Keep canonical `knewwhen.case` unless the owner explicitly approves a rename in every dependent document. A rename touches the write allow-list, tests, guide and manifest projection. |
-| **WF-14-C2** | Owner says module `jira:entityPropertySet`; canonical baseline says `jira:entityProperty` (indexed). | D-008 §1 vs `Architecture.md` §3.6/§13.2 and `Scope.md` C-07 | Prefer `jira:entityPropertySet` if it gives the required aliases without extra scopes, but record an explicit module change before the 1 Dec freeze. Do not edit the manifest until the module and key are approved together. |
-
-No canonical file, manifest, migration or rule file was changed by this draft.
+No canonical file, manifest, migration or rule file was changed by this document.
 
 ---
 
@@ -35,9 +31,9 @@ No canonical file, manifest, migration or rule file was changed by this draft.
 
 ---
 
-## 3. Proposed property object
+## 3. Approved property object
 
-The example below uses the owner's requested key for clarity. **Do not implement that key until WF-14-C1 is resolved.** If the canonical key is retained, substitute `knewwhen.case`.
+Key: **`knewwhen.case`** (WF-14-C1).
 
 ```json
 {
@@ -67,7 +63,7 @@ The example below uses the owner's requested key for clarity. **Do not implement
 
 Field notes:
 
-- Enums (`state`, `routingState`, `decisionStatus`, `deadlineStatus`, `awarenessBasisCode`, `ruleSetStatus`) are **proposed technical codes**. The authoritative vocabulary is pending qualified QA/RA rule data (OI-1, WF-15). No code in this draft is regulatory content.
+- Enums (`state`, `routingState`, `decisionStatus`, `deadlineStatus`, `awarenessBasisCode`, `ruleSetStatus`) are **technical codes approved as a projection contract**, but the authoritative domain vocabulary still requires qualified QA/RA rule data (OI-1, WF-15). No code here is regulatory content.
 - `signalFlag` uses number `0|1` because the documented entity-property JQL types are number/text/string/user/date, not boolean (PF-JIRA-2).
 - `decisionStatus` distinguishes `NONE`, `PROVISIONAL` and `FINAL` so OI-3 can be represented without a deadline. Final regulatory closure is unavailable under unreviewed rules.
 - `ruleSet*` fields implement CF-7: ID, version, digest, jurisdiction and effective date are recorded for every calculation and decision. Status is included so a reader can tell why no deadline appears.
@@ -76,9 +72,7 @@ Field notes:
 
 ---
 
-## 4. Proposed JQL aliases
-
-Alias names are proposed and must be approved with the key/module choice.
+## 4. Approved JQL aliases
 
 | Alias | Source field | JQL type | Purpose |
 |---|---|---|---|
@@ -96,15 +90,15 @@ Alias names are proposed and must be approved with the key/module choice.
 | `knewwhenDaysLeft` | `daysLeft` | number | Convenience sorting; labelled with as-of |
 | `knewwhenDaysLeftAsOf` | `daysLeftAsOf` | date | Detect stale convenience values |
 
-Example queries (adjust the key after WF-14-C1 is resolved):
+Example queries:
 
 ```text
-alias = "knewwhenCaseState" and knewwhenCaseState = "FLAGGED"
+knewwhenCaseState = "FLAGGED"
 knewwhenDueDate <= "2026-12-01" and knewwhenDecisionStatus != "FINAL"
 knewwhenRuleSetStatus = "APPROVED" and knewwhenDeadlineStatus = "CALCULATED"
 ```
 
-Fallback path if an alias is unavailable: `issue.property['<approved-key>'].<field>`. This is also the documented query form in PF-JIRA-2.
+Fallback path if an alias is unavailable: `issue.property['knewwhen.case'].<field>`. This is also the documented query form in PF-JIRA-2.
 
 ---
 
@@ -115,8 +109,6 @@ Fallback path if an alias is unavailable: `issue.property['<approved-key>'].<fie
 - Monotonic test: a lower `decisionVersion` cannot overwrite a higher one.
 - Rule-status test: `PREVIEW`/`UNREVIEWED` rows have `deadlineStatus: "NOT_CALCULATED"` and no numeric deadline fields.
 - Repair test: a modified Jira property is detected and repaired from SQL with an audit event.
-- Alias test: each proposed alias resolves to the expected indexed value; fallback `issue.property[...]` query works.
+- Alias test: each approved alias resolves to the expected indexed value; fallback `issue.property[...]` query works.
 - Freshness test: the UI and tests tolerate index lag and never say “no cases” solely because JQL has not caught up.
-- Manifest/scope snapshot test: key and module changes fail without an approval marker (N-03, CF-5).
-
-**Approval needed:** owner chooses the property key, module, alias list and enum vocabulary; QA/RA approval supplies regulatory vocabulary before any deadline field is trusted.
+- Manifest/scope snapshot test: `jira:entityPropertySet` and the `knewwhen.case` key are locked by an approval marker (N-03, CF-5).

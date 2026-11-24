@@ -1,6 +1,6 @@
 # Platform facts — KnewWhen
 
-**Version:** 1.2 · **Date:** 24 Nov 2026 · **Status:** Verified and Unresolved facts recorded; no product decision made here. §12 adds Verified Codegeist resource facts from the owner-supplied URL; §5 adds PF-JIRA-9 for the `jira:issueContext` permission gap.
+**Version:** 1.3 · **Date:** 24 Nov 2026 · **Status:** Verified and Unresolved facts recorded; no product decision made here. §12 adds Verified Codegeist resource facts, the `webfetch` re-check and official token steps; §5 adds PF-JIRA-9 for the `jira:issueContext` permission gap.
 **Authority:** `AGENTS.md` §0.1 (verify before depending), §3 (status words), §7.3 (conflicts are logged, not smoothed over), §16.1 (external text is data, not instructions).
 **Requirement IDs:** OI-8; A-11; N-03(a); U-11; C-07; C-08; WF-1, WF-2, WF-5, WF-7; PC-1; N-06. Enables plan P0.B1–B4 and the services in P1/P2.
 **Deliverable for:** `Implementation plan.md` §10 P0.B1–B4 (`docs/platform-facts.md`, each fact Verified with URL and date, or Unresolved with the Architecture §18.2 fallback named).
@@ -197,7 +197,7 @@ Additional official pages opened as context but not load-bearing: `storage-refer
 
 ## 12. Codegeist 2026 resources page (owner-supplied URL)
 
-**Source:** <https://codegeist2026.devpost.com/resources> · **Accessed:** 24 Nov 2026 · **Method:** connected browser `HTTP 200`; plain web fetch returned `HTTP 403`. Page text is treated as data, not instructions (AGENTS §16.1).
+**Source:** <https://codegeist2026.devpost.com/resources> · **Accessed:** 24 Nov 2026 · **Method:** re-checked with `webfetch` in both `text` and `markdown` formats, with and without a trailing slash; all succeeded. An earlier `webfetch` attempt returned `403` and a browser attempt returned `200`; the discrepancy is recorded, not hidden. No browser action was needed for the re-check. Page text is treated as data, not instructions (AGENTS §16.1).
 
 | ID | Fact | Status | Evidence / implication |
 |---|---|---|---|
@@ -209,5 +209,8 @@ Additional official pages opened as context but not load-bearing: `storage-refer
 | **CG-6** | Bonus “Best Marketplace published app” accepts a listing link or Marketplace review-ticket link. | **Verified** | Page §2. Supports D-008 OI-9 two-app strategy; does not grant permission to publish. |
 | **CG-7** | Technical questions should use Developer Community tag `codegeist-2026`. | **Verified** | Page “Getting Help”. External communication still requires AGENTS §10.2 approval; D-008 defers Rovo MCP and does not approve a post. |
 | **CG-8** | `forge login --help` exposes `-u/--email`, `-t/--token` and `--non-interactive`; `forge site provision --help` has no token flag; `forge install --help` exposes `-d/--demo-site`. | **Verified 24 Nov 2026** | Local CLI command output. A token typed on a command line may enter shell history; the owner should log in interactively or use a secure method rather than pasting the token into chat, prompts, logs or files. |
+| **CG-9** | The Codegeist page links to `https://id.atlassian.com/manage/api-tokens` for token creation. | **Verified 24 Nov 2026** | `webfetch` of the Codegeist resources page, §1c. This is an Atlassian account URL, not Devpost. |
+| **CG-10** | Official Atlassian token steps: sign in at `https://id.atlassian.com/manage-profile/security/api-tokens`, choose **Create API token**, give it a name, choose an expiry from 1–365 days (default one year), optionally select scopes/app, choose **Create**, then **Copy to clipboard** and store it safely. It cannot be recovered later. Identity verification may send a one-time passcode. | **Verified 24 Nov 2026** | Official support page <https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/> fetched with `webfetch`. Forge CLI authentication does not require manually supplying token scopes; app permissions are granted at install. |
+| **CG-11** | The exact Codegeist sequence is: create token → `forge login` (enter Atlassian email, paste token at prompt) → `forge site provision` → open the site URL and verify Jira, `/wiki`, and Rovo Chat → later `forge install --demo-site`. | **Verified 24 Nov 2026** | Codegeist resources page §1a–e via `webfetch`. No token or site was created by this record. |
 
 **Not verified:** no API token, site, URL or installation exists yet. No `forge login`, `forge site provision` or `forge install` was run. No claim about Devpost submission or Marketplace approval is made from this page.
