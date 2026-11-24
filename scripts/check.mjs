@@ -10,6 +10,7 @@ const steps = [
   'check:imports',
   'check:types',
   'check:lint',
+  'check:manifests',
   'check:format',
   'check:tests',
 ];
@@ -52,8 +53,11 @@ if (existsSync(join(root, 'manifest.yml'))) {
   console.log(output);
   if (result.status !== 0) failed = true;
 } else {
-  lines.push('--- forge lint: SKIP (no manifest.yml yet; P1.B1 owns the manifest) ---', '');
-  console.log('forge lint: SKIP (no manifest.yml yet)');
+  lines.push(
+    '--- forge lint: SKIP (no root manifest.yml; P1.B1 owns manifests/app-{a,b}.yml templates, P1.B2 creates manifest.yml) ---',
+    '',
+  );
+  console.log('forge lint: SKIP (root manifest.yml is created in P1.B2)');
 }
 
 // A pre-commit run is a gate, not an evidence step; an explicit `npm run check` writes proof.

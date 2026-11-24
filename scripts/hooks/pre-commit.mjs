@@ -13,11 +13,23 @@ const staged = git(['diff', '--cached', '--name-only', '--diff-filter=ACDMR', '-
   .stdout.split(/\r?\n/)
   .filter(Boolean);
 
+// AGENTS §7.2 locks "the manifest scopes". The model, the independent baseline
+// and the rendered manifests are those scopes in executable form (review F2).
+const MANIFEST_SCOPE_FILES = new Set([
+  'scripts/lib/manifest-model.mjs',
+  'scripts/lib/manifest-model.d.mts',
+  'manifests/baseline.json',
+  'manifests/app-config.json',
+  'manifests/app-a.yml',
+  'manifests/app-b.yml',
+]);
+
 // Locked files (AGENTS 7.2, Tools 8). Approval must be an explicit decision id.
 const locked = staged.filter(
   (path) =>
     path.startsWith('docs/Project/') ||
     path.startsWith('rules/') ||
+    MANIFEST_SCOPE_FILES.has(path) ||
     ['docs/02-spec.md', 'docs/03-domain-rules.md', 'docs/05-stack-and-constraints.md'].includes(
       path,
     ),

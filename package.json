@@ -13,8 +13,10 @@
     "check:imports": "node scripts/check-imports.mjs",
     "check:types": "tsc --noEmit",
     "check:lint": "eslint .",
+    "check:manifests": "node scripts/check-manifests.mjs",
     "check:format": "prettier --check .",
     "check:tests": "vitest run",
+    "render:manifests": "node scripts/render-manifests.mjs",
     "setup": "node scripts/setup.mjs"
   },
   "dependencies": {},

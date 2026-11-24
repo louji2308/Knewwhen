@@ -1,6 +1,6 @@
 # Platform facts — KnewWhen
 
-**Version:** 1.4 · **Date:** 24 Nov 2026 · **Status:** Verified and Unresolved facts recorded; no product decision made here. §12 adds Verified Codegeist resource facts, two independent `webfetch`/direct-fetch re-checks and official token steps; §5 adds PF-JIRA-9 for the `jira:issueContext` permission gap.
+**Version:** 1.6 · **Date:** 24 Nov 2026 · **Status:** Verified and Unresolved facts recorded; no product decision made here. §12 records Codegeist setup facts; §13 records the owner-supplied demo site and verified CLI login; §14 records manifest schema facts found during the P1.B1 task review. §5 keeps PF-JIRA-9 open.
 **Authority:** `AGENTS.md` §0.1 (verify before depending), §3 (status words), §7.3 (conflicts are logged, not smoothed over), §16.1 (external text is data, not instructions).
 **Requirement IDs:** OI-8; A-11; N-03(a); U-11; C-07; C-08; WF-1, WF-2, WF-5, WF-7; PC-1; N-06. Enables plan P0.B1–B4 and the services in P1/P2.
 **Deliverable for:** `Implementation plan.md` §10 P0.B1–B4 (`docs/platform-facts.md`, each fact Verified with URL and date, or Unresolved with the Architecture §18.2 fallback named).
@@ -188,6 +188,10 @@ Reference labels used above:
 - [scopes-forge]: https://developer.atlassian.com/platform/forge/manifest-reference/scopes-forge/
 - [permissions]: https://developer.atlassian.com/platform/forge/manifest-reference/permissions/
 - [add-scopes]: https://developer.atlassian.com/platform/forge/add-scopes-to-call-an-atlassian-rest-api/
+- [forge-entity-property-set]: https://developer.atlassian.com/platform/forge/manifest-reference/modules/jira-entity-property-set/
+- [forge-runtimes]: https://developer.atlassian.com/platform/forge/runtime-reference/
+- [manifest overview]: https://developer.atlassian.com/platform/forge/manifest-reference/
+- [issue-panel]: https://developer.atlassian.com/platform/forge/manifest-reference/modules/jira-issue-panel/
 
 Additional official pages opened as context but not load-bearing: `storage-reference/sql-tutorial/`, `storage-reference/sql-data-types/`, `storage-reference/kvs/`, `runtime-reference/fetch-api/`, `runtime-reference/authorize-api/`, `events-reference/`, `events-reference/product_events/`, `manifest-reference/modules/`, `manifest-reference/modules/consumer/`, `manifest-reference/modules/scheduled-trigger/`, `manifest-reference/modules/jira-entity-property-set/`, `manifest-reference/modules/index-jira/`, `manifest-reference/modules/index-jsm/`, `platform-quotas-and-limits/`, `limits-sql/`, `limits-async-events/`, `limits-llm/`, `faq-privacy-security/`, `in-scope-end-user-data/`, `user-privacy-guidelines/`, `security/`, `app-context-security/`, `apis-reference/product-rest-api-reference/`, `apis-reference/fetch-api-product.requestjira/`, `marketplace/`, `marketplace/onboarding-hub/launch/submit-for-review/`, `marketplace/security-scanning/`, `marketplace/ecoscanner/`, `marketplace/vulnerability-management-for-marketplace-apps/`, `marketplace/creating-a-marketplace-listing/`, `marketplace/marketplace-partner-program/`, `forge/`, `forge/versions/`, `forge/developer-space/publish-developer-space/`, `forge/developer-space/developer-space-apps/`, `cloud/jira/platform/jira-entity-properties/`, `cloud/jira/platform/storing-data-with-entity-properties/`, `cloud/jira/platform/modules/entity-property/`, `cloud/jira/platform/security-for-forge-apps/`, `cloud/jira/platform/webhooks/`, `cloud/jira/service-desk/rest/`, `cloud/jira/service-desk/rest/intro/`, `cloud/jira/service-desk/jira-entity-properties/`, `platform/forge/apis-reference/ui-api-bridge/bridge/`, `platform/forge/apis-reference/ui-api-bridge/router/`, `platform/forge/events-reference/jira-service-management/`, `platform/forge/manifest-reference/modules/connect-module-equivalents/`, `platform/forge/changelog/`, and official sitemaps.
 
@@ -214,4 +218,34 @@ Additional official pages opened as context but not load-bearing: `storage-refer
 | **CG-11** | The exact Codegeist sequence is: create token → `forge login` (enter Atlassian email, paste token at prompt) → `forge site provision` → open the site URL and verify Jira, `/wiki`, and Rovo Chat → later `forge install --demo-site`. | **Verified 24 Nov 2026** | Codegeist resources page §1a–e via `webfetch`. No token or site was created by this record. |
 | **CG-12** | Page §1c exact wording: “Go to Atlassian API tokens. Click **Create API token** and give it a name (e.g., `codegeist26`). Copy your token, then run: `forge login`. Enter your Atlassian email and paste your API token when prompted.” Page §1d adds: `forge site provision` displays name, URL and expiration when ready; `Ctrl+C` is safe because provisioning continues in the background; re-run the command for status or the URL; only one active provisioned site exists and the same site is used for all apps. Page states the challenge deadline as **22 Dec 2026, 12:00 pm PST**. | **Verified 24 Nov 2026** | Direct HTTP fetch of the resources page (`200`, 139,597 bytes), independent of the browser and `webfetch`. No token or site was created by this record. The deadline matches AGENTS §11.4 and must still be re-read before submission. |
 
-**Not verified:** no API token, site, URL or installation exists yet. No `forge login`, `forge site provision` or `forge install` was run. No claim about Devpost submission or Marketplace approval is made from this page.
+**Not verified by §12:** the page does not prove any token, site or install exists. The owner subsequently supplied a provisioned site and the CLI confirms login; §13 records those separately. No claim about Devpost submission or Marketplace approval is made from this page.
+
+---
+
+## 13. Demo site, Forge CLI and P1.B1 module syntax (Verified 24 Nov 2026)
+
+**Sources:** owner-supplied site table in chat; local `forge whoami` and `forge site --help`; official module and runtime pages fetched with `webfetch`. No API token value was supplied, seen or stored.
+
+| ID | Fact | Status | Evidence / implication |
+|---|---|---|---|
+| **PF-CLI-1** | The Forge CLI is authenticated as the owner's Atlassian account (`louji2308@gmail.com`). The account ID returned by `forge whoami` is deliberately not stored in this repository (I-6). | **Verified 24 Nov 2026** | `forge whoami` output: “Logged in as Loujan (louji2308@gmail.com)”. |
+| **PF-CLI-2** | The provisioned demo site is **`one-atlas-ttud`**, URL **`https://one-atlas-ttud.atlassian.net`**, status **active**, expiry **2027-02-22**. The expiry is after judging (~15 Feb 2027), so it covers the Core demo and judging window. | **Verified 24 Nov 2026** | Owner-supplied `forge site provision` table. Re-check the expiry before submission (AGENTS §3.2). |
+| **PF-CLI-3** | `forge site list` is not a command. `forge site --help` exposes only `provision`; re-running `forge site provision` returns the existing site. | **Verified 24 Nov 2026** | Local CLI output: “Error: 'site list' is not a Forge command” and `forge site --help`. |
+| **PF-CLI-4** | Local CLI is `15.1.0`; the tool warns that `16.0.0` is available. **No upgrade was applied.** | **Verified 24 Nov 2026** | `forge whoami` warning. A toolchain version change needs an owner ruling under AGENTS §7.4 before it is made. |
+| **PF-JIRA-10** | `jira:entityPropertySet` is a current Forge module (page last updated 16 Jul 2026). Syntax: `key` plus `properties[]`, each with `propertyKey`, `entityType` and `values[]` (`path`, `type`, `searchAlias`). It removes the 100-value per-app limit. It requires `read:jira-work` and `write:jira-work`. | **Verified 24 Nov 2026** | [forge-entity-property-set]. Confirms WF-14-C2 can be implemented with the approved six scopes. The 1,000-properties-per-entity platform limit still applies. |
+| **PF-JIRA-11** | `jira:issueContext` is a current module (page last updated 9 Oct 2026). Manifest fields include `key`, `resource`, `resolver`, `render: native`, `title`, `label`; it works in the new issue view in Jira and JSM. | **Verified 24 Nov 2026** | [issue-context]. Confirms D-008's module is technically available, **not** that Viewers can open it — PF-JIRA-9 stays Unresolved. |
+| **PF-RUN-1** | `nodejs24.x` is a valid Forge runtime name (`app.runtime.name`), alongside `nodejs22.x` and `nodejs20.x`. | **Verified 24 Nov 2026** | [forge-runtimes]. Confirms the locked runtime in `docs/Project/Tools and technologies.md` §93. |
+
+**Still Blocked:** real `app.id` values for App A and App B (P1.B4, owner); app shell and deploy/install (P1.B2); Viewer permission check for `jira:issueContext` (PF-JIRA-9); two independent verifier contexts.
+
+---
+
+## 14. Manifest schema details found in the P1.B1 task review (Verified 24 Nov 2026)
+
+**Sources:** official [manifest overview] and [issue-panel] pages, fetched with `webfetch`. These are platform facts, not product decisions; no canonical file was changed.
+
+| ID | Fact | Status | Evidence / implication |
+|---|---|---|---|
+| **PF-MAN-1** | `app.licensing` takes an **`enabled: true`** field, not `subscription`. The official example is `app: { id: <ari>, licensing: { enabled: true } }`. | **Verified 24 Nov 2026** | [manifest overview], "App" table and example. P1.B1 initially emitted the invalid `subscription: false`; corrected. Whether App A needs a licensing block at all remains an owner/listing determination (Architecture §1097); App B must have none (Hackathon §208/§213). |
+| **PF-MAN-2** | `app.id` is an Atlassian resource identifier supplied by the CLI when the app is created or registered (`ari:cloud:ecosystem::app/<uuid>` in the official example). A placeholder string is not a valid id. | **Verified 24 Nov 2026** | [manifest overview], "App" table. Confirms why P1.B4 (owner) must supply real App A/App B ids before `forge lint` and deploy in P1.B2. |
+| **PF-MAN-3** | The current `jira:issuePanel` page marks `icon` **Required = Yes**, but its description says "If no icon is provided … a generic app icon will be displayed." The generated manifests omit `icon`. | **Unresolved 24 Nov 2026** | [issue-panel], page last updated 9 Oct 2026. Do not add an external icon URL (I-6 no egress, I-12 no third-party marks). P1.B3 must record the actual `forge lint` result; that result rules on this ambiguity. |

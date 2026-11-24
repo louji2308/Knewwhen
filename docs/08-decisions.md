@@ -332,6 +332,15 @@ No Forge token, developer site, clean install site, outside organisation, verifi
 
 ---
 
+## D-010 — Demo site access and P1.B1 entry interpretation (24 Nov 2026)
+
+- **Access facts: Verified.** The owner supplied the provisioned site `one-atlas-ttud` / `https://one-atlas-ttud.atlassian.net`, active, expiry **2027-02-22** (after judging). `forge whoami` confirms the CLI is authenticated as the owner's account. Details and sources are in `docs/platform-facts.md` §13 (PF-CLI-1…4, PF-JIRA-10/11, PF-RUN-1). No token value was supplied or stored.
+- **Finding, not a decision:** the CLI is `15.1.0`; `16.0.0` is advertised. No upgrade applied — a toolchain change needs an owner ruling under AGENTS §7.4. Minor finding only; current version works.
+- **DR-2 interpretation: Inferred, reversible.** The canonical plan §12 decision register (DR-1…DR-18) is still absent, but D-008 and D-009 contain explicit owner rulings covering DR-2's entire content: baseline modules, the approved `jira:entityPropertySet` change, the `jira:issueContext` preference, no glance/gadget/Rovo/custom fields, and the six N-03 scopes. The orchestrator therefore treats P1.B1's entry condition as met **for reversible local tooling only**. This is an interpretation, not a new decision; the owner may correct it. It does not authorise a deploy, a manifest freeze or a phase acceptance.
+- **Not included:** real App A/App B IDs (P1.B4 is an owner task); the `jira:issueContext` Viewer permission check (PF-JIRA-9); a second site or organisation; verifier contexts.
+
+---
+
 ## Expert baseline calls E-1 to E-4 (Proposed — no new scope taken)
 
 **Historical status: Proposed, not Approved at the time.** The owner later ruled on all four in D-008 (24 Nov 2026): E-1 and E-3 **Ratified**, E-2 **Superseded** by the `jira:issueContext` preference, and E-4 **Modified** by the controlled critical-fix exception. The table below is retained for traceability; D-008 governs. Proposer: orchestrator in the expert-engineer role, 24 Nov 2026.

@@ -1,0 +1,10 @@
+{
+  "status": "Placeholder IDs — P1.B4 owner registers App A and App B in the Developer Console; replace both ids before the 1 Dec manifest freeze.",
+  "appA": {
+    "id": "app-a-placeholder",
+    "includeLicensing": false
+  },
+  "appB": {
+    "id": "app-b-placeholder"
+  }
+}

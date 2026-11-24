@@ -1,0 +1,25 @@
+{
+  "status": "Owner-controlled baseline. Do not edit without an owner decision id in KW_APPROVAL_TAG; the pre-commit hook locks this file.",
+  "scopes": [
+    "read:jira-work",
+    "write:jira-work",
+    "read:jira-user",
+    "storage:app",
+    "report:personal-data",
+    "read:servicedesk-request"
+  ],
+  "modules": [
+    "function",
+    "trigger",
+    "consumer",
+    "scheduledTrigger",
+    "jira:issuePanel",
+    "jira:adminPage",
+    "jira:issueContext",
+    "jira:entityPropertySet",
+    "llm",
+    "sql"
+  ],
+  "approval": ["N-03(a)", "N-08", "Arch-3.2", "D-008", "D-009"],
+  "evidence": ["PF-RUN-1"]
+}

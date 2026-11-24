@@ -4,5 +4,6 @@ docs/
 evidence/
 coverage/
 dist/
+manifests/*.yml
 package-lock.json
 *.md

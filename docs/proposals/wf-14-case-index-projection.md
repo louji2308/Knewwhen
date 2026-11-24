@@ -1,6 +1,6 @@
 # WF-14 Jira case-index projection
 
-**Version:** 1.0 · **Date:** 24 Nov 2026 · **Status:** **Approved in principle** by D-009; enum vocabulary still requires qualified QA/RA rule data
+**Version:** 1.1 · **Date:** 24 Nov 2026 · **Status:** **Approved in principle** by D-009; enum vocabulary still requires qualified QA/RA rule data. v1.1 adds a technical implementation note (WF-14-C3); no product decision changed.
 **Authority:** D-008 owner ruling requested the draft; D-009 approved it and resolved WF-14-C1/C2 (`docs/08-decisions.md`); `AGENTS.md` §3, §5.3, §7.3–7.4, §12.4
 **Requirement IDs:** WF-14; C-07, C-09, N-03, N-04, N-08; CF-1, CF-6, CF-7
 **Purpose:** define the searchable Jira entity-property projection and JQL aliases. Forge SQL remains authoritative; the Jira property is only a reduced search mirror.
@@ -13,6 +13,10 @@
 |---|---|---|
 | **WF-14-C1** | D-009 retains the canonical key **`knewwhen.case`**. The `knewwhen.case-index` name in D-008 is superseded. | Use `knewwhen.case` in manifests, tests, JQL and docs. |
 | **WF-14-C2** | D-009 approves **`jira:entityPropertySet`** for the searchable projection. This is an explicit owner-approved change from the canonical `jira:entityProperty` baseline. | Implement with `jira:entityPropertySet`. Update manifest/scope snapshot and parity tests when P1.B1/B2 are built. Pending canonical wording update in `Architecture.md`/`Scope.md`; those files were not edited here. |
+
+### WF-14-C3 — technical implementation note (not a product decision)
+
+The approved alias `knewwhenRuleSet` is defined as `ruleSetId@ruleSetVersion` (§4), but that expression is not a JSON path and cannot be indexed directly. The P1.B1 manifest therefore indexes a derived string field **`ruleSetRef`** with that alias. The write-back service must set `ruleSetRef` to the exact value `${ruleSetId}@${ruleSetVersion}`; the original `ruleSetId` and `ruleSetVersion` values remain in the authoritative SQL row and CF-7 is unchanged. This is a necessary technical implication (AGENTS §5.3, kind A) of the approved alias, not a new field for users. No canonical file was changed; the property example in §3 should be updated to include `ruleSetRef` at the next authorised revision.
 
 No canonical file, manifest, migration or rule file was changed by this document.
 
