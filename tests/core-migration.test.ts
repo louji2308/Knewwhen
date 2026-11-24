@@ -23,6 +23,7 @@ const EXPECTED_TABLES = [
   'audit_event',
   'usage_counter',
   'scan_lease',
+  'writeback_attempt',
 ] as const;
 
 const KEY_COLUMNS: Record<string, readonly string[]> = {
@@ -149,6 +150,7 @@ const KEY_COLUMNS: Record<string, readonly string[]> = {
   ],
   usage_counter: ['bucket', 'kind', 'count'],
   scan_lease: ['issue_id', 'owner_job', 'lease_until'],
+  writeback_attempt: ['task_id', 'next_attempt_at', 'last_attempt_at'],
 };
 
 const UNIQUE_KEYS: Record<string, readonly string[]> = {
@@ -171,8 +173,8 @@ function columnNames(ddl: string): string[] {
 }
 
 describe('P2.A1 Core SQL migration (Arch §5.2/§5.3, §14.3/§14.5; PF-DB-3/4/5, PF-SQL-1)', () => {
-  it('defines exactly 14 uniquely named forward-only operations', () => {
-    expect(CORE_TABLE_MIGRATIONS).toHaveLength(14);
+  it('defines exactly 15 uniquely named forward-only operations', () => {
+    expect(CORE_TABLE_MIGRATIONS).toHaveLength(15);
     const names = CORE_TABLE_MIGRATIONS.map((op) => op.name);
     expect(new Set(names).size).toBe(names.length);
     for (const name of names) expect(name).toMatch(/^\d{3}-/);
@@ -230,9 +232,9 @@ describe('P2.A1 Core SQL migration (Arch §5.2/§5.3, §14.3/§14.5; PF-DB-3/4/5
     const run = vi.fn().mockResolvedValue(['a', 'b', 'c']);
     const runner: CoreMigrationRunner = { enqueue, run };
     const outcome = await runCoreMigration(runner);
-    expect(enqueue).toHaveBeenCalledTimes(14);
+    expect(enqueue).toHaveBeenCalledTimes(15);
     expect(run).toHaveBeenCalledTimes(1);
-    expect(outcome).toEqual({ status: 'migration-ok', applied: 3, operations: 14 });
+    expect(outcome).toEqual({ status: 'migration-ok', applied: 3, operations: 15 });
   });
 
   it('is idempotent by operation name when run twice (PF-SQL-1, PF-DB-3)', async () => {
@@ -245,7 +247,7 @@ describe('P2.A1 Core SQL migration (Arch §5.2/§5.3, §14.3/§14.5; PF-DB-3/4/5
     };
     await runCoreMigration(runner);
     await runCoreMigration(runner);
-    expect(executed.size).toBe(14);
+    expect(executed.size).toBe(15);
   });
 
   it('propagates a runner failure without masking it (AGENTS §17.1)', async () => {

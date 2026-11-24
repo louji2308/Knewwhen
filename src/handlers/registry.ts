@@ -13,6 +13,7 @@ import {
   type HandlerRegistry,
 } from './authorisation';
 import { createAwarenessHandlers, type AwarenessDependencies } from './awareness';
+import { createOperationHandlers } from './operations';
 
 function unavailable(): GatedHandler {
   return async (_context, decision) =>
@@ -24,11 +25,18 @@ function unavailable(): GatedHandler {
     }) satisfies ResolverEnvelope<null>;
 }
 
-export function createHandlerRegistry(deps: AwarenessDependencies): HandlerRegistry {
+export function createHandlerRegistry(
+  deps: AwarenessDependencies,
+  operationDeps?: Parameters<typeof createOperationHandlers>[0],
+): HandlerRegistry {
   const awareness = createAwarenessHandlers(deps);
+  const operations = createOperationHandlers(operationDeps ?? { now: () => deps.now() });
   const missing = unavailable();
   const registry = Object.fromEntries(
-    HANDLER_ACTIONS.map((action) => [action, awareness[action as Action] ?? missing]),
+    HANDLER_ACTIONS.map((action) => [
+      action,
+      awareness[action as Action] ?? operations[action] ?? missing,
+    ]),
   ) as unknown as HandlerRegistry;
   assertRegistryMatchesMatrix(registry);
   return registry;

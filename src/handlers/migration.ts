@@ -266,6 +266,14 @@ export const CORE_TABLE_MIGRATIONS: readonly MigrationOperation[] = Object.freez
   lease_until VARCHAR(24) NOT NULL
 )`,
   },
+  {
+    name: '015-writeback_attempt',
+    ddl: `CREATE TABLE IF NOT EXISTS writeback_attempt (
+  task_id VARCHAR(36) NOT NULL PRIMARY KEY,
+  next_attempt_at VARCHAR(24) NOT NULL,
+  last_attempt_at VARCHAR(24) NOT NULL
+)`,
+  },
 ]);
 
 /**

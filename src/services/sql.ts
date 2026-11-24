@@ -54,6 +54,7 @@ export const CORE_TABLE_NAMES = Object.freeze([
   'audit_event',
   'usage_counter',
   'scan_lease',
+  'writeback_attempt',
 ] as const);
 
 export type CoreTable = (typeof CORE_TABLE_NAMES)[number];
@@ -84,6 +85,7 @@ export const CORE_TABLE_KEYS: Readonly<Record<CoreTable, TableKeys>> = Object.fr
   audit_event: { primary: ['id'], unique: [] },
   usage_counter: { primary: ['bucket', 'kind'], unique: [] },
   scan_lease: { primary: ['issue_id'], unique: [] },
+  writeback_attempt: { primary: ['task_id'], unique: [] },
 });
 
 /** The table list must stay in step with the frozen migration DDL. */

@@ -105,8 +105,8 @@ describe('P2.A2 in-memory SQL fake built from verified facts (PF-DB-1/2/3/4/5)',
     );
   });
 
-  it('transcribes a key for every Core table (14 owners, no missing spec)', () => {
-    expect(Object.keys(CORE_TABLE_KEYS)).toHaveLength(14);
+  it('transcribes a key for every Core table (15 owners, no missing spec)', () => {
+    expect(Object.keys(CORE_TABLE_KEYS)).toHaveLength(15);
     for (const [table, keys] of Object.entries(CORE_TABLE_KEYS)) {
       expect(keys.primary.length, table).toBeGreaterThan(0);
     }
