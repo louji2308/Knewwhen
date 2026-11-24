@@ -118,6 +118,21 @@
 
 ---
 
+## D-007 — Harness guards and read-only agent mirrors (Verified technical implementation)
+
+- **Date:** 24 Nov 2026
+- **Status:** **Verified** for installation and configuration loading. No owner approval was needed: this is a technical choice inside the approved toolchain and governance workflow (`AGENTS.md` §5.3 kind B), not a new dependency, scope, permission grant, module or product decision. It tightens existing guards; it does not disable or weaken one (`AGENTS.md` §10.2).
+- **What:** add root `opencode.json` (OpenCode V2 `permissions`), `.claude/settings.json` (Claude Code `permissions.deny`), tracked read-only `reviewer` and `judge` definitions for both harnesses, and extend `npm run setup` so the OpenCode definitions are copied into the ignored `.opencode/agents/` directory. `docs/harness-matrix.md` v1.0 records the method, date and gaps.
+- **Why needed:** plan P1.A5 and `AGENTS.md` §19.1–19.2 require an evidence-backed harness inventory; §7.2 requires a locked-file guard; §8.3 requires genuinely independent verifier contexts. The Git hook remains the enforced backstop, so harness configuration is defence in depth, not the boundary.
+- **Licence / cost class:** none. No package was added; these are project configuration and Markdown files. No record text, quote, model I/O or secret is stored in them.
+- **Impact:** file-tool edits under `docs/Project/`, `rules/`, and the three named locked docs are denied in the configured harnesses; `reviewer`/`judge` are installed as subagents with edit, shell and nested-subagent access denied. No `docs/Project/` content, rule data, scope, tier, module or runtime behaviour changed.
+- **Official sources (accessed 24 Nov 2026):** <https://opencode.ai/docs/config/> · <https://opencode.ai/docs/permissions/> · <https://opencode.ai/docs/agents/> · <https://docs.claude.com/en/docs/claude-code/settings> · <https://docs.claude.com/en/docs/claude-code/permissions> · <https://docs.claude.com/en/docs/claude-code/sub-agents>.
+- **Verification (Verified 24 Nov 2026):** both JSON files parse; `npm run setup` → PASS for the hook and both OpenCode agents; temporarily removing the `edit` deny from the reviewer source made setup exit **1**, after which the source was restored and setup passed again (`evidence/P1/setup-probe-2026-11-24T04-36-33Z.txt`); `opencode debug config` shows the root V2 document loaded; `opencode debug agents` lists `reviewer` and `judge` as subagents with the expected deny rules; `npm run check` → **PASS** with evidence `evidence/P1/check-2026-11-24T04-38-12-186Z.txt`. The installed Git hook had already fired through Git's shell with `PRE-COMMIT: PASS`, exit 0.
+- **Discrepancies recorded, not smoothed over:** HM-1 — ECC 2.2.3 writes V1-style config keys in ignored `.opencode/opencode.json`; OpenCode v2.3.2 normalises them and the new tracked config uses V2 only. HM-2 — `.opencode/` is ignored, so tracked source plus setup copying is required. HM-3 — a separate reviewer context worked, but not yet through the final agent files or a second model family. HM-4 — harness denies were not tested by attempting a real locked-file edit; shell edits can bypass file-tool rules.
+- **Not verified:** real harness enforcement of a locked-file edit; exercise of the final agents in a task or phase gate; worktree creation; a second independent model family or fresh gate context. Phase acceptance and Verification A/B remain **Blocked** under AGENTS §8.3 and §13.5.
+
+---
+
 ## Expert baseline calls E-1 to E-4 (Proposed — no new scope taken)
 
 **Status: Proposed, not Approved.** The owner asked for expert decisions and to proceed. Under `AGENTS.md` §5.3 these four calls are either the *existing approved baseline* or a *technical choice inside it*: none adds a scope, module, tier, feature or regulatory content. They are recorded as **Proposed** because reversing them to the alternative **does** require a Type C decision (§7.4) and an owner approval tag. Proposer: orchestrator in the expert-engineer role, 24 Nov 2026.

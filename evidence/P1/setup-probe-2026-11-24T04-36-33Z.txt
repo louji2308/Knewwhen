@@ -1,0 +1,25 @@
+KnewWhen - npm run setup evidence (P1.A5)
+
+Date: 2026-11-24T04:36:33Z
+Node: v24.22.3
+Git HEAD: 51f6602a9f2d5b9040c616353fd44a29aa5f87e7
+
+POSITIVE PROBE: npm run setup
+> knewwhen@0.1.0 setup
+> node scripts/setup.mjs
+
+SETUP: PASS - pre-commit hook installed at .git\hooks\pre-commit
+SETUP: PASS - read-only agent installed at reviewer.md
+SETUP: PASS - read-only agent installed at judge.md
+POSITIVE PROBE EXIT: 0
+
+NEGATIVE PROBE: edit deny removed from agents/opencode/reviewer.md
+> knewwhen@0.1.0 setup
+> node scripts/setup.mjs
+
+SETUP: PASS - pre-commit hook installed at .git\hooks\pre-commit
+SETUP: FAIL - read-only agent installed at reviewer.md
+SETUP: PASS - read-only agent installed at judge.md
+NEGATIVE PROBE EXIT: 1
+
+The reviewer source was restored after the negative probe; npm run setup passed again.

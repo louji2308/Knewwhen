@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permissions": [
+    { "action": "edit", "resource": "docs/Project/*", "effect": "deny" },
+    { "action": "edit", "resource": "rules/*", "effect": "deny" },
+    { "action": "edit", "resource": "docs/02-spec.md", "effect": "deny" },
+    { "action": "edit", "resource": "docs/03-domain-rules.md", "effect": "deny" },
+    { "action": "edit", "resource": "docs/05-stack-and-constraints.md", "effect": "deny" }
+  ]
+}
