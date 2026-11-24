@@ -44,6 +44,12 @@ export interface JiraCallDescriptor {
   readonly method: 'GET' | 'POST' | 'PUT';
   readonly resource: string;
   readonly params?: Readonly<Record<string, string>>;
+  /**
+   * P2.B1 compatible addition (single-writer change). Carries pointers, codes,
+   * hashes or app-authored write-back content only — never record text from a
+   * scan. Request and response bodies are never logged (I-6).
+   */
+  readonly body?: Readonly<Record<string, unknown>>;
 }
 
 /** The single client interface (IF-6). Descriptors are validated by the adapter. */
