@@ -1,10 +1,10 @@
 {
-  "status": "App A ID recorded 24 Nov 2026 from the owner-created Forge app (evidence/P1/app-ids-2026-11-24.md). App B remains a placeholder pending the owner's second forge create (P1.B4).",
+  "status": "App A and App B IDs recorded 24 Nov 2026 from the owner-created Forge apps (evidence/P1/app-ids-2026-11-24.md). P1.B4 complete; both registrations exist in the owner's Developer Space.",
   "appA": {
     "id": "ari:cloud:ecosystem::app/379ee125-304c-41a7-bbdc-81c40a27d957",
     "includeLicensing": false
   },
   "appB": {
-    "id": "app-b-placeholder"
+    "id": "ari:cloud:ecosystem::app/3665d600-5d9d-4e3a-ad26-c850eec2642a"
   }
 }

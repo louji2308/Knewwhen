@@ -1,5 +1,5 @@
 app:
-  id: "app-b-placeholder"
+  id: "ari:cloud:ecosystem::app/3665d600-5d9d-4e3a-ad26-c850eec2642a"
   runtime:
     name: "nodejs24.x"
 permissions:

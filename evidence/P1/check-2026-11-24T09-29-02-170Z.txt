@@ -1,0 +1,65 @@
+KnewWhen - npm run check evidence (N-06, C-12.5)
+Date: 2026-11-24T09:29:02.172Z
+Node: v24.22.3 · npm: npm/11.19.1 node/v24.22.3 win32 x64 workspaces/false
+Git HEAD: d3d4719994ad56fd9f09e69dde14d4be1249f4ad
+Test seed: 20261124
+
+--- npm run check:deps (exit 0) ---
+
+> knewwhen@0.1.0 check:deps C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-dependencies.mjs
+
+DEPENDENCY CHECK: PASS (0 runtime, 7 approved dev dependencies)
+
+--- npm run check:imports (exit 0) ---
+
+> knewwhen@0.1.0 check:imports C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-imports.mjs
+
+IMPORT BOUNDARY CHECK: PASS (no @forge/* outside adapters; no tests or oracle under src/)
+
+--- npm run check:types (exit 0) ---
+
+> knewwhen@0.1.0 check:types C:\Users\LOUJAN B\Knewwhen
+> tsc --noEmit
+
+--- npm run check:lint (exit 0) ---
+
+> knewwhen@0.1.0 check:lint C:\Users\LOUJAN B\Knewwhen
+> eslint .
+
+--- npm run check:manifests (exit 0) ---
+
+> knewwhen@0.1.0 check:manifests C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-manifests.mjs
+
+MANIFEST CHECK: PASS (2 apps, 6 scopes, 10 modules, independent baseline intact)
+
+--- npm run check:format (exit 0) ---
+
+> knewwhen@0.1.0 check:format C:\Users\LOUJAN B\Knewwhen
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+--- npm run check:tests (exit 0) ---
+
+> knewwhen@0.1.0 check:tests C:\Users\LOUJAN B\Knewwhen
+> vitest run
+
+
+ RUN  v5.1.1 C:/Users/LOUJAN B/Knewwhen
+
+ ✓ tests/smoke.test.ts (1 test) 7ms
+ ✓ tests/manifest.test.ts (18 tests) 28ms
+ ✓ tests/property.smoke.test.ts (1 test) 19ms
+
+ Test Files  3 passed (3)
+      Tests  20 passed (20)
+   Start at  14:59:19
+   Duration  533ms (import 50%, transform 19%, tests 18%, worker 12%, environment 1%)
+
+--- forge lint: SKIP (no root manifest.yml; P1.B1 owns manifests/app-{a,b}.yml templates, P1.B2 creates manifest.yml) ---
+
+RESULT: PASS
