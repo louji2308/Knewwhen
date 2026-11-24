@@ -105,14 +105,14 @@
 
 | ID | Req / ref | Depends | Owner | Status | Evidence required | Blockers |
 |---|---|---|---|---|---|---|
-| P2.D2 | Arch §12 | P1 | FA | **Not Started** | Frozen IF-6/7/14/15 and envelope | P1 |
-| P2.A1 | N-04(a,e), N-07, B-9 | D2 | BE-1 | **Not Started** | Column check; migration runs twice | D2 |
-| P2.A2 | Arch §12, §18.2 | A1, P0.B1 | BE-1 + TE | **Not Started** | Fake validated against verified SQL facts | A1; P0.B1 |
-| P2.B1 | N-01(b,d), N-03(c), C-07.10, G-3 | D2 | BE-2 | **Not Started** | FK tests; sixth write unreachable | D2 |
-| P2.B2 | N-04(a), N-09, I-6 | D2 | BE-2 + SP | **Not Started** | Canary fails build on leak | D2 |
-| P2.C1 | Arch §6.2, C-10.4, N-04(b) | D2, A1 | BE-3 | **Not Started** | Race test; missing key blocks capture | D2, A1; U-3 |
+| P2.D2 | Arch §12 | P1 | FA | **Completed** | `src/contracts/{jira,authorisation,logging,envelope}.ts` pin IF-6/7/14/15; `tests/contracts.test.ts` transcribes the five writes, five budget classes, three error classes, four roles, twelve actions, the §13.3 matrix cell by cell, registry equality and the envelope codes. `npm run check` PASS, 63 tests | Contracts frozen; signature change needs a single-writer announcement |
+| P2.A1 | N-04(a,e), N-07, B-9 | D2 | BE-1 | **Completed** | `src/handlers/migration.ts` defines 14 frozen forward-only operations covering every Core table incl. `scan_lease`/`usage_counter`; one `CREATE TABLE IF NOT EXISTS` each, no FK/upsert/multi-statement (PF-DB-3/4/5). `tests/core-migration.test.ts` transcribes §5.3 key columns and UNIQUE keys cell by cell, checks no record-text columns, proves enqueue-once/run-once and idempotency by name over two runs. Mutation spot-check: renaming `lease_until` failed the column test, restored green. Adapter wired to `runCoreMigration`; `npm run check` PASS, 72 tests | Live site DDL execution remains **Unresolved** (PF-SQL-2 — no observed scheduled invocation); code-level idempotency is proven, live run is not |
+| P2.A2 | Arch §12, §18.2 | A1, P0.B1 | BE-1 + TE | **Not Started** | Fake validated against verified SQL facts | A1 |
+| P2.B1 | N-01(b,d), N-03(c), C-07.10, G-3 | D2 | BE-2 | **Not Started** | FK tests; sixth write unreachable | D2 complete; not yet built |
+| P2.B2 | N-04(a), N-09, I-6 | D2 | BE-2 + SP | **In Progress** | `src/contracts/canary.ts` + `tests/canary.test.ts`: four distinct probes, serialised scan, log-field leak and unknown-field guards. Canary wired into `npm run check` via the test suite | Harness written; SQL/comment/error call-site guards arrive with A1/B1 |
+| P2.C1 | Arch §6.2, C-10.4, N-04(b) | D2, A1 | BE-3 | **In Progress** | `src/services/settings.ts` + `tests/settings.test.ts`: unsafe write-back/visibility rejection, project check, code-only before/after audit. First-run empty roles correctly accepted (Arch §13.1) — my initial ROLES_EMPTY rule was wrong and was corrected by the test | Hash-key store (create-if-absent race, never regenerate) needs A1 + KVS adapter; U-3 |
 | P2.C2 | G-5, N-07 | A1 | BE-3 | **Not Started** | Append-only FK test | A1 |
-| P2.D1 | G-4, Arch §13.3 | D2, A1, B1, C1, C2 | BE-4 | **Not Started** | Handler × role × browse matrix; deny on failure | D2, A1, B1, C1, C2 |
+| P2.D1 | G-4, Arch §13.3 | D2, A1, B1, C1, C2 | BE-4 | **In Progress** | `src/handlers/authorisation.ts` + `tests/authorisation.test.ts`: matrix allow/deny, browse denial, audited denial with codes only, injected dependency failure → deny, empty roles → deny, unregistered action → deny | Written ahead of full dependencies behind pure interfaces; integration with real settings/Jira pending |
 
 ### 3.4 P3 — Pure core A: evidence core and scenario generator
 

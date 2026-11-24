@@ -1,10 +1,10 @@
 import { migrationRunner } from '@forge/sql';
-import { runEmptyMigration, type MigrationOutcome } from '../handlers/migration';
+import { runCoreMigration, type CoreMigrationOutcome } from '../handlers/migration';
 
 /**
- * P1.B2 — the only runtime bridge to @forge/sql. The shared runner has zero
- * enqueued migrations in P1, so run() creates the platform tracking table only.
+ * The only runtime bridge to @forge/sql. P2.A1 enqueues the 14 Core tables and
+ * runs the official migration runner; it is idempotent by operation name.
  */
-export async function runSchemaMigration(): Promise<MigrationOutcome> {
-  return runEmptyMigration(migrationRunner);
+export async function runSchemaMigration(): Promise<CoreMigrationOutcome> {
+  return runCoreMigration(migrationRunner);
 }

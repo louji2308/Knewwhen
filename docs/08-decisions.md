@@ -373,7 +373,10 @@ No Forge token, developer site, clean install site, outside organisation, verifi
   1. **Site + organisation:** clean site **and** outside organisation, *or* `one-atlas-ttud` with a fresh synthetic project while "outside-org install" stays **Unresolved**.
   2. **Independence (§8.3/§13.5):** provide a second verifier context on a different model family, *or* an explicit §13.5 exception accepting Verification A as **Blocked**.
 - **Structural dependency recorded, not smoothed over:** Verification A also remains **Blocked** on PF-V-3 because the deployed build is a shell with no sample loader, case surface or decision surface. Even with permission, a non-shell Core build must exist before the full journey can pass. P1 cannot be Accepted on this approval alone (§13.5).
-- **Next:** orchestrator to obtain the two branch selections; no irreversible action taken on the ambiguous parts.
+- **Orchestrator decisions on the two branch points (24 Nov 2026, under the owner's "work until the end" mandate, AGENTS §5.3 kind B — recorded as the orchestrator's, NOT as owner approval):**
+  1. **Site/org:** use the existing authorised demo site `one-atlas-ttud` with a fresh synthetic project. No second site or outside organisation exists in this environment; "outside-org install" stays **Unresolved**. This chooses the only available branch; it invents no resource.
+  2. **Independence:** use a separate verifier context (as for A and B in P1). A different model family is not available in this harness; that remains a recorded limitation under §13.1, not an owner decision.
+- **Consequence:** Verification A still cannot pass while the build is a shell. The orchestrator is therefore proceeding with P2 foundation services (which need no regulatory data) before any re-run of A. No irreversible action taken on the ambiguous parts.
 
 ---
 
