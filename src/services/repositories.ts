@@ -50,11 +50,11 @@ function execute(port: SqlPort, spec: QuerySpec): Promise<SqlResponse> {
     .execute();
 }
 
-function keyOf(keys: TableKeys, row: SqlRow): SqlRow {
+function keyOf(columns: readonly string[], row: SqlRow): SqlRow | null {
   const key: Record<string, SqlRow[string]> = {};
-  for (const column of keys.primary) {
+  for (const column of columns) {
     const value = row[column];
-    if (value === undefined || value === null) throw new Error('SQL_KEY_REQUIRED');
+    if (value === undefined || value === null) return null;
     key[column] = value;
   }
   return key;
@@ -64,19 +64,34 @@ function createRepository(port: SqlPort, table: CoreTable, keys: TableKeys): Tab
   const findBy = async (where: SqlRow): Promise<readonly SqlRow[]> =>
     (await execute(port, selectQuery(table, where))).rows;
 
+  /**
+   * A row is the same logical row if any PRIMARY or UNIQUE group matches. The
+   * primary key alone is insufficient under an insert race: another writer can
+   * win on `UNIQUE(anchor_issue_id, case_seq)` with a different UUID (PF-DB-3).
+   */
+  const findExisting = async (row: SqlRow): Promise<SqlRow | null> => {
+    for (const columns of [keys.primary, ...keys.unique]) {
+      const key = keyOf(columns, row);
+      if (!key) continue;
+      const matches = await findBy(key);
+      if (matches.length > 0) return matches[0]!;
+    }
+    return null;
+  };
+
   return {
     async insert(row) {
-      const key = keyOf(keys, row);
-      const existing = await findBy(key);
-      if (existing.length > 0) return { inserted: false, row: existing[0]! };
+      if (!keyOf(keys.primary, row)) throw new Error('SQL_KEY_REQUIRED');
+      const existing = await findExisting(row);
+      if (existing) return { inserted: false, row: existing };
       try {
         await execute(port, insertQuery(table, row));
         return { inserted: true, row };
       } catch (error) {
         if (!isDuplicateKeyError(error)) throw error;
-        const winner = await findBy(key);
-        if (winner.length === 0) throw error;
-        return { inserted: false, row: winner[0]! };
+        const winner = await findExisting(row);
+        if (!winner) throw error;
+        return { inserted: false, row: winner };
       }
     },
     findBy,

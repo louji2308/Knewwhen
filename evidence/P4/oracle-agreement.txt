@@ -1,0 +1,25 @@
+P4.B1 / P4.B3 — independent deadline oracle agreement (C-05.6, Arch §10.6)
+HEAD: b8666551ea1727ec6665f42ba69bc610468d9481
+
+fast-check seed: 20261206
+Differential runs: 10000
+Metamorphic runs: 2000 per property (3 properties)
+Golden cases: 11
+Comparison: status, typed error code and year, all clock fields, full trace.
+Excluded from comparison by design: ruleSetDigest (loader's job) and engineVersion (oracle-v1 vs engine).
+
+Command: npx vitest run tests/oracle-agreement.test.ts
+Result: PASS — 15 tests passed, 0 failed.
+
+Command: npm run check:tests
+Result: my suite PASS (15/15); full suite 254 passed, 5 failed — all 5 failures are pre-existing in tests/evidence.test.ts and tests/trail.test.ts (P5), unrelated to the oracle.
+
+Command: npx eslint oracle/deadline-oracle.ts tests/oracle-agreement.test.ts
+Result: PASS — no output.
+
+Command: npx prettier --check oracle/deadline-oracle.ts tests/oracle-agreement.test.ts
+Result: PASS — all matched files use Prettier code style.
+
+Known finding (not a test failure): a clock that marks all seven weekdays non-working makes the engine's day search non-terminating when skipHolidays is false, and likewise under NEXT_WORKING_DAY. With skipHolidays true the engine fails closed with HOLIDAY_DATA_MISSING for the following year. The generator therefore keeps at least one working weekday, and the oracle fails closed with RULE_SET_INVALID for that degenerate parameter set. Reported to the orchestrator.
+
+Orchestrator update (24 Nov 2026): the defect was fixed test-first in `src/core/rules-loader.ts` (loader rejects seven non-working weekdays) and `src/core/deadlines.ts` (forged rule sets bypassing the loader also fail closed with `RULE_SET_INVALID`). `DeadlineFailure` was re-exported to match the public contract. The oracle files were not edited by that fix; this differential evidence still stands. After the P5 files were completed, the orchestrator re-ran `npm run check`: PASS, 30 test files, 260 tests, strict types, lint, manifest parity, import boundary and format (`evidence/P1/check-2026-11-24T14-49-00-445Z.txt`). The earlier 5 P5 failures recorded above were builder-side failures, fixed before that final run.

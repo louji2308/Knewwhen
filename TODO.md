@@ -16,8 +16,8 @@
 | **P1** | Repository, toolchain, installable Forge shell | **Active** *(partial: A1–A4 only; formal entry conditions still open)* | P0.A1, A2, A3, B2 | `npm run check` green; hook tested; shell deployed and installed; parity passes; `evidence/P1/` | BE-1 / FA | Yes | §3.2 |
 | **P2** | Platform foundation services | **Awaiting verification** | P1 shell deployed; P0.B1 facts; P2.D2 contracts pinned | Migrations, gate, Jira client, logger, settings/hash/audit; `evidence/P2/` — all eight tasks complete locally (128 tests); plan integration checkpoints on the demo site and PF-SQL-2 live validation still open, so not Accepted under §13 | BE-1…BE-4 | Yes | §3.3 |
 | **P3** | Pure core A: evidence core and scenario generator | **Awaiting verification** | P1 toolchain; P3 contract tasks | Normaliser, validator, screener, corpus, generator; `evidence/P3/` — all eight tasks green locally (185 tests total); real lexicon and version-freeze tag still open, so not Accepted under §13 | BE-1…BE-3 / TE | Feeder | §3.4 |
-| **P4** | Pure core B: deadline engine, rules loader, oracle | **Not started** | P1 toolchain; P4.A0 contract | Engine, independent oracle, ≥10,000-case differential run, golden cases; `evidence/P4/` | BE-1 / TE-O | Feeder | §3.5 |
-| **P5** | Evidence and Trail services | **Not started** | P2 contracts; P3 IF-1/IF-2 accepted; P5.0 pinned | Evidence lifecycle, trail state machine, FE trail slice; `evidence/P5/` | BE-1 / BE-2 / FE | Yes | §3.6 |
+| **P4** | Pure core B: deadline engine, rules loader, oracle | **Awaiting verification** | P1 toolchain; P4.A0 contract | Engine, independent oracle, ≥10,000-case differential run, golden cases; `evidence/P4/` — all tasks green locally incl. 10,000-run differential (seed `20261206`); real QA/RA rule data still Blocked, so not Accepted under §13 | BE-1 / TE-O | Feeder | §3.5 |
+| **P5** | Evidence and Trail services | **Active** | P2 contracts; P3 IF-1/IF-2 accepted; P5.0 pinned | Evidence lifecycle, trail state machine, FE trail slice; `evidence/P5/` — services and A/B tasks green locally; C1/C2 FK reports, D1 resolvers and D2 FE slice remain; not Accepted under §13 | BE-1 / BE-2 / FE | Yes | §3.6 |
 | **P6** | Signal Finder and capture | **Not started** | P5 IF-8/IF-9; P3 and P2 accepted; P6.0 pinned | Trigger, scan consumer, AI fake/tests, record path, FE tab; `evidence/P6/` | BE-1 / BE-2 / TE | Near | §3.7 |
 | **P7** | Write-back outbox | **Not started** | P2 IF-6/IF-7; P7.A0 schema; P7.0 pinned | Outbox, property, comment, retry, visibility fail-closed; `evidence/P7/` | BE-4 / FA | Feeder | §3.8 |
 | **P8** | Lookback and benchmark | **Not started** | P5 accepted; P3 generator/normaliser; P8.0 pinned | Matcher/ranker, lookback service, benchmark, FE tab; `evidence/P8/` | BE-2 / TE / FE | Yes (co-critical) | §3.9 |
@@ -131,28 +131,28 @@
 
 | ID | Req / ref | Depends | Owner | Status | Evidence required | Blockers |
 |---|---|---|---|---|---|---|
-| P4.A0 | Arch §10.2, I-7 | P1, DR-9 | FA + DR | **Not Started** | Rule-data contract frozen; IF-4/5/16 pinned | P1; owner review |
-| P4.A1 | C-05.3, C-05.9 | A0 | BE-1 | **Not Started** | Loader UT; fails closed | A0 |
-| P4.A2 | C-05.1, C-05.2, C-05.4 | A1 | BE-1 | **Not Started** | No clock/I/O in static check | A1 |
-| P4.A3 | Arch §10.1, C-04.4 | A0 | BE-1 | **Not Started** | Near-midnight zone tests | A0; time-zone rule |
-| P4.B1 | C-05.6, Arch §10.6 | A0 | TE-O | **Not Started** | Separate context/history; no engine imports | A0; independence |
-| P4.B2 | C-05.5, C-05.7, FX-1 | A0; D1/D2 for real values | DR + TE | **Not Started** | Golden results; real set Blocked until data | A0; OI-1/OI-2 |
-| P4.B3 | C-05.6 | A2, B1 | TE-O | **Not Started** | Seed/count ≥10,000; metamorphic results | A2, B1 |
-| P4.C1 | C-05.11, G-1 | A2 | SP | **Not Started** | Wording and import-boundary scan green | A2 |
+| P4.A0 | Arch §10.2, I-7 | P1, DR-9 | FA + DR | **Completed (local)** | `src/contracts/deadlines.ts` freezes the generic clock/rule contract; versioned synthetic fixtures only; no regulatory content invented | Real rule data still Blocked |
+| P4.A1 | C-05.3, C-05.9 | A0 | BE-1 | **Completed (local)** | `src/core/rules-loader.ts` strict loader; 10 tests; malformed/unreviewed/all-non-working sets fail closed | Real rule data still Blocked |
+| P4.A2 | C-05.1, C-05.2, C-05.4 | A1 | BE-1 | **Completed (local)** | `src/core/deadlines.ts` pure engine; near-midnight, weekend, holiday, DUE_TODAY/OVERDUE and fail-closed tests; `check:imports` green | — |
+| P4.A3 | Arch §10.1, C-04.4 | A0 | BE-1 | **Completed (local)** | `src/core/timezone.ts`; `tests/timezone.test.ts` 3 tests; injected zone only | Real time-zone rule still Blocked |
+| P4.B1 | C-05.6, Arch §10.6 | A0 | TE-O | **Completed (local)** | `oracle/deadline-oracle.ts` written in a separate context; no engine runtime import; 11 golden cases in `tests/oracle-agreement.test.ts` | Different model family unavailable (§13.1) |
+| P4.B2 | C-05.5, C-05.7, FX-1 | A0; D1/D2 for real values | DR + TE | **Completed (synthetic local)** | Synthetic arithmetic goldens including FX-1; `evidence/P4/oracle-agreement.txt` | Real values Blocked on OI-1/OI-2; no legal reading claimed |
+| P4.B3 | C-05.6 | A2, B1 | TE-O | **Completed (local)** | 10,000 differential runs + metamorphic properties, seed `20261206`; full trace equality; `evidence/P4/oracle-agreement.txt` | Arithmetic agreement only (Arch §10.6) |
+| P4.C1 | C-05.11, G-1 | A2 | SP | **Completed (local)** | `src/core/wording.ts`; `tests/wording.test.ts` 9 tests; `check:imports` PASS | — |
 
 ### 3.6 P5 — Evidence and Trail services
 
 | ID | Req / ref | Depends | Owner | Status | Evidence required | Blockers |
 |---|---|---|---|---|---|---|
-| P5.0 | Arch §12 | P2.D2 | FA | **Not Started** | IF-8/IF-9 and state vocabulary frozen | P2.D2 |
-| P5.A1 | C-04.1, N-04 | P5.0 | BE-1 | **Not Started** | FK; canary no text in SQL | P5.0; hash key |
-| P5.A2 | C-04.8–10, Arch §6.4 | A1 | BE-1 | **Not Started** | Five states and ambiguous 403/404 FK | A1 |
-| P5.A3 | C-04.1, Arch §6.4 | A1 | BE-1 | **Not Started** | Strength-labelling FK | A1 |
-| P5.B1 | C-04.2, C-04.5, C-04.7, C-04.11 | P5.0 | BE-2 | **Not Started** | Append-only FK | P5.0; WF-10 |
-| P5.B2 | C-04.4, C-04.6 | B1, P4.A3 | BE-2 | **Not Started** | No preselection UT | B1, P4.A3 |
-| P5.C1 | Arch §16.1 | P5.0 | TE | **Not Started** | Evidence lifecycle FK reports | P5.0; SC-5 |
-| P5.C2 | G-7 | P5.0 | TE | **Not Started** | Idempotency/replay FK reports | P5.0 |
-| P5.D1 | G-4 | A2, B1 | BE-2 | **Not Started** | Role matrix updated | A2, B1 |
+| P5.0 | Arch §12 | P2.D2 | FA | **Completed (local)** | `src/contracts/evidence.ts` pins IF-8/IF-9 vocabularies and state codes; `tests/evidence.test.ts` / `tests/trail.test.ts` pin enumerations | — |
+| P5.A1 | C-04.1, N-04 | P5.0 | BE-1 | **Completed (local)** | `src/services/evidence.ts`: pointers, offsets, keyed hashes and codes only; verbatim validator before SQL; canary test proves no text in SQL or storage | Live demo-site SQL still not observed |
+| P5.A2 | C-04.8–10, Arch §6.4 | A1 | BE-1 | **Completed (local)** | Five states, ambiguous 403/404, capped relocation, key rotation and retired-version paths; 18 evidence tests | Live Jira read/coverage gate not exercised |
+| P5.A3 | C-04.1, Arch §6.4 | A1 | BE-1 | **Completed (local)** | `classifyEvidenceStrength()` uses only Jira record claims and an explicit changelog check; tests cover comment and summary/description paths | Changelog call is an edge responsibility, not yet wired |
+| P5.B1 | C-04.2, C-04.5, C-04.7, C-04.11 | P5.0 | BE-2 | **Completed (local)** | `src/services/trail.ts` append-only service; insert-if-absent case; RECORD/ENTERED; role-gated transitions; supersession; future-date rejection; 8 trail tests | Concurrent live SQL not observed |
+| P5.B2 | C-04.4, C-04.6 | B1, P4.A3 | BE-2 | **Completed (local)** | `candidateDates()` lists both bases, earliest first, no preselection; Jira timestamp converted only with an injected zone | Time-zone rule still Blocked |
+| P5.C1 | Arch §16.1 | P5.0 | TE | **Not Started** | Evidence lifecycle FK reports: unchanged, edited elsewhere, moved, removed, deleted, denied, key missing, rotation | P5.0; SC-5 corpus |
+| P5.C2 | G-7 | P5.0 | TE | **Not Started** | Idempotency/replay FK reports: duplicate capture, concurrent case creation, replay and reorder | P5.0 |
+| P5.D1 | G-4 | A2, B1 | BE-2 | **Not Started** | Role matrix updated for trail/evidence resolvers | A2, B1 |
 | P5.D2 | C-04.1–3, C-09.2–3 | D1 contract | FE | **Not Started** | Visible on demo site | D1 contract |
 
 ### 3.7 P6 — Signal Finder and capture
@@ -406,6 +406,14 @@ Independent read-only review of the manifest tooling (`code-reviewer`, session `
 | **RV-18** | Minor | B's re-review noted `scripts/lib/manifest-model.mjs:7` still names `manifests/snapshot.json`, but the artifact is `baseline.json`. | Recorded, not changed in this fix (§5.6 smallest sound change); no runtime or guard effect. |
 
 **U-B1-1 (Unresolved):** the baseline guard is a local tripwire: an agent with an owner approval tag can change both the model and `baseline.json`. It is not a substitute for owner control before M-1. Cleared by the 1 Dec manifest freeze review, not by another code check.
+
+### 5.8 P4/P5 implementation gaps (24 Nov 2026)
+
+| ID | Status | Finding | Proposed handling |
+|---|---|---|---|
+| **PS-1** | **Unresolved** | `Architecture.md` §6.1 names `issue_key_at_capture`, `comment_id`, `captured_at` and `scan_id` on `evidence_item`, but migration `004-evidence_item` does not define them. | The implemented service uses only columns that exist. Do not invent a migration change; record the gap for the architect/owner and reconcile the canonical design and schema in one change set. |
+| **PS-2** | **Unresolved** | The deadline oracle confirms arithmetic agreement only; QA/RA-approved day-count conventions, holidays, time-zone rules and rule-set status remain absent (OI-1/OI-2). | Keep headline deadlines withheld under UNREVIEWED/PREVIEW; never claim legal reading. |
+| **PS-3** | **Unresolved** | `npm run check` is green locally, but no live demo-site SQL/DDL, evidence capture, revalidation or role-gated resolver has been observed. | Keep P4/P5 unaccepted until integration evidence and Verification A/B exist on the current commit. |
 
 ---
 

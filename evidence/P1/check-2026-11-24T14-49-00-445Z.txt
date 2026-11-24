@@ -1,0 +1,110 @@
+KnewWhen - npm run check evidence (N-06, C-12.5)
+Date: 2026-11-24T14:49:00.446Z
+Node: v24.22.3 · npm: npm/11.19.1 node/v24.22.3 win32 x64 workspaces/false
+Git HEAD: b8666551ea1727ec6665f42ba69bc610468d9481
+Test seed: 20261124
+
+--- npm run check:deps (exit 0) ---
+
+> knewwhen@0.1.0 check:deps C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-dependencies.mjs
+
+DEPENDENCY CHECK: PASS (5 approved runtime, 7 approved dev dependencies)
+
+--- npm run check:imports (exit 0) ---
+
+> knewwhen@0.1.0 check:imports C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-imports.mjs
+
+IMPORT BOUNDARY CHECK: PASS (no @forge/* outside adapters; no tests or oracle under src/)
+
+--- npm run check:types (exit 0) ---
+
+> knewwhen@0.1.0 check:types C:\Users\LOUJAN B\Knewwhen
+> tsc --noEmit
+
+--- npm run check:lint (exit 0) ---
+
+> knewwhen@0.1.0 check:lint C:\Users\LOUJAN B\Knewwhen
+> eslint .
+
+--- npm run check:manifests (exit 0) ---
+
+> knewwhen@0.1.0 check:manifests C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-manifests.mjs
+
+ROOT_MANIFEST_TARGET: app-a
+MANIFEST CHECK: PASS (2 apps, 6 scopes, 10 modules, independent baseline intact)
+
+--- npm run check:format (exit 0) ---
+
+> knewwhen@0.1.0 check:format C:\Users\LOUJAN B\Knewwhen
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+--- npm run check:tests (exit 0) ---
+
+> knewwhen@0.1.0 check:tests C:\Users\LOUJAN B\Knewwhen
+> vitest run
+
+
+ RUN  v5.1.1 C:/Users/LOUJAN B/Knewwhen
+
+ ✓ tests/core-migration.test.ts (9 tests) 53ms
+ ✓ tests/manifest.test.ts (22 tests) 46ms
+ ✓ tests/timezone.test.ts (3 tests) 85ms
+ ✓ tests/repositories.test.ts (12 tests) 40ms
+ ✓ tests/screener-metrics.test.ts (6 tests) 39ms
+ ✓ tests/validate.test.ts (9 tests) 156ms
+ ✓ tests/evidence.test.ts (18 tests) 117ms
+ ✓ tests/trail.test.ts (8 tests) 223ms
+ ✓ tests/checks.test.ts (2 tests) 592ms
+   ✓ P1.A3 / P1.B2 import-boundary guard (N-06, AGENTS 12.4) (2)
+     ✓ rejects the same import outside src/adapters 307ms
+ ✓ tests/screener.test.ts (15 tests) 367ms
+ ✓ tests/audit.test.ts (7 tests) 37ms
+ ✓ tests/authorisation.test.ts (12 tests) 54ms
+ ✓ tests/generator.test.ts (8 tests) 38ms
+ ✓ tests/property.smoke.test.ts (1 test) 34ms
+ ✓ tests/sql-fake.test.ts (9 tests) 34ms
+ ✓ tests/jira-client.test.ts (12 tests) 43ms
+ ✓ tests/hash-key.test.ts (8 tests) 30ms
+ ✓ tests/deadlines.test.ts (10 tests) 31ms
+ ✓ tests/wording.test.ts (9 tests) 24ms
+ ✓ tests/rules-loader.test.ts (10 tests) 24ms
+ ✓ tests/migration.test.ts (3 tests) 21ms
+ ✓ tests/csv.test.ts (8 tests) 22ms
+ ✓ tests/normalise.test.ts (11 tests) 26ms
+ ✓ tests/shell.test.ts (8 tests) 18ms
+ ✓ tests/logger.test.ts (4 tests) 18ms
+ ✓ tests/contracts.test.ts (7 tests) 15ms
+ ✓ tests/canary.test.ts (6 tests) 16ms
+ ✓ tests/settings.test.ts (7 tests) 12ms
+ ✓ tests/smoke.test.ts (1 test) 6ms
+ ✓ tests/oracle-agreement.test.ts (15 tests) 11780ms
+   ✓ P4.B3 — differential and metamorphic properties (C-05.6, Arch §10.6) (4)
+     ✓ engine and oracle agree on 10,000 generated cases (seed 20261206) 8488ms
+     ✓ next-working-day due dates never land on a non-working day (PT) 957ms
+     ✓ adding a holiday never moves a due date earlier (PT) 1133ms
+     ✓ due date is non-decreasing in the awareness date (PT) 1157ms
+
+ Test Files  30 passed (30)
+      Tests  260 passed (260)
+   Start at  20:19:20
+   Duration  12.86s (tests 76%, import 12%, transform 9%, worker 3%)
+
+    Isolate  30 workers spawned · ~598ms startup each (spawn + environment, per file)
+             at least ~1.03s faster with isolate: false — reuses workers across files instead of one per file
+
+--- forge lint (exit 0) ---
+The linter checks the app code for known errors. Warnings are issues you should fix, but they won't stop the app code from building.
+Press Ctrl+C to cancel.
+
+No issues found.
+
+Warning: Your version of Forge CLI is out of date. We recommend you update to the latest version to get the latest features and bug fixes.
+Run npm install -g @forge/cli@latest to update from version 15.1.0 to 16.0.0.
+
+RESULT: PASS

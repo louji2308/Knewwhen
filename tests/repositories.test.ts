@@ -87,6 +87,63 @@ describe('P2.A2 repository semantics (read-after-write; no upsert — PF-DB-3)',
     expect(outcome.row.state).toBe('OPEN');
   });
 
+  it('adopts a competing winner found through a UNIQUE key, not only the primary key', async () => {
+    const fake = createSqlFake();
+    const repos = createRepositories(fake);
+    const winner = { ...CASE, id: 'winner-id', state: 'OPEN' };
+    await repos.review_case.insert(winner);
+
+    const outcome = await repos.review_case.insert({
+      ...CASE,
+      id: 'loser-id',
+      state: 'IN_REVIEW',
+    });
+
+    expect(outcome.inserted).toBe(false);
+    expect(outcome.row).toEqual(winner);
+    expect(fake.dump('review_case')).toHaveLength(1);
+  });
+
+  it('adopts a competing winner before attempting an insert that would violate UNIQUE', async () => {
+    const fake = createSqlFake();
+    const repos = createRepositories(fake);
+    await repos.decision_record.insert({
+      id: 'winner-id',
+      case_id: 'case-1',
+      version: 1,
+      state: 'DRAFT',
+      awareness_entry_id: 'entry-1',
+      awareness_date: '2026-11-24',
+      awareness_basis: 'ENTERED_RECEIPT_DATE',
+      question_set_id: 'test-questions',
+      question_set_version: 'v1',
+      answers_json: '{}',
+      evidence_snapshot_json: '[]',
+      features_json: '{}',
+      created_at: '2026-11-24T12:00:00.000Z',
+    });
+
+    const outcome = await repos.decision_record.insert({
+      id: 'loser-id',
+      case_id: 'case-1',
+      version: 1,
+      state: 'DRAFT',
+      awareness_entry_id: 'entry-2',
+      awareness_date: '2026-11-25',
+      awareness_basis: 'ENTERED_RECEIPT_DATE',
+      question_set_id: 'test-questions',
+      question_set_version: 'v1',
+      answers_json: '{}',
+      evidence_snapshot_json: '[]',
+      features_json: '{}',
+      created_at: '2026-11-24T12:00:00.000Z',
+    });
+
+    expect(outcome.inserted).toBe(false);
+    expect(outcome.row.id).toBe('winner-id');
+    expect(fake.dump('decision_record')).toHaveLength(1);
+  });
+
   it('supports conditional finalise: UPDATE ... WHERE state = DRAFT reports affectedRows', async () => {
     const repos = createRepositories(createSqlFake());
     await repos.decision_record.insert({
