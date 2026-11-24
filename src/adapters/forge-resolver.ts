@@ -34,9 +34,15 @@ interface AwarenessPayload {
 
 type PlatformContext = Readonly<Record<string, unknown>>;
 
+interface OperationsPayload {
+  action?: unknown;
+  payload?: unknown;
+}
+
 type Definition = {
   knewwhenShell: (request: Request<ShellPayload>) => ShellStatus;
   knewwhenAwareness: (request: Request<AwarenessPayload>) => Promise<ResolverEnvelope<unknown>>;
+  knewwhenOperations: (request: Request<OperationsPayload>) => Promise<ResolverEnvelope<unknown>>;
 };
 
 function readString(value: unknown): string {
@@ -100,6 +106,16 @@ const handlers: Definition = {
       accountId: readString(context['accountId']),
       canBrowseResource: false,
     });
+  },
+  async knewwhenOperations() {
+    // No approved runtime scan/write-back ports exist yet. Fail closed rather
+    // than expose an unauthorised or hardcoded operation (I-11, §10.2).
+    return {
+      data: null,
+      roleHint: 'UNKNOWN',
+      correlationId: globalThis.crypto.randomUUID(),
+      code: 'NOT_FOUND',
+    } satisfies ResolverEnvelope<null>;
   },
 };
 

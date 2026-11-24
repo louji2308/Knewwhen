@@ -22,6 +22,7 @@ import {
   receiptDateProblem,
   tableRows,
 } from './awareness-view';
+import { SCAN_UI_STRINGS, scanViewModel } from './scan-view';
 
 const TRAIL_HEAD = {
   cells: [
@@ -290,12 +291,25 @@ const AwarenessSlice = ({ model, onAction }) => {
   );
 };
 
+const ScanSlice = ({ model, onScan }) => (
+  <Box>
+    <Text>{SCAN_UI_STRINGS.title}</Text>
+    <Text>{model.message}</Text>
+    <Text>{SCAN_UI_STRINGS.notice}</Text>
+    {model.kind === 'RESULT' ? (
+      <Text>{`${model.state} · ${model.result} · ${model.reasonCode} · ${model.segmentsScanned}/${model.segmentsSeen}`}</Text>
+    ) : null}
+    <Button onClick={onScan}>{SCAN_UI_STRINGS.run}</Button>
+  </Box>
+);
+
 const App = () => {
   const context = useProductContext();
   const module = moduleFrom(context);
   const [status, setStatus] = useState(null);
   const [failed, setFailed] = useState(false);
   const [envelope, setEnvelope] = useState(null);
+  const [scanEnvelope, setScanEnvelope] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -312,6 +326,12 @@ const App = () => {
   }, [module]);
 
   const issueKey = status?.issueKey ?? null;
+  const onScan = () => {
+    if (issueKey === null) return;
+    invoke('knewwhenOperations', { action: 'MANUAL_SCAN', payload: { issueId: issueKey } })
+      .then((result) => setScanEnvelope(result))
+      .catch(() => setScanEnvelope(failedEnvelope('DEPENDENCY_FAILED')));
+  };
   useEffect(() => {
     if (module !== 'issuePanel' || status?.state !== 'ready' || issueKey === null) return;
     let active = true;
@@ -360,7 +380,12 @@ const App = () => {
     );
   }
 
-  return <AwarenessSlice model={awarenessViewModel(envelope)} onAction={onAction} />;
+  return (
+    <Box>
+      <ScanSlice model={scanViewModel(scanEnvelope)} onScan={onScan} />
+      <AwarenessSlice model={awarenessViewModel(envelope)} onAction={onAction} />
+    </Box>
+  );
 };
 
 ForgeReconciler.render(<App />);
