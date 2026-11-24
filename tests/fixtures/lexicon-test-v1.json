@@ -1,0 +1,10 @@
+{
+  "version": "lexicon-test-v1",
+  "phrases": [
+    { "id": "P-INJ-1", "category": "INJURY", "text": "patient injured" },
+    { "id": "P-MAL-1", "category": "MALFUNCTION", "text": "pump stopped" },
+    { "id": "P-MAL-2", "category": "MALFUNCTION", "text": "pump stopped working" },
+    { "id": "P-DEV-1", "category": "DEVICE_FAILURE", "text": "screen cracked" },
+    { "id": "P-HARM-1", "category": "HARM", "text": "harm" }
+  ]
+}

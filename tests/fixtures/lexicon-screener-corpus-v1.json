@@ -1,0 +1,9 @@
+{
+  "version": "lexicon-screener-corpus-v1",
+  "phrases": [
+    { "id": "P-SC1-1", "category": "MALFUNCTION", "text": "app froze during dose calculation" },
+    { "id": "P-SC1-2", "category": "INJURY", "text": "patient was sent to the emergency room" },
+    { "id": "P-SC1-3", "category": "INJURY", "text": "patient went to the ER" },
+    { "id": "P-SC2-1", "category": "DEVICE_FAILURE", "text": "values appear in the wrong unit" }
+  ]
+}
