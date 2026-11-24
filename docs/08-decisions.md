@@ -133,9 +133,178 @@
 
 ---
 
+## D-008 — Owner ruling batch, 24 November 2026 (Approved)
+
+- **Date:** 24 Nov 2026
+- **Status:** **Approved.** The owner's exact reply is reproduced below. It supersedes any conflicting Proposed baseline, including E-2 and the conservative assumption in E-4.
+- **Source:** owner message titled “# Owner Ruling Batch — 24 November 2026” in this session. Section numbers are stable; each ID below is binding where it differs from an earlier Proposed call.
+- **Method:** decisions are recorded here and in `TODO.md`. No file under `docs/Project/` was edited. Where a canonical file would need a wording change, the update is listed as pending rather than made silently (AGENTS §2.7, §7.6).
+- **Scope impact:** approves the module choice, manifest freeze, rule-status model, evidence-retention limit, operational defaults as **Proposed engineering values**, two-app strategy, interface-level verification for pure phases, one controlled live LLM call, P13/P14 draft task list, and owner-controlled release/access rules. It does **not** supply missing regulatory rule data, Forge credentials, a clean site, an outside organisation or verifier contexts.
+
+### Owner reply (verbatim)
+
+> # Owner Ruling Batch — 24 November 2026
+>
+> ## 1. Approved engineering decisions
+>
+> **CF-1 / E-2 / WF-1 / WF-2**
+> - Use `jira:issueContext` as the preferred primary entry point, subject to read-only permission verification.
+> - Do not use deprecated `jira:issueGlance`.
+> - Defer dashboard gadget and Rovo.
+> - Use `jira:entityPropertySet` for searchable metadata.
+> - Defer the three custom fields unless a specific native-field requirement is demonstrated.
+>
+> **CF-2:** FDA deadlines; EU in preview.
+>
+> **CF-3 / WF-13:**
+> - Separate AI screening enablement from regulatory rule-set status.
+> - Only APPROVED rule sets may produce regulatory deadline calculations.
+> - PREVIEW and UNREVIEWED rules must not generate operational deadlines.
+> - Preserve evidence-only investigation.
+>
+> **CF-4:** Approve option (a) for MVP: pointers, timestamps, keyed hashes, live re-display and MODIFIED/UNAVAILABLE indicators. Do not claim immutable evidence retention.
+>
+> **CF-5:** Freeze first manifest on 1 December 2026. Exclude dashboard gadget and Rovo from the first submission.
+>
+> **CF-6:** Accept Jira Browse permission visibility with explicit disclosure. Jira entity properties contain only non-sensitive metadata. Sensitive decision data stays in Forge SQL. Comments must fail closed.
+>
+> **CF-7:** Record rule-set ID, version, digest, jurisdiction and effective date for every calculation and decision.
+>
+> **E-1:** Keep JSM write-back held. Proceed with Jira-only write-back.
+>
+> **E-3 / WF-5:** Use option (b), copyable CSV in a code block. Do not implement a fake download.
+>
+> **E-4 / PF-MP-1:** Freeze the release candidate for review. Allow only documented critical fixes through controlled releases; do not assume code-only changes are officially prohibited.
+>
+> **WF-4:** Disclose that restricted comments are not scanned. Never claim complete organisational coverage.
+>
+> **WF-6:** Use seed, anchor date and generator version for deterministic sample data. Keep real admin identity exclusively in audit metadata.
+>
+> **WF-8:** Never automatically merge cases. Handle each case independently.
+>
+> **WF-9:** New evidence becomes PROPOSED. A qualified person must create a new decision version.
+>
+> **WF-10:** First substantive case action triggers IN_REVIEW. Viewing, routing and manual scanning do not.
+>
+> **WF-11:** Add configurable namespaced routing label. Never overwrite existing labels.
+>
+> **WF-12:** Add manual case opening to acceptance criteria.
+>
+> **WF-16:** Record searcher, timestamp and search scope. Provide Search again as me. Mark incomplete searches explicitly.
+>
+> **OI-6:** Target WCAG 2.2 AA, with actual accessibility testing.
+>
+> **OI-7:** No unsupported numeric performance SLA. Instrument and benchmark before establishing one.
+>
+> **WF-3:** Accept baseline. Keep event occurrence and company awareness separate.
+>
+> **WF-7:** Accept manual scanning fallback for imported issues.
+>
+> ## 2. Regulatory and missing-input decisions
+>
+> **OI-1 / WF-15:** Do not invent regulatory rule data. Require qualified QA/RA approval for day-count conventions, timezones, awareness definitions, decision questions, answer vocabulary and signal lexicon.
+>
+> **OI-2:** Practitioner review, trademark clearance and partner verification remain UNVERIFIED until evidence is supplied. Use FDA-only evidence mode until rule review is completed.
+>
+> **OI-3:**
+> - Allow recording a case with an undetermined awareness date.
+> - Allow provisional decisions under unreviewed rules.
+> - Do not calculate deadlines or permit final regulatory closure under unreviewed rules.
+>
+> **OI-4:** Prepare proposed operating defaults:
+>
+> - Debounce: 5 seconds.
+> - One automatic LLM call per unique content version.
+> - LLM budget: 100 requests per installation per day.
+> - Input/output budget: 8,000 / 1,000 tokens.
+> - Manual scans: 5 per user per 10 minutes.
+> - Lookback: 2 relationship hops.
+> - Initial/extended lookback: 500 / 2,000 records.
+> - Display: maximum 25 candidates, with remaining count.
+> - Evidence quote: 1–1,000 characters.
+> - Reminders: 7, 3 and 1 days before deadline; once daily overdue.
+>
+> These are proposed engineering defaults, subject to benchmarking and approval.
+>
+> Do not automatically discard low-strength matches. Exact quote validation must reject every non-verbatim quote. LLM failure must never become NO_SIGNAL_FOUND.
+>
+> **OI-5:** Honest precision/recall reporting only. No invented hard pass percentages. Report sample sizes and actual results. HIGH must represent stronger evidence than MEDIUM.
+>
+> **OI-8:** Use verified or explicitly documented fallbacks. Do not claim runtime proof without actual tests. The missing Architecture §18.2 fallback definitions remain to be reconciled.
+>
+> **OI-9:** Accept the two-app strategy. App A is the Marketplace submission. App B is the unlicensed judge-install build. Both must originate from a recorded Git commit.
+>
+> ## 3. Additional technical approvals
+>
+> **WF-14:** Draft the `knewwhen.case-index` property schema and JQL aliases for approval. Forge SQL remains authoritative; Jira entity properties are only a searchable projection.
+>
+> **PLAN-2:** Approve a proposed P13/P14 task list in TODO.md, clearly marked as a draft, not as a replacement for the missing canonical implementation plan.
+>
+> **PLAN-3:** Record explicitly supplied owner rulings. Do not invent DR-1 through DR-18.
+>
+> **PLAN-4 / DR-17:** Approve interface-level verification for pure phases. Integrated functionality requires running-product verification.
+>
+> **PLAN-5 / DR-18:** Approve one controlled live Forge LLM call using synthetic data only. Record usage and cost. Automated tests must not invoke the live model.
+>
+> **OI-10 / PA-1 to PA-5:** Keep unapproved until the actual descriptions and implementation implications are supplied.
+>
+> ## 4. Access and verification
+>
+> Forge credentials, developer site, clean installation site and outside organisation are not yet supplied. Keep dependent verification tasks BLOCKED.
+>
+> Require two independent verifier contexts. If unavailable, document the exception and leave acceptance conditional.
+>
+> Defer Rovo MCP.
+>
+> Preserve the rule that only the owner submits, publishes or shares the application.
+>
+> ## 5. Documentation and implementation
+>
+> - Record approved decisions with dates in docs/08-decisions.md.
+> - Update TODO.md with exact requirement IDs.
+> - Do not edit anything under docs/Project/.
+> - Keep missing inputs and unverified requirements visible.
+> - Reconcile the manifest with the approved scope before freezing it.
+> - Implement tests before implementation acceptance.
+> - Run npm run check.
+> - Maintain traceability between requirements, tests, decisions and commits.
+>
+> Do not silently convert proposed values into approved regulatory rules or claim verification that has not occurred.
+
+### Effect on earlier baseline calls
+
+| ID | Effect of D-008 |
+|---|---|
+| **E-1** | **Ratified.** JSM write-back stays held; Jira-only write-back proceeds. |
+| **E-2** | **Superseded.** `jira:issueContext` is now the preferred primary entry point, subject to read-only permission verification. `jira:issueGlance` stays excluded. The original panel-only + manual-pin baseline is retained only as history; no claim is made that WF-2 pinning was separately approved. |
+| **E-3** | **Ratified.** Copyable CSV in a Code block; no fake download. |
+| **E-4** | **Modified by owner ruling.** Freeze the release candidate, but allow documented critical fixes through controlled releases; do not assert that code-only changes are officially prohibited. PF-MP-1 remains **Unresolved** as a platform fact. |
+| **CF/OI/WF/PLAN/DR** | Approved, partially approved or kept unapproved exactly as recorded in `TODO.md` §5.1–5.5; no broader permission or scope is inferred. |
+
+### Pending canonical wording updates (not performed)
+
+- `Scope.md`: CF-1…CF-7 and OI-1…OI-10 disposition records; OI-4 values remain Proposed, not rule data.
+- `Workflow and UI demo.md`: WF-1…WF-16 disposition records, especially the `jira:issueContext` preference and WF-6 generator inputs.
+- `Architecture.md`: module baseline, manifest/scope freeze, property projection vs SQL authority, and the E-4 critical-fix release path.
+- `Implementation plan.md`: P13/P14 sections and §12 `DR` register remain absent; D-008 records only the owner-supplied DR-17 and DR-18 rulings.
+- These are **pending**, not edits. `docs/Project/` remains untouched.
+
+### Not verified by D-008
+
+No Forge token, developer site, clean install site, outside organisation, verifier contexts, QA/RA rule data, trademark evidence or partner verification was supplied. No runtime proof was claimed. The Codegeist resources page was opened in the connected browser on 24 Nov 2026 (`HTTP 200`); a plain fetch returned `403`, recorded in `docs/platform-facts.md` §12.
+
+### Draft deliverables produced under D-008 (24 Nov 2026)
+
+- **OI-4:** `docs/proposals/oi-4-operating-defaults.md` v0.1 records every supplied numeric default as **Proposed**, plus the already-Approved behavioural constraints. No value was written to `rules/*.json`; no benchmark or SLA is claimed.
+- **WF-14:** `docs/proposals/wf-14-case-index-projection.md` v0.1 records the proposed property, aliases, JQL examples, SQL-authoritative rule and tests. It is **not approved**.
+- **New conflicts held open:** WF-14-C1 — owner's `knewwhen.case-index` vs canonical `knewwhen.case` (`Architecture.md` §11.3, `Scope.md` C-07). WF-14-C2 — owner's `jira:entityPropertySet` vs canonical `jira:entityProperty` (`Architecture.md` §3.6/§13.2, `Scope.md` C-07). Both need an owner ruling before manifest work; neither was silently changed.
+- **Platform gap added:** PF-JIRA-9 records that official `jira:issueContext` documentation does not state a Viewers/read-only permission rule. D-008's preference is therefore conditional on a clean-site permission check.
+
+---
+
 ## Expert baseline calls E-1 to E-4 (Proposed — no new scope taken)
 
-**Status: Proposed, not Approved.** The owner asked for expert decisions and to proceed. Under `AGENTS.md` §5.3 these four calls are either the *existing approved baseline* or a *technical choice inside it*: none adds a scope, module, tier, feature or regulatory content. They are recorded as **Proposed** because reversing them to the alternative **does** require a Type C decision (§7.4) and an owner approval tag. Proposer: orchestrator in the expert-engineer role, 24 Nov 2026.
+**Historical status: Proposed, not Approved at the time.** The owner later ruled on all four in D-008 (24 Nov 2026): E-1 and E-3 **Ratified**, E-2 **Superseded** by the `jira:issueContext` preference, and E-4 **Modified** by the controlled critical-fix exception. The table below is retained for traceability; D-008 governs. Proposer: orchestrator in the expert-engineer role, 24 Nov 2026.
 
 | ID | Question answered | Expert call and reason | What would need owner approval |
 |---|---|---|---|

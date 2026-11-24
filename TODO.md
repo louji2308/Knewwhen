@@ -1,9 +1,9 @@
 # KnewWhen — TODO (execution ledger)
 
-**Version:** 0.8 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
+**Version:** 1.0 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
 **Authority:** built from the canonical documents in `docs/Project/` (read-only, AGENTS §2.7). This file records progress; it is **not** proof and **not** a source of scope (AGENTS §14.1).
 **Status words:** Not Started · Ready · In Progress · In review · Blocked · Completed (tasks, AGENTS §14.3). Phase status: Not started · Active · Awaiting verification · Accepted.
-**Verified baseline:** branch `master` · commit `b0b850c885ef5d7bf3734c4dad14dcf469c75726` · tracks `origin/master` · clean worktree at the start of the P1.A1–A4 update. The toolchain checkpoint is the next commit (see `git log -1`).
+**Verified baseline:** branch `master` · pushed commit `f3d294bb8233739a8de299fdd304a4c8518791af` · tracks `origin/master` at the same SHA · clean worktree before the D-008 ledger update. The governance/checkpoint commit for D-008 is the next commit (see `git log -1` after it is made).
 
 ---
 
@@ -28,7 +28,7 @@
 | **P13** | Release-candidate QA, security, evidence pack | **Not started** | P10 accepted; P11 accepted or cut | Whole-product A and B, evidence pack; `evidence/P13/` | ORC / SP / TE | Yes | §3.14 (gap) |
 | **P14** | Judge-ready build, demo and submission | **Not started** | P13 accepted; P12 submitted | Judge-ready build, demo, owner submission | RD / OWN | Yes | §3.14 (gap) |
 
-**Note (AGENTS §14.5):** implementation phase sections below are derived from `Implementation plan.md` §10. The file is **Approved v0.1** (D-003, 24 Nov 2026) and its task tables end at P12; P13/P14 are named in the index but have no task sections in the file, so no task list is invented for them (§3.14).
+**Note (AGENTS §14.5):** implementation phase sections below are derived from `Implementation plan.md` §10. The file is **Approved v0.1** (D-003, 24 Nov 2026) and its task tables end at P12; P13/P14 are named in the index but have no task sections in the file. D-008 (owner ruling, 24 Nov 2026) approves a **draft** P13/P14 task list in §3.14; it is not a replacement for the missing canonical sections (§3.14).
 
 ---
 
@@ -44,14 +44,15 @@
 | **PREP-0.2** | Run bootstrap and capability checks (Git, Node/npm/Forge, hooks, ECC inventory) | AGENTS §0.1, §6.5, §19.1, Appendix A.3; enables N-03, N-06, C-12 | None | **Completed** | 23 Nov output: `master...origin/master`; `node -v` → `v26.13.1`; `npm -v` → `11.20.0`; `forge --version` → `15.1.0` with Node 22.x/24.x warning; `CLAUDE.md` absent; `package.json` absent; pre-commit hook absent. ECC 2.2.3 / doctor OK from the recorded 23 Nov install | — |
 | **PREP-0.3** | Reconstruct actual progress from repository and evidence; write recovery note | AGENTS §6.4, §14.4; enables all | PREP-0.1, PREP-0.2 | **Completed** | Verified state in §6 and the session report; mismatch recorded (TODO absent, plan absent at first read, Node warning) | — |
 | **PREP-0.4** | Create and maintain this ledger outside `docs/Project/` | AGENTS §14.1–14.6, §2.7; enables all | PREP-0.3 | **Completed** | Commit `740ccf2`; this file | — |
-| **PREP-0.5** | Owner decision on Scope conflicts CF-1 to CF-7 | C-01–C-12; AGENTS §2.6, §7.3–7.4 | `Scope.md` approval; owner | **Blocked** | `docs/Project/Scope.md` §5.1, Draft v0.1 | Blocked by: owner decision. Contract defaults cannot drive work until approved. |
-| **PREP-0.6** | Owner decision on Scope open items OI-1 to OI-10 | C-01–C-12, C-05/C-06/C-01 (OI-1), C-07 (OI-8); AGENTS §5.5 | Owner; supplied rule inputs | **Blocked** | `docs/Project/Scope.md` §5.2 | Blocked by: owner decision and missing `docs/03-domain-rules.md`, `rules/*.json`. |
+| **PREP-0.5** | Owner decision on Scope conflicts CF-1 to CF-7 | C-01–C-12; AGENTS §2.6, §7.3–7.4 | `Scope.md` approval; owner | **Completed** | D-008 records all seven rulings verbatim with date; dispositions in §5.1 | Canonical wording updates remain pending in `docs/Project/`; no edit made there. |
+| **PREP-0.6** | Owner decision on Scope open items OI-1 to OI-10 | C-01–C-12, C-05/C-06/C-01 (OI-1), C-07 (OI-8); AGENTS §5.5 | Owner; supplied rule inputs | **Completed** | D-008 records all ten rulings verbatim with date; dispositions in §5.2 | Rule data and outside evidence still absent; OI-4 values are Proposed, not rule data; OI-2 remains Unverified. |
 | **PREP-0.7** | Supply, approve and track `Implementation plan.md`; create implementation phase sections from its task tables | AGENTS §2.1, §11.1, §14.5 | Owner supplied the file | **Completed** | `docs/Project/Implementation plan.md` (682 lines) read to last line; owner approval D-003 (24 Nov 2026); plan tracked in Git; phase index and P0–P12 checklists in §3; P13/P14 gap in §3.14 | — |
 | **PREP-0.8** | Supply approved locked inputs: `IMPLEMENTATION_PLAN.md` §2.11, `docs/02-spec.md`, `docs/03-domain-rules.md`, `rules/*.json` | I-7; C-05, C-06, C-01; OI-1; AGENTS §2.2, §7.2 | Owner | **Blocked** | `Scope.md` §0, §5.2 OI-1; `Architecture.md` §1.1 U-1 | Blocked by: owner. Regulatory content may not be invented (I-7). |
 | **PREP-0.9** | Verify the A-11 platform assumptions before use (storage, queue/events, LLM, Jira visibility/UI, JSM, Marketplace, six scopes) | C-07, C-08, S-03, N-04; OI-8; N-03(a); AGENTS §17.5 | Official documentation access | **Completed** | `docs/platform-facts.md` v1.0: 4 parallel read-only agents, official URLs and 24 Nov 2026 access dates, orchestrator spot-checks, §7 discrepancy log, §8 scope mapping; 33 facts Verified and 6 Unresolved with named fallbacks | — |
 | **PREP-0.10** | Resolve local runtime mismatch: select a Forge-supported Node line | Tools §4; N-06; AGENTS §12.1 | Owner decision D-005 | **Completed** | `nvm install 24` → 24.22.3; `nvm use 24.22.3`; `nvm list` → `* 24.22.3 (default)`; fresh-shell `node -v` → `v24.22.3`; `forge --version` → `15.1.0` with no Node warning; D-005 | — |
 | **PREP-0.11** | Add `CLAUDE.md` containing only `@AGENTS.md` | Tools §6; enables all builder tasks | Owner decision D-004 | **Completed** | `CLAUDE.md` created with one line `@AGENTS.md`; D-004 | — |
-| **PREP-0.12** | Define the first implementation task and the critical path once PREP-0.5–0.8 are cleared | C-01–C-12; AGENTS §11.1–11.4 | PREP-0.5–PREP-0.8 | **Blocked** | Approved plan §4 names `P0 → P1 → P2 → P5 → {P8 ∥ P9} → P10 → P13 → P14` as critical path (D-003) | Blocked by: CF/OI decisions and missing locked inputs. |
+| **PREP-0.12** | Define the first implementation task and the critical path once PREP-0.5–0.8 are cleared | C-01–C-12; AGENTS §11.1–11.4 | PREP-0.5–PREP-0.8 | **Blocked** | Approved plan §4 names `P0 → P1 → P2 → P5 → {P8 ∥ P9} → P10 → P13 → P14` as critical path (D-003) | D-008 cleared most CF/OI/WF decisions; still Blocked by QA/RA rule data (`OI-1`), missing locked files, Forge token/site (CG-3/4), outside organisation and verifier contexts. |
+| **PREP-0.13** | Draft OI-4 operating defaults and WF-14 property/JQL projection for owner approval | OI-4, WF-14; C-01, C-03, C-05, C-07, C-11; N-03, N-04 | D-008 | **Completed** | `docs/proposals/oi-4-operating-defaults.md`; `docs/proposals/wf-14-case-index-projection.md`, both Draft 0.1 (24 Nov 2026) | Drafts only. Owner approval needed; WF-14-C1 key name and WF-14-C2 module conflict are Unresolved. |
 
 **Task status changes:** update a row when the status changes, not in batches (AGENTS §14.6). Mark `Completed` only after the ACs pass and the evidence exists (§14.4).
 
@@ -72,14 +73,14 @@
 |---|---|---|---|---|---|---|
 | P0.A1 | AGENTS A.3, §19 | — | ORC + OWN | **Not Started** | Command output with dates; repository reconciled | Plan approval |
 | P0.A2 | AGENTS §9.3, §13, B-2 | A1 | ORC | **Not Started** | Worktree and second-context proof, or owner decision | Plan approval |
-| P0.A3 | Tools §7, Hackathon §14 | A1 | OWN | **Not Started** | Forge/token/site/user setup without secrets | Plan approval; owner access |
+| P0.A3 | Tools §7, Hackathon §14, CG-3/CG-4 | A1 | OWN | **Not Started** | Forge/token/site/user setup without secrets | Forge API token, email, provisioned site and outside organisation not supplied (D-008; `docs/platform-facts.md` §12) |
 | P0.A4 | AGENTS §2.3, PC-6 | A1 | ORC | **Not Started** | File-name mapping in decision log | Plan approval |
 | P0.B1 | Arch §18.2, OI-8 | A1 | DR | **In review** | `docs/platform-facts.md` §2–6, §7 (Verified URL/date or Unresolved fallback) | Formal P0 acceptance awaits A1–A3; preparatory research complete under PREP-0.9 |
 | P0.B2 | Arch §13.2, N-03(a) | A1 | DR | **In review** | `docs/platform-facts.md` §8 scope identifier table | Formal P0 acceptance awaits A1–A3; `forge lint` not yet run |
-| P0.B3 | Workflow §0 | A1 | DR | **In review** | `docs/platform-facts.md` §5–6 (CSV/importer/panel facts) | Formal P0 acceptance awaits A1–A3; WF-1/2/5/7 rulings pending |
-| P0.B4 | Hackathon §11 | A1 | DR | **In review** | `docs/platform-facts.md` §6 (Marketplace update-path facts) | Formal P0 acceptance awaits A1–A3; PF-MP-1 Unresolved |
+| P0.B3 | Workflow §0 | A1 | DR | **In review** | `docs/platform-facts.md` §5–6 (CSV/importer/panel facts) | D-008 ruled WF-1/5/7; WF-2 manual-pin fallback was not separately ruled; `jira:issueContext` read-only permission verification still needed |
+| P0.B4 | Hackathon §11 | A1 | DR | **In review** | `docs/platform-facts.md` §6 (Marketplace update-path facts) | D-008 E-4 release rule recorded; official PF-MP-1 platform status remains **Unresolved**; formal P0 acceptance awaits A1–A3 |
 | P0.C1 | AGENTS §7.4 | B1–B4 (partial OK) | PRQ + ORC | **Not Started** | Decision packet delivered | Plan approval |
-| P0.C2 | AGENTS §7.4 | C1 | ORC | **Not Started** | Dated replies in `docs/08-decisions.md` | Plan approval; owner replies |
+| P0.C2 | AGENTS §7.4 | C1 | ORC | **Completed** | D-008 records the owner's 24 Nov ruling batch verbatim with date; CF/OI/WF/PLAN/DR dispositions recorded in §5.1–5.5 | Rule-data files and access inputs still absent, but the decision-record task itself is complete |
 | P0.D1 | OI-1, U-1 | A1 | OWN | **Not Started** | Locked rule files present or OI-1 Unresolved | Plan approval; owner files |
 | P0.D2 | OI-2, CF-3 | D1 | OWN | **Not Started** | Dated practitioner-review outcome | Plan approval; practitioner |
 | P0.D3 | OI-2, R-8, R-9 | — | OWN | **Not Started** | Dated trademark/partner record | Plan approval; owner |
@@ -248,12 +249,33 @@
 
 ### 3.14 P13 and P14 — phase-section gap
 
-The supplied `Implementation plan.md` names P13 and P14 in §3 milestones, §4 critical path and §9 phase index, but §10 ends at P12 (file line 682). There are **no task tables** for P13 or P14 in the supplied file. Per AGENTS §5.4 and §14.5, no tasks are invented here.
+The supplied `Implementation plan.md` names P13 and P14 in §3 milestones, §4 critical path and §9 phase index, but §10 ends at P12 (file line 682). There are **no canonical task tables** for P13 or P14. In D-008 the owner approved a **draft** task list here, explicitly not a replacement for the missing canonical sections. `GAP-P13` and `GAP-P14` stay Blocked until an owner-supplied canonical section exists.
 
 | ID | Needed from owner | Status | Evidence required | Blockers |
 |---|---|---|---|---|
-| **GAP-P13** | P13 phase section: outcome, entry, tasks, VA scope, VB focus, exit/evidence | **Blocked** | Owner-supplied canonical section or approved task list | Missing from `Implementation plan.md` §10 |
-| **GAP-P14** | P14 phase section: outcome, entry, tasks, VA scope, VB focus, exit/evidence | **Blocked** | Owner-supplied canonical section or approved task list | Missing from `Implementation plan.md` §10 |
+| **GAP-P13** | Canonical P13 phase section: outcome, entry, tasks, VA scope, VB focus, exit/evidence | **Blocked** | Owner-supplied `Implementation plan.md` §10 section | Missing from the approved v0.1 file; draft below is not a substitute |
+| **GAP-P14** | Canonical P14 phase section: outcome, entry, tasks, VA scope, VB focus, exit/evidence | **Blocked** | Owner-supplied `Implementation plan.md` §10 section | Missing from the approved v0.1 file; draft below is not a substitute |
+
+**Draft P13 — release-candidate QA, security and evidence pack (D-008 PLAN-2; Draft, Not Started)**
+
+| ID | Req / ref | Depends | Owner | Status | Evidence required | Blockers |
+|---|---|---|---|---|---|---|
+| P13.D1 | CF-5, N-08, AGENTS §18.3 | P10, P11 | ORC | **Not Started** | Manifest/scope parity snapshot; freeze date recorded | P10/P11 not accepted |
+| P13.D2 | C-12, N-06 | D1 | BE + SP | **Not Started** | `npm run check` clean; `forge lint` and `forge eligibility` outputs | Forge site/token |
+| P13.D3 | D-008 OI-9 | D1 | RD | **Not Started** | App A/B same-commit parity; App IDs recorded | Forge access |
+| P13.D4 | N-04, C-12.5 | D1 | SP + TE | **Not Started** | Canary, privacy, banned-wording and evidence-pack results | Rule data and tests |
+| P13.D5 | AGENTS §13.2–13.5, D-008 DR-17 | D2–D4 | VA + VB + ORC | **Not Started** | A/B reports, current-commit evidence, orchestrator confirmation | Two verifier contexts |
+| P13.D6 | AGENTS §18.3 | D2–D5 | OWN + RD | **Not Started** | Outside-org test and testing-guide steps 1–9 | Outside organisation |
+
+**Draft P14 — judge-ready build, demo and submission (D-008 PLAN-2; Draft, Not Started)**
+
+| ID | Req / ref | Depends | Owner | Status | Evidence required | Blockers |
+|---|---|---|---|---|---|---|
+| P14.D1 | CF-2, I-13, AGENTS §18.2 | P13.D6 | RD | **Not Started** | Listing/description with required decision-support wording | P13 not accepted |
+| P14.D2 | Hackathon §11, D-008 CF-5 | P14.D1 | RD | **Not Started** | Video under five minutes; no third-party marks or unlicensed music | P14.D1 |
+| P14.D3 | D-008 OI-9, CG-6 | P14.D1 | RD + OWN | **Not Started** | App B judge link and App A listing/review-ticket link | Owner; Marketplace state |
+| P14.D4 | AGENTS §18.3 | P14.D3 | OWN | **Not Started** | Billing alert on App B; App B frozen after outside-org test | Owner |
+| P14.D5 | §10.2, §18.4 | P14.D1–D4 | OWN | **Not Started** | Owner presses submit/publish/share | Owner only |
 
 ---
 
@@ -269,48 +291,78 @@ None. No implementation phase has been accepted: Verification A, Verification B 
 
 ## 5. Blockers and Unresolved
 
-### 5.1 Owner decisions pending — Scope conflicts (`Scope.md` §5.1)
+### 5.1 Owner decisions on Scope conflicts (D-008, Approved 24 Nov 2026)
 
-| ID | Effect on the build |
-|---|---|
-| **CF-1** | Modules/"fields": entity properties vs custom fields; glance, gadget and Rovo need approval. |
-| **CF-2** | EU wording: Core is FDA-only; listing/video text must say "FDA deadlines; EU in preview". |
-| **CF-3** | "Evidence-only": two switches (AI off/on; rule-set reviewed/preview/unreviewed); default unreviewed = no deadline numbers. |
-| **CF-4** | Exact quotes vs no stored text: "(a) pointer + hash + live re-display" is the default; snapshot storage is Type C. |
-| **CF-5** | Manifest freeze date; S-02/S-03 modules cannot be added late to App B. |
-| **CF-6** | Write-back visibility cannot be role-limited outside the app; property is JQL-visible. |
-| **CF-7** | Core records one rule-set version; multiple selectable versions are Should (S-04). |
+| ID | Status | Ruling and effect | Still pending |
+|---|---|---|---|
+| **CF-1** | **Approved** | `jira:issueContext` preferred primary entry point, subject to read-only permission verification; no `jira:issueGlance`; gadget/Rovo deferred; `jira:entityPropertySet` for searchable metadata; three custom fields deferred unless a native-field need is shown. | Canonical wording update; permission verification; manifest reconciliation before 1 Dec. |
+| **CF-2** | **Approved** | FDA deadlines are Core; EU is preview. | Listing/video wording review. |
+| **CF-3 / WF-13** | **Approved** | Separate AI screening from rule-set status. Only APPROVED rule sets produce regulatory deadlines; PREVIEW/UNREVIEWED produce none. Evidence-only investigation is preserved. | Rule-set status evidence (OI-2). |
+| **CF-4** | **Approved** | MVP option (a): pointers, timestamps, keyed hashes, live re-display, MODIFIED/UNAVAILABLE indicators. No immutable-retention claim. | Intended-use wording. |
+| **CF-5** | **Approved** | First manifest freeze 1 Dec 2026; dashboard gadget and Rovo excluded from first submission. | Freeze gate and parity snapshot. |
+| **CF-6** | **Approved** | Accept Browse visibility with explicit disclosure; entity properties hold non-sensitive metadata only; sensitive decision data stays in Forge SQL; comments fail closed. | Disclosure and schema wording. |
+| **CF-7** | **Approved** | Every calculation and decision records rule-set ID, version, digest, jurisdiction and effective date. | Storage/schema implementation. |
 
-### 5.2 Open items pending (`Scope.md` §5.2)
+### 5.2 Open items (D-008 disposition)
 
-**OI-1** missing regulatory rule data · **OI-2** outside deadlines (practitioner review, trademark, partner verification) · **OI-3** decision without awareness date / under unreviewed rules · **OI-4** numeric limits (debounce, caps, lookback, thresholds) · **OI-5** precision/recall pass bars · **OI-6** accessibility level · **OI-7** numeric performance target · **OI-8** platform assumptions to verify · **OI-9** two-app plan H-11 · **OI-10** proposed additions PA-1 to PA-5.
+| ID | Status | Ruling and effect | Still pending |
+|---|---|---|---|
+| **OI-1 / WF-15** | **Approved instruction; input Blocked** | Do not invent regulatory rule data. Require qualified QA/RA approval for day-count, time zone, awareness definitions, decision questions, answer vocabulary and signal lexicon. | `docs/03-domain-rules.md`, `rules/*.json`, QA/RA evidence. |
+| **OI-2** | **Unresolved** | Practitioner review, trademark clearance and partner verification remain Unverified; use FDA-only evidence mode until rule review is complete. | Dated evidence for all three. |
+| **OI-3** | **Approved** | Case may have undetermined awareness date; provisional decisions allowed under unreviewed rules; no deadline calculation and no final regulatory closure under unreviewed rules. | UI labels and rule-status gate. |
+| **OI-4** | **Proposed defaults; behavioural constraints Approved** | Defaults: debounce 5 s; one auto LLM call per unique content version; 100 requests/installation/day; 8,000/1,000 input/output tokens; 5 manual scans/user/10 min; 2 relationship hops; 500/2,000 initial/extended records; 25 displayed candidates + remainder; quote 1–1,000 chars; reminders 7/3/1 days and daily overdue. Draft in `docs/proposals/oi-4-operating-defaults.md`. Approved constraints: do not discard low-strength matches; reject every non-verbatim quote; LLM failure must never become `NO_SIGNAL_FOUND`. | Benchmark and owner approval before values become rule/settings data. |
+| **OI-5** | **Approved** | Honest precision/recall reporting only; no invented hard pass percentages; report sample sizes and actual results; HIGH stronger than MEDIUM. | Test design and evidence. |
+| **OI-6** | **Approved** | WCAG 2.2 AA with actual accessibility testing. | Test evidence. |
+| **OI-7** | **Approved** | No unsupported numeric performance SLA; instrument and benchmark first. | Benchmark data. |
+| **OI-8** | **Approved policy; proof Blocked** | Use verified or explicitly documented fallbacks; no runtime claim without tests; missing Arch §18.2 fallback definitions to reconcile. | Runtime probes for upsert, index lag, CSV import events; reconcile §18.2. |
+| **OI-9** | **Approved** | Two-app strategy: App A Marketplace submission; App B unlicensed judge-install build; both from a recorded Git commit. CG-6 confirms listing/review-ticket link is acceptable for the bonus. | Owner submission; App IDs. |
+| **OI-10** | **Not Approved** | PA-1 to PA-5 stay unapproved until actual descriptions and implementation implications are supplied. | Owner-supplied descriptions. |
 
-### 5.3 Workflow findings needing decisions (`Workflow and UI demo.md` §0, all Proposed)
+### 5.3 Workflow findings (D-008 disposition)
 
-**WF-1** glance deprecated → `jira:issueContext` is Type C · **WF-2** panel hidden unless pinned · **WF-3** no event-occurrence field · **WF-4** restricted comments not scanned · **WF-5** CSV download mechanism unverified · **WF-6** sample identities/dates · **WF-7** importer may emit no events · **WF-8** earlier record can have its own case · **WF-9** new evidence on a decided case · **WF-10** FLAGGED → IN_REVIEW trigger undefined · **WF-11** routing-label setting missing from C-10 · **WF-12** manual case opening has no AC · **WF-13** headline number depends on 24 Nov review · **WF-14** JQL keys/aliases undefined · **WF-15** decision questions missing (OI-1) · **WF-16** lookback completeness depends on searcher.
+| ID | Status | Ruling and effect |
+|---|---|---|
+| **WF-1** | **Approved** | `jira:issueContext` preferred; `jira:issueGlance` excluded; subject to read-only permission verification. |
+| **WF-2** | **Partial** | Module choice approved; manual-pin fallback was not separately ruled. Keep the documented behaviour until verified; do not claim an extra app write. |
+| **WF-3** | **Approved** | No occurrence field; event occurrence and company awareness stay separate. |
+| **WF-4** | **Approved** | Disclose that restricted comments are not scanned; never claim complete organisational coverage. |
+| **WF-5** | **Approved** | Option (b): copyable CSV in a Code block; no fake download. |
+| **WF-6** | **Approved** | Deterministic sample uses seed, anchor date and generator version; real admin identity only in audit metadata. |
+| **WF-7** | **Approved** | Manual scanning fallback for imported issues; no event-driven dependency. |
+| **WF-8** | **Approved** | Never auto-merge cases; each case decided independently. |
+| **WF-9** | **Approved** | New evidence becomes PROPOSED; a qualified person creates a new decision version. |
+| **WF-10** | **Approved** | First substantive case action triggers IN_REVIEW; viewing, routing and manual scanning do not. |
+| **WF-11** | **Approved** | Configurable namespaced routing label; never overwrite existing labels. |
+| **WF-12** | **Approved** | Add manual case opening to acceptance criteria. |
+| **WF-13** | **Approved via CF-3/OI-2** | Headline deadline numbers require an APPROVED rule set. |
+| **WF-14** | **Draft produced; not approved** | `docs/proposals/wf-14-case-index-projection.md` contains the proposed schema, aliases, JQL examples and tests. SQL remains authoritative; entity property is a reduced search projection. | Owner must resolve WF-14-C1 (`knewwhen.case-index` vs canonical `knewwhen.case`) and WF-14-C2 (`jira:entityPropertySet` vs canonical `jira:entityProperty`) before manifest work. |
+| **WF-15** | **Blocked** | Decision questions remain unavailable until OI-1 rule data is supplied; OI-3 behaviour is now Approved. |
+| **WF-16** | **Approved** | Record searcher, timestamp and scope; offer “Search again as me”; mark incomplete searches explicitly. |
 
-### 5.4 Capability and document gaps (Updated 24 Nov 2026)
+### 5.4 Capability and document gaps (Updated 24 Nov 2026 after D-008)
 
 - `Implementation plan.md` is present, **Approved v0.1** (D-003) and tracked in Git; its contents were not edited. PLAN-1 and PLAN-6 are resolved.
-- `CLAUDE.md` now exists with one line `@AGENTS.md` (D-004), resolving the Tools §6 gap.
+- `CLAUDE.md` exists with one line `@AGENTS.md` (D-004), resolving the Tools §6 gap.
 - Local Node is `v24.22.3` by default via nvm (D-005); Forge 15.1.0 runs without the Node-version warning. PREP-0.10 is resolved.
-- The following canonical inputs remain absent: `IMPLEMENTATION_PLAN.md` §2.11, `docs/02-spec.md`, `docs/03-domain-rules.md`, `docs/05-stack-and-constraints.md`, `rules/*.json`.
-- No Forge app scaffold: `manifest.yml`, `package.json`, `migrations/`, `rules/` do not exist. `npm run check` cannot be run. The solution is plan **P1.A1–A4**: create `package.json`, strict TypeScript/Vitest/fast-check config, `npm run check`, and a tested pre-commit hook.
-- No pre-commit hook installed. `.opencode/` is intentionally ignored (owner decision D-002) and will not be present in a fresh clone.
-- ECC hook registration was verified (`doctor: OK`, 549 operations, `outside-root=0`), but no functional hook firing was triggered or observed.
-- Verification A (clean-site install from an outside organisation) and Verification B plus an independent second context are not arranged; phase acceptance is **Blocked** (AGENTS §8.3, §13.5, Appendix B-2). The solution is plan **P0.A2/A3**: prove a second independent context and obtain Forge access, two developer sites/test users and an outside organisation; if independence cannot be proven, the owner decides under §13.5 and the phase stays unaccepted until then.
-- Owner decisions recorded: **D-001** scoped ECC install; **D-002** local OpenCode ECC with hooks enabled and `.opencode/` ignored; **D-003** plan v0.1 approved and tracked; **D-004** `CLAUDE.md`; **D-005** Node 24.x (`docs/08-decisions.md`).
-- A-11 platform facts are now recorded in `docs/platform-facts.md` v1.0 (24 Nov 2026): 33 Verified, 6 Unresolved with named Arch §18.2 fallbacks. Discrepancies D-PF-1…D-PF-7 are logged there; D-PF-3 was reconciled and Resolved. New owner decisions needed: JSM write scope (D-PF-1), WF-1/WF-2 panel choice, WF-5 export mechanism, PF-MP-1 in-review updates. Runtime proof still needed for upsert, index lag and CSV import events. No platform/scope file was edited.
+- The following canonical inputs remain absent: `IMPLEMENTATION_PLAN.md` §2.11, `docs/02-spec.md`, `docs/03-domain-rules.md`, `docs/05-stack-and-constraints.md`, `rules/*.json` (the `rules/` directory exists but has no JSON files). Regulatory content may not be invented (I-7).
+- The P1.A1–A4 toolchain exists: `package.json`, `package-lock.json`, strict TypeScript/Vitest/fast-check/ESLint/Prettier config, `npm run check`, `npm run setup` and a tested pre-commit hook. The earlier statement that these could not exist is superseded by the verified checkpoints.
+- No Forge app scaffold yet: `manifest.yml`, `src/adapters/forge/`, `migrations/` and `rules/*.json` are absent. `forge lint` is honestly skipped until a manifest exists. P1.B1/B2 remain Not Started.
+- `.opencode/` is intentionally ignored (D-002) and is regenerated from tracked source by `npm run setup`. Root `opencode.json` and `.claude/settings.json` carry V2 deny rules; D-007 records their method and limits.
+- ECC hook registration was verified (`doctor: OK`, 549 operations, `outside-root=0`); the Git pre-commit hook has since fired through Git's shell (`PRE-COMMIT: PASS`, exit 0). Harness deny rules were not tested by a real locked-file edit; HM-1–HM-4 remain visible in `docs/harness-matrix.md`.
+- Verification A (clean-site install from an outside organisation) and Verification B with two independent contexts are not arranged; phase acceptance is **Blocked** (AGENTS §8.3, §13.5, Appendix B-2). D-008 requires two contexts and says acceptance stays conditional if unavailable.
+- Owner decisions recorded: **D-001**–**D-007** as before, plus **D-008** (24 Nov ruling batch). `docs/08-decisions.md` is the dated record; `docs/Project/` was not edited.
+- A-11 platform facts are recorded in `docs/platform-facts.md` v1.2: 33 Verified, 7 Unresolved with named fallbacks (PF-JIRA-9 added for issueContext permission), plus CG-1…CG-8 from the owner-supplied Codegeist resources URL. Discrepancies D-PF-1…D-PF-7 are logged; D-PF-3 resolved. D-008 rules E-1, E-4, WF-1/5/7 and PF-MP-1 handling, but runtime proof and the issueContext read-only permission question remain open.
+- Codegeist “API key” is an **Atlassian API token** for `forge login`, not a Devpost key (CG-3). No token, email, site URL, outside organisation or verifier context was supplied. No credential is stored in the repository.
 
 ### 5.5 Implementation-plan gaps (Verified 23 Nov 2026)
 
 | ID | Finding | Effect | Proposed handling |
 |---|---|---|---|
 | **PLAN-1 — Resolved 24 Nov** | `Implementation plan.md` was Draft v0.1 at first read (lines 3–6). | Blocked implementation from starting. | Owner approved v0.1 and required tracking (D-003); resolved. |
-| **PLAN-2** | §10 ends at P12; P13/P14 have no task tables although named in §3, §4 and §9. | Cannot create faithful P13/P14 checklists (AGENTS §14.5). | Owner supplies the missing §10 sections or approves a task list; see §3.14. |
-| **PLAN-3** | §2.4 refers to §12 decision register `DR-1`…`DR-18`, but no §12 section exists in the supplied file. | Decision defaults and costs cannot be read from the canonical file. | Owner supplies §12, or the orchestrator records each DR in `docs/08-decisions.md` after owner replies. |
-| **PLAN-4** | PC-3 proposes interface-level Verification A for pure phases P3/P4; AGENTS §13.2 says VA runs against the running product. | Literal rule would block pure phases. | Owner confirms DR-17 before P3/P4 acceptance. |
-| **PLAN-5** | PC-7 requires a live hosted-model call for AI-path evidence; AGENTS §10.2 requires owner approval for any live Forge LLM call. | P6/P13 evidence has a cost gate. | Owner approves or rejects DR-18; tests never call the model. |
+| **PLAN-2 — Draft supplied** | §10 ends at P12; P13/P14 have no canonical task tables although named in §3, §4 and §9. | No faithful canonical P13/P14 checklist exists. | D-008 approves a clearly marked **draft** task list in §3.14. `GAP-P13`/`GAP-P14` stay Blocked until canonical sections are supplied. |
+| **PLAN-3 — Ruling recorded; input Blocked** | §2.4 refers to §12 decision register `DR-1`…`DR-18`, but no §12 section exists in the supplied file. | Decision defaults and costs cannot be read from the canonical file. | D-008 says record only explicitly supplied rulings; DR-17 and DR-18 are recorded. DR-1…DR-16 are **not invented**; canonical §12 remains missing. |
+| **PLAN-4 — Resolved by D-008** | PC-3 proposes interface-level Verification A for pure phases P3/P4; AGENTS §13.2 says VA runs against the running product. | Literal rule would block pure phases. | DR-17 approved: interface-level verification for pure phases; integrated functionality still requires running-product verification. |
+| **PLAN-5 — Resolved by D-008** | PC-7 requires a live hosted-model call for AI-path evidence; AGENTS §10.2 requires owner approval for any live Forge LLM call. | P6/P13 evidence has a cost gate. | DR-18 approved: one controlled live Forge LLM call with synthetic data only; record usage and cost; automated tests must not invoke the live model. Access and deployment still Blocked. |
 | **PLAN-6 — Resolved 24 Nov** | The supplied plan file was untracked. | A fresh clone could not derive §3 from Git. | Owner required tracking (D-003); the file is added to Git without content edits; resolved. |
 
 ### 5.6 Plan findings carried from `Implementation plan.md` §2.4
@@ -338,15 +390,15 @@ Reviewer found **no** defect in evidence writing, privacy wording, banned phrase
 
 ## 6. Handoff block (AGENTS §6.6)
 
-**Verified repository state:** branch `master` · last verified implementation checkpoint `212b655` (P1.A5 harness guards, local, not pushed) · tracks `origin/master` at `b0b850c` · clean worktree before this ledger update. Official harness docs were read and `docs/harness-matrix.md` records the result.
-**Last checks run:** clean-directory `npm ci` → 132 packages, exit 0; `npm run check` → **PASS** with evidence `evidence/P1/check-2026-11-24T04-38-12-186Z.txt` (strict types, lint, format, 2 tests); eight injected-violation probes each exited 1; installed hook fired via Git's shell → `PRE-COMMIT: PASS`, exit 0; `npm run setup` → hook + both OpenCode agents installed; removing an agent's `edit` deny made setup exit 1 and the restored source passed again (`evidence/P1/setup-probe-2026-11-24T04-36-33Z.txt`); `opencode debug agents/config` → agents and deny rules loaded; independent review found 0 Blocker/Major and 2 Minor, both fixed; `git diff --check` clean apart from LF→CRLF notices; secret scan of new files → no matches. `forge lint` skipped honestly (no `manifest.yml`). No deploy, install or phase acceptance is claimed.
-**What was read:** `AGENTS.md` in full and all nine canonical files now present, each to its last line, earlier in the conversation. For this task: `Hackathon.md` §5–§9, `Implementation plan.md` §10 P0/P1/P2, `Tools and technologies.md` in full, `Scope.md` §5.1–5.2, `Workflow and UI demo.md` §0, and `docs/08-decisions.md`. The independent reviewer read `AGENTS.md` in full plus the 19 changed files. No canonical file content was edited.
-**Active task / branch:** P1 harness/toolchain work on `master`; no implementation branch. P1.A1–A5 are **Completed**; P1 is **Active** but not Accepted (formal entry conditions P0.A1–A3 remain open). P0.B1–B4 remain In review.
-**Half-done work:** none in P1.A1–A5. P1.B1–B4 are Not Started. Four expert calls E-1–E-4 are recorded as **Proposed** baselines, not approvals; no new scope, module or rule content was added.
-**Next ready task:** no P1.B task is Ready: P1.B1 needs DR-2 and the missing plan §12; P1.B2 needs Forge access and manifest decisions. Owner actions P0.A2/A3 and D1–D4 remain ready for the owner. No feature phase is Ready.
-**Blockers:** PLAN-2–PLAN-5, CF-1–CF-7, OI-1–OI-10, WF-1–WF-16, missing locked inputs, no Forge scaffold/deploy, no clean site and no independent verifiers; plus PF-MP-1 (in-review code updates) and D-PF-1 (JSM write scope). PLAN-1 and PLAN-6 are Resolved; D-PF-3 Reconciled; RV-1–RV-8 Resolved.
-**Open questions for the owner:** rule on CF-1–CF-7 and OI-1–OI-10; supply the plan's §12 register and P13/P14 sections and the locked rule-data files; ratify or reverse E-1–E-4 (each reversal is Type C); decide D-PF-1, WF-1/WF-2, WF-5 and PF-MP-1; provide Forge access, an outside organisation and two independent verifier contexts (or decide under AGENTS §13.5); approve pushing the local toolchain/harness checkpoints to `origin/master` (§10.2, §15.6). Already approved D-003–D-006; D-007 is a Verified technical implementation, not an approval item.
-**Mismatch found:** P1.A1–A4 were authorised and executed early although P1's formal entry conditions (P0.A1–A3) are not met; the ledger says so rather than claiming P1 acceptance. The reviewer found two Major boundary gaps and six Minor hardening gaps, all fixed and re-probed. The plan still references P13/P14 and §12 sections absent from the supplied file; platform research found D-PF-1, D-PF-2 and reconciled D-PF-3. None was silently smoothed over.
+**Verified repository state:** branch `master` · last pushed implementation checkpoint `f3d294b` (ledger/toolchain/harness) · `origin/master` at the same SHA before the D-008 governance edit · clean worktree before this edit. No deploy or install exists.
+**Last checks run:** clean-directory `npm ci` → 132 packages, exit 0; `npm run check` → **PASS** with evidence `evidence/P1/check-2026-11-24T04-38-12-186Z.txt` (strict types, lint, format, 2 tests); injected-violation probes exited 1; installed hook fired via Git's shell → `PRE-COMMIT: PASS`, exit 0; `npm run setup` negative/positive probe passed (`evidence/P1/setup-probe-2026-11-24T04-36-33Z.txt`); independent review found 0 Blocker/Major and 2 Minor, both fixed. `forge lint` skipped honestly (no `manifest.yml`). The D-008 documentation/draft edit was re-checked with `npm run check` → **PASS**; evidence `evidence/P1/check-2026-11-24T05-58-03-771Z.txt`. `forge lint` remains SKIP (no `manifest.yml`).
+**What was read:** `AGENTS.md` in full and all nine canonical files now present, each to its last line, earlier in the conversation. For the ruling update: `Scope.md` §5.1–5.2 and C-07/C-09/N-03/N-08, `Workflow and UI demo.md` §0, `Architecture.md` entity-property/write-back/scope sections, `Implementation plan.md` P13/P14 gap, `docs/08-decisions.md`, `docs/platform-facts.md`, and the official `jira:issueContext` and Issue Glance migration pages (24 Nov 2026). The Codegeist resources page was opened in the connected browser (`HTTP 200`; plain fetch `403`). No `docs/Project/` content was edited.
+**Active task / branch:** D-008 ruling capture on `master`. PREP-0.5 and PREP-0.6 are now **Completed** as decision-record tasks; PREP-0 remains **Active** because rule data and locked inputs are absent. P1.A1–A5 are **Completed**; P1 is **Active** but not Accepted (formal P0.A1–A3 entry conditions remain open). P0.B1–B4 remain In review.
+**Half-done work:** none in PREP-0.13. The WF-14 schema/JQL aliases and OI-4 operating defaults now exist as **Draft** proposals under `docs/proposals/` and await owner approval. P13/P14 draft task lists exist in §3.14. P1.B1–B4 are Not Started. E-1/E-3 are Ratified, E-2 Superseded, E-4 Modified by D-008; no new scope, module or regulatory rule data was added.
+**Next ready task:** owner review of the two Draft proposals and resolution of WF-14-C1/C2. No P1.B task is Ready: P1.B1 needs DR-2/canonical §12; P1.B2 still needs Forge access, token, site and manifest reconciliation before the 1 Dec freeze.
+**Blockers:** missing QA/RA rule data and locked inputs; no Forge token/site, clean site, outside organisation or two verifier contexts; issueContext read-only permission (PF-JIRA-9); PF-MP-1 official status; D-PF-1 JSM write scope; canonical P13/P14/§12 sections. PLAN-1, PLAN-4, PLAN-5 and PLAN-6 are Resolved; PLAN-2/3 have D-008 dispositions but canonical inputs remain missing.
+**Open questions for the owner:** supply QA/RA-approved rule data (`OI-1`), outside evidence (`OI-2`), PA-1…PA-5 descriptions, DR-2 and canonical plan §12/P13/P14, Forge token/email/site URL and outside organisation, two verifier contexts (or an §13.5 exception), approve the WF-14/OI-4 drafts, and resolve WF-14-C1 (property key) and WF-14-C2 (module). The owner alone submits, publishes or shares.
+**Mismatch found:** earlier blocker text said P1.A1–A4 could not be built and `npm run check` could not run; the repository now proves the opposite, so §5.4 was corrected. The owner's `knewwhen.case-index` name in D-008 differs from canonical `knewwhen.case` (Architecture §11.3, Scope C-07); the WF-14 draft must flag this rather than silently rename a canonical key. The Codegeist page calls the credential an API token for `forge login`; no token was supplied or stored.
 
 ---
 **End of `TODO.md`.** Update on every status change; never record a claim here without evidence (AGENTS §14.4, §20.2).
