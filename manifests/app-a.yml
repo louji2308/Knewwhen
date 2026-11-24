@@ -17,6 +17,7 @@ modules:
       resolver:
         function: "resolver"
       render: "native"
+      icon: "https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg"
       title: "KnewWhen"
       description: "Decision support for adverse-event reporting clocks."
   jira:adminPage:
@@ -112,7 +113,7 @@ modules:
   scheduledTrigger:
     - key: "knewwhen-daily"
       function: "daily-reconcile"
-      interval: "24h"
+      interval: "day"
   llm:
     - key: "knewwhen-llm"
       model:

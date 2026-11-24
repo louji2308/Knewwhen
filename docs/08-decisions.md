@@ -341,6 +341,27 @@ No Forge token, developer site, clean install site, outside organisation, verifi
 
 ---
 
+## D-011 — P1.B2 shell dependencies and manifest corrections (Verified technical implementation, 24 Nov 2026)
+
+- **Class:** technical choices inside the approved architecture (AGENTS §5.3 kind B). No new module, scope, role, screen, setting, dependency class or tier; D-008 and D-009 still govern. Proposer and implementer: orchestrator in the backend/Forge role. Recorded because §7.4 requires an exact version and licence log for every tool and package used.
+- **Runtime packages (pinned exactly; method `npm view <pkg> version license --json`, npmjs registry, 24 Nov 2026):**
+
+| Package | Version | Licence | Why it is needed |
+|---|---|---|---|
+| `@forge/resolver` | `2.0.2` | SEE LICENSE IN LICENSE.txt | Resolver shell; identity read from platform context only. |
+| `@forge/bridge` | `7.4.0` | SEE LICENSE IN LICENSE.txt | UI `invoke('knewwhenShell', …)`. |
+| `@forge/react` | `12.6.0` | SEE LICENSE IN LICENSE.txt | UI Kit components used by the panel/admin/context shell. |
+| `@forge/sql` | `4.0.11` | SEE LICENSE IN LICENSE.txt | Official `migrationRunner` for the plan's "first empty migration". |
+| `react` | `18.3.1` | MIT | Required peer of `@forge/react` and the UI Kit bundle. |
+
+- **Install note:** npm reported peer warnings from Atlaskit packages pinned to React 16/17; they are transitive UI Kit peers, not installed runtime replacements. Root `react` stayed at the approved `18.3.1`. No package outside I-10's official `@forge/*` + built-in Node class was added at runtime.
+- **Manifest corrections forced by real tooling:** the `jira:issuePanel` icon is the official Atlassian asset URL copied verbatim from the owner's `forge create` scaffold (resolves PF-MAN-3); `scheduledTrigger.interval` changed from the invented `24h` to the official enum value `day` (source fetched 24 Nov 2026). Both are recorded in `docs/platform-facts.md` §14/§16.
+- **Bundler correction:** `tsconfig.json` uses `module: ESNext` and `moduleResolution: Bundler`. `NodeNext` with `.js` specifiers passed `tsc` but failed the real Forge bundle (`Can't resolve './adapters/forge-resolver.js'`); extensionless imports fixed it and the deploy then succeeded.
+- **Local CLI telemetry:** `forge settings set usage-analytics false` was applied after Sentry telemetry caused `getaddrinfo ENOTFOUND o55978.ingest.sentry.io` during install. This is a reversible local CLI preference, not an app check, hook, permission or scope, and no repository file records a credential.
+- **Explicitly not included:** no production deploy, Marketplace listing, publish or share; no new site, organisation or verifier context; no phase acceptance. Deploy and install evidence is in `evidence/P1/` and indexed in `evidence/P1/README.md`.
+
+---
+
 ## Expert baseline calls E-1 to E-4 (Proposed — no new scope taken)
 
 **Historical status: Proposed, not Approved at the time.** The owner later ruled on all four in D-008 (24 Nov 2026): E-1 and E-3 **Ratified**, E-2 **Superseded** by the `jira:issueContext` preference, and E-4 **Modified** by the controlled critical-fix exception. The table below is retained for traceability; D-008 governs. Proposer: orchestrator in the expert-engineer role, 24 Nov 2026.

@@ -28,7 +28,7 @@ function walk(directory) {
       failures.push(`${rel} matches oracle naming; the oracle must not be in src/`);
     }
 
-    if (rel.startsWith(`adapters${sep}`)) continue; // adapters are the only runtime bridge
+    if (rel.startsWith(`src${sep}adapters${sep}`)) continue; // adapters are the only runtime bridge
     if (forbiddenForgeImport.test(readFileSync(full, 'utf8'))) {
       failures.push(`${rel} imports @forge/* outside adapters`);
     }

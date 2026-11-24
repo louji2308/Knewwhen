@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -24,6 +24,18 @@ const b = buildManifest({ appId: config.appB?.id });
 if (!isParityCompatible(a, b)) findings.push('PARITY_FAIL: apps differ beyond app.id/licensing');
 if (read('app-a.yml') !== renderYaml(a)) findings.push('APP_A_YAML_OUT_OF_DATE');
 if (read('app-b.yml') !== renderYaml(b)) findings.push('APP_B_YAML_OUT_OF_DATE');
+
+// RV-15: the deployed manifest must be an exact copy of one approved template.
+const rootManifestPath = join(root, 'manifest.yml');
+if (!existsSync(rootManifestPath)) {
+  findings.push('ROOT_MANIFEST_MISSING');
+} else {
+  const deployed = readFileSync(rootManifestPath, 'utf8');
+  const target =
+    deployed === read('app-a.yml') ? 'app-a' : deployed === read('app-b.yml') ? 'app-b' : null;
+  if (target === null) findings.push('ROOT_MANIFEST_TIE_FAIL');
+  else console.log(`ROOT_MANIFEST_TARGET: ${target}`);
+}
 
 // Compare the code model against the independent, hook-locked artifact. Editing
 // only the constants can no longer pass with an unchanged approval marker (F1).

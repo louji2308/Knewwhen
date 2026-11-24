@@ -1,0 +1,35 @@
+COMMAND: forge install -e development -d -p Jira --confirm-scopes --non-interactive
+NOTE: excerpt of the original ~6.3 MB capture. The full output repeated the same
+Sentry DNS stack trace thousands of times; no record text, token or model I/O.
+The distinct error lines are preserved verbatim below.
+
+Warning: Your version of Forge CLI is out of date. We recommend you update to the latest version to get the latest features and bug fixes.
+Run npm install -g @forge/cli@latest to update from version 15.1.0 to 16.0.0.
+
+Installing your app onto an Atlassian site.
+Press Ctrl+C to cancel.
+
+Your app will be installed with the following scopes:
+- read:jira-work
+- write:jira-work
+- read:jira-user
+- storage:app
+- report:personal-data
+- read:servicedesk-request
+
+WARNING: You are about to install a development app to a production site. If you do not intend to test your app, we strongly recommend that you deploy your app to production and install the production version instead.
+Installing your app in Jira on to development...
+Error: getaddrinfo ENOTFOUND o55978.ingest.sentry.io
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:123:26)
+Error: getaddrinfo ENOTFOUND o55978.ingest.sentry.io
+This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+Error: getaddrinfo ENOTFOUND o55978.ingest.sentry.io
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:123:26)
+Rerunning the command with --verbose may give more details.
+This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+Error: getaddrinfo ENOTFOUND o55978.ingest.sentry.io
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:123:26)
+
+ROOT CAUSE: CLI Sentry telemetry (usage-analytics = true) attempted a DNS lookup
+that fails in this sandbox. Fixed by `forge settings set usage-analytics false`;
+see D-011 and PF-RUN-6. No app code or scope was changed.

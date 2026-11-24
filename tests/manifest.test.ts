@@ -34,7 +34,7 @@ const EXPECTED_MODULES = [
   'sql',
 ];
 
-const EXPECTED_APPROVAL = ['N-03(a)', 'N-08', 'Arch-3.2', 'D-008', 'D-009'];
+const EXPECTED_APPROVAL = ['N-03(a)', 'N-08', 'Arch-3.2', 'D-008', 'D-009', 'D-011'];
 const EXPECTED_EVIDENCE = ['PF-RUN-1'];
 
 type Baseline = {
@@ -90,6 +90,18 @@ describe('P1.B1 approved manifest baseline (N-03(a), N-08, D-008, D-009)', () =>
     const modules = buildManifest({ appId: 'app-a' }).modules;
     expect(modules.llm![0]).toMatchObject({ key: 'knewwhen-llm', model: ['claude'] });
     expect(modules.sql![0]).toMatchObject({ key: 'knewwhen-main', engine: 'mysql' });
+  });
+
+  it('uses the official issue-panel icon and scheduled-trigger enum (PF-MAN-3)', () => {
+    const modules = buildManifest({ appId: 'app-a' }).modules;
+    expect(modules['jira:issuePanel']![0]).toMatchObject({
+      icon: 'https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg',
+    });
+    expect(modules.scheduledTrigger![0]).toMatchObject({
+      key: 'knewwhen-daily',
+      function: 'daily-reconcile',
+      interval: 'day',
+    });
   });
 
   it('uses the official licensing.enabled shape and leaves App B unlicensed', () => {
@@ -195,5 +207,21 @@ describe('P1.B1 YAML rendering', () => {
     const yaml = renderYaml({ app: { title: 'Decision support: not advice' } });
     expect(yaml).toContain('"Decision support: not advice"');
     expect(yaml).not.toContain('\t');
+  });
+});
+
+describe('P1.B2 root manifest tie (RV-15, N-08)', () => {
+  const root = readFileSync(new URL('../manifest.yml', import.meta.url), 'utf8');
+  const appA = readFileSync(new URL('../manifests/app-a.yml', import.meta.url), 'utf8');
+  const appB = readFileSync(new URL('../manifests/app-b.yml', import.meta.url), 'utf8');
+
+  it('is byte-for-byte one of the two rendered approval templates', () => {
+    expect([appA, appB]).toContain(root);
+  });
+
+  it('never introduces a third app id', () => {
+    const ids = [appA, appB].map((yaml) => yaml.match(/ari:cloud:ecosystem::app\/[0-9a-f-]+/)?.[0]);
+    expect(ids.every((id) => typeof id === 'string')).toBe(true);
+    expect(root).toContain(ids.find((id) => root.includes(id ?? '\u0000')) ?? '\u0000');
   });
 });

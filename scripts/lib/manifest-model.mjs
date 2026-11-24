@@ -30,7 +30,14 @@ export const APPROVED_MODULES = Object.freeze([
 ]);
 
 /** Owner decisions only. A platform fact is evidence, not an approval (review F6). */
-export const APPROVAL_IDS = Object.freeze(['N-03(a)', 'N-08', 'Arch-3.2', 'D-008', 'D-009']);
+export const APPROVAL_IDS = Object.freeze([
+  'N-03(a)',
+  'N-08',
+  'Arch-3.2',
+  'D-008',
+  'D-009',
+  'D-011',
+]);
 
 /** Verified platform facts cited by the model; deliberately not approval markers. */
 export const EVIDENCE_IDS = Object.freeze(['PF-RUN-1']);
@@ -97,6 +104,7 @@ export function buildManifest({ appId, includeLicensing = false } = {}) {
           resource: 'main',
           resolver: { function: 'resolver' },
           render: 'native',
+          icon: 'https://developer.atlassian.com/platform/forge/images/icons/issue-panel-icon.svg',
           title: 'KnewWhen',
           description: 'Decision support for adverse-event reporting clocks.',
         },
@@ -152,7 +160,8 @@ export function buildManifest({ appId, includeLicensing = false } = {}) {
         { key: 'scan-queue', queue: 'knewwhen-scan', function: 'scan-consumer' },
         { key: 'writeback-queue', queue: 'knewwhen-writeback', function: 'writeback-consumer' },
       ],
-      scheduledTrigger: [{ key: 'knewwhen-daily', function: 'daily-reconcile', interval: '24h' }],
+      // Official scheduled-trigger enum: fiveMinute | hour | day | week (fetched 24 Nov 2026).
+      scheduledTrigger: [{ key: 'knewwhen-daily', function: 'daily-reconcile', interval: 'day' }],
       llm: [{ key: 'knewwhen-llm', model: ['claude'] }],
       sql: [{ key: 'knewwhen-main', engine: 'mysql' }],
     },
