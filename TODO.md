@@ -1,9 +1,9 @@
 # KnewWhen — TODO (execution ledger)
 
-**Version:** 0.3 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
+**Version:** 0.4 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
 **Authority:** built from the canonical documents in `docs/Project/` (read-only, AGENTS §2.7). This file records progress; it is **not** proof and **not** a source of scope (AGENTS §14.1).
 **Status words:** Not Started · Ready · In Progress · In review · Blocked · Completed (tasks, AGENTS §14.3). Phase status: Not started · Active · Awaiting verification · Accepted.
-**Verified baseline:** branch `master` · commit `740ccf29dd2baa07a5bbe4ed085f8d7d99851b53` · tracks `origin/master` · worktree had `?? TODO.md` and `?? docs/Project/Implementation plan.md` at the start of this update. WIP checkpoint: `docs(governance): derive implementation ledger from plan` (see `git log -1`).
+**Verified baseline:** branch `master` · commit `497fd08d964cba9b0797f9ae32433abb0aaeedfc` · tracks `origin/master` · clean worktree at the start of the PREP-0.9 update. Platform-facts checkpoint is the next commit (see `git log -1`).
 
 ---
 
@@ -48,7 +48,7 @@
 | **PREP-0.6** | Owner decision on Scope open items OI-1 to OI-10 | C-01–C-12, C-05/C-06/C-01 (OI-1), C-07 (OI-8); AGENTS §5.5 | Owner; supplied rule inputs | **Blocked** | `docs/Project/Scope.md` §5.2 | Blocked by: owner decision and missing `docs/03-domain-rules.md`, `rules/*.json`. |
 | **PREP-0.7** | Supply, approve and track `Implementation plan.md`; create implementation phase sections from its task tables | AGENTS §2.1, §11.1, §14.5 | Owner supplied the file | **Completed** | `docs/Project/Implementation plan.md` (682 lines) read to last line; owner approval D-003 (24 Nov 2026); plan tracked in Git; phase index and P0–P12 checklists in §3; P13/P14 gap in §3.14 | — |
 | **PREP-0.8** | Supply approved locked inputs: `IMPLEMENTATION_PLAN.md` §2.11, `docs/02-spec.md`, `docs/03-domain-rules.md`, `rules/*.json` | I-7; C-05, C-06, C-01; OI-1; AGENTS §2.2, §7.2 | Owner | **Blocked** | `Scope.md` §0, §5.2 OI-1; `Architecture.md` §1.1 U-1 | Blocked by: owner. Regulatory content may not be invented (I-7). |
-| **PREP-0.9** | Verify the A-11 platform assumptions before use (entity-property JQL, JSM internal comments, group lookup, personal-data mechanics, queue delay/retries, event IDs, LLM moderation) | C-07, C-08, S-03, N-04; OI-8; AGENTS §17.5 | Official documentation access | **Ready** | `Architecture.md` §18.2; `Workflow and UI demo.md` §1; plan P0.B1–B4 | — |
+| **PREP-0.9** | Verify the A-11 platform assumptions before use (storage, queue/events, LLM, Jira visibility/UI, JSM, Marketplace, six scopes) | C-07, C-08, S-03, N-04; OI-8; N-03(a); AGENTS §17.5 | Official documentation access | **Completed** | `docs/platform-facts.md` v1.0: 4 parallel read-only agents, official URLs and 24 Nov 2026 access dates, orchestrator spot-checks, §7 discrepancy log, §8 scope mapping; 33 facts Verified and 6 Unresolved with named fallbacks | — |
 | **PREP-0.10** | Resolve local runtime mismatch: select a Forge-supported Node line | Tools §4; N-06; AGENTS §12.1 | Owner decision D-005 | **Completed** | `nvm install 24` → 24.22.3; `nvm use 24.22.3`; `nvm list` → `* 24.22.3 (default)`; fresh-shell `node -v` → `v24.22.3`; `forge --version` → `15.1.0` with no Node warning; D-005 | — |
 | **PREP-0.11** | Add `CLAUDE.md` containing only `@AGENTS.md` | Tools §6; enables all builder tasks | Owner decision D-004 | **Completed** | `CLAUDE.md` created with one line `@AGENTS.md`; D-004 | — |
 | **PREP-0.12** | Define the first implementation task and the critical path once PREP-0.5–0.8 are cleared | C-01–C-12; AGENTS §11.1–11.4 | PREP-0.5–PREP-0.8 | **Blocked** | Approved plan §4 names `P0 → P1 → P2 → P5 → {P8 ∥ P9} → P10 → P13 → P14` as critical path (D-003) | Blocked by: CF/OI decisions and missing locked inputs. |
@@ -74,10 +74,10 @@
 | P0.A2 | AGENTS §9.3, §13, B-2 | A1 | ORC | **Not Started** | Worktree and second-context proof, or owner decision | Plan approval |
 | P0.A3 | Tools §7, Hackathon §14 | A1 | OWN | **Not Started** | Forge/token/site/user setup without secrets | Plan approval; owner access |
 | P0.A4 | AGENTS §2.3, PC-6 | A1 | ORC | **Not Started** | File-name mapping in decision log | Plan approval |
-| P0.B1 | Arch §18.2, OI-8 | A1 | DR | **Not Started** | `docs/platform-facts.md` with Verified URL/date or Unresolved fallback | Plan approval |
-| P0.B2 | Arch §13.2, N-03(a) | A1 | DR | **Not Started** | Scope identifier table | Plan approval |
-| P0.B3 | Workflow §0 | A1 | DR | **Not Started** | CSV/importer/panel facts | Plan approval |
-| P0.B4 | Hackathon §11 | A1 | DR | **Not Started** | Marketplace update-path facts | Plan approval |
+| P0.B1 | Arch §18.2, OI-8 | A1 | DR | **In review** | `docs/platform-facts.md` §2–6, §7 (Verified URL/date or Unresolved fallback) | Formal P0 acceptance awaits A1–A3; preparatory research complete under PREP-0.9 |
+| P0.B2 | Arch §13.2, N-03(a) | A1 | DR | **In review** | `docs/platform-facts.md` §8 scope identifier table | Formal P0 acceptance awaits A1–A3; `forge lint` not yet run |
+| P0.B3 | Workflow §0 | A1 | DR | **In review** | `docs/platform-facts.md` §5–6 (CSV/importer/panel facts) | Formal P0 acceptance awaits A1–A3; WF-1/2/5/7 rulings pending |
+| P0.B4 | Hackathon §11 | A1 | DR | **In review** | `docs/platform-facts.md` §6 (Marketplace update-path facts) | Formal P0 acceptance awaits A1–A3; PF-MP-1 Unresolved |
 | P0.C1 | AGENTS §7.4 | B1–B4 (partial OK) | PRQ + ORC | **Not Started** | Decision packet delivered | Plan approval |
 | P0.C2 | AGENTS §7.4 | C1 | ORC | **Not Started** | Dated replies in `docs/08-decisions.md` | Plan approval; owner replies |
 | P0.D1 | OI-1, U-1 | A1 | OWN | **Not Started** | Locked rule files present or OI-1 Unresolved | Plan approval; owner files |
@@ -93,7 +93,7 @@
 | P1.A2 | N-06, C-12 | A1 | BE-1 | **Not Started** | Green `npm run check` output | A1 |
 | P1.A3 | N-06, N-03(h), C-12.5 | A1 | SP + BE-1 | **Not Started** | Each static check fails on injected violation | A1 |
 | P1.A4 | AGENTS §6.5, §7.2 | A1, A2 | BE-1 | **Not Started** | Hook blocks violating scratch commit | A1, A2 |
-| P1.A5 | Tools §6, AGENTS §19 | A1 | ORC | **Not Started** | Harness support matrix with method/date | A1; owner approval for `CLAUDE.md` |
+| P1.A5 | Tools §6, AGENTS §19 | A1 | ORC | **Not Started** | Harness support matrix with method/date | A1; `CLAUDE.md` approval resolved by D-004 |
 | P1.B1 | N-03(a), N-08 | A1, DR-2 | FA | **Not Started** | Parity passes; negative injection fails | A1; DR-2 |
 | P1.B2 | Arch §3.2, G-8 | A1, B1 | FA + BE-1 | **Not Started** | Install log; app under Apps | A1, B1; Forge access |
 | P1.B3 | N-03(g), I-13 | B2 | FA | **Not Started** | `forge lint` and `forge eligibility` output | B2 |
@@ -300,6 +300,7 @@ None. No implementation phase has been accepted: Verification A, Verification B 
 - ECC hook registration was verified (`doctor: OK`, 549 operations, `outside-root=0`), but no functional hook firing was triggered or observed.
 - Verification A (clean-site install from an outside organisation) and Verification B plus an independent second context are not arranged; phase acceptance is **Blocked** (AGENTS §8.3, §13.5, Appendix B-2). The solution is plan **P0.A2/A3**: prove a second independent context and obtain Forge access, two developer sites/test users and an outside organisation; if independence cannot be proven, the owner decides under §13.5 and the phase stays unaccepted until then.
 - Owner decisions recorded: **D-001** scoped ECC install; **D-002** local OpenCode ECC with hooks enabled and `.opencode/` ignored; **D-003** plan v0.1 approved and tracked; **D-004** `CLAUDE.md`; **D-005** Node 24.x (`docs/08-decisions.md`).
+- A-11 platform facts are now recorded in `docs/platform-facts.md` v1.0 (24 Nov 2026): 33 Verified, 6 Unresolved with named Arch §18.2 fallbacks. Discrepancies D-PF-1…D-PF-7 are logged there; D-PF-3 was reconciled and Resolved. New owner decisions needed: JSM write scope (D-PF-1), WF-1/WF-2 panel choice, WF-5 export mechanism, PF-MP-1 in-review updates. Runtime proof still needed for upsert, index lag and CSV import events. No platform/scope file was edited.
 
 ### 5.5 Implementation-plan gaps (Verified 23 Nov 2026)
 
@@ -320,15 +321,15 @@ None. No implementation phase has been accepted: Verification A, Verification B 
 
 ## 6. Handoff block (AGENTS §6.6)
 
-**Verified repository state:** branch `master` · baseline SHA `221d27027e4610dfa636c774e2b76538dabf0889` · tracks `origin/master` · approval checkpoint adds `CLAUDE.md`, `docs/08-decisions.md`, `TODO.md` and the tracked plan file (see `git log -1`).
-**Last checks run:** before the approval checkpoint: `git status --short --branch` → `## master...origin/master`, `?? docs/Project/Implementation plan.md`; `git diff --check` clean; `git log -1` → `221d270`; `nvm list` → `* 24.22.3 (default)`; fresh-shell `node -v` → `v24.22.3`; `npm -v` → `11.19.1`; `forge --version` → `15.1.0` with no Node warning; `Get-Content CLAUDE.md` → `@AGENTS.md`; `Test-Path package.json` → False; pre-commit hook → False. No test/lint/typecheck/build command exists yet, so none was run and none is claimed.
-**What was read:** `AGENTS.md` in full and all nine canonical files now present, each to its last line: `Idea.md`, `Hackathon.md`, `Winner Benchmarks.md`, `Tools and technologies.md`, `Architecture.md`, `Scope.md`, `Workflow and UI demo.md`, `Implementation plan.md`. The plan is now Approved v0.1 (D-003); no canonical file content was edited.
-**Active task / branch:** PREP-0 on `master`; no implementation branch exists.
-**Half-done work:** none — implementation has not started. The approval checkpoint records D-003–D-005 and the updated ledger.
-**Next ready task:** PREP-0.9 (A-11 platform verification), now explicitly confirmed by the owner. **No implementation task is Ready** until PREP-0.5–PREP-0.8 are cleared.
-**Blockers:** PLAN-2–PLAN-5, CF-1–CF-7, OI-1–OI-10, WF-1–WF-16, missing locked inputs, absent Forge scaffold/`npm run check`, absent clean site and independent verifiers. PLAN-1 and PLAN-6 are Resolved.
-**Open questions for the owner:** supply the plan's §12 decision register and P13/P14 sections; rule on CF-1–CF-7 and OI-1–OI-10; supply locked rule-data files; provide Forge access, an outside organisation and two independent verifier contexts (or decide under AGENTS §13.5). The owner has already approved plan v0.1, required plan tracking, approved `CLAUDE.md`, and selected Node 24.x (D-003–D-005).
-**Mismatch found:** the plan was absent at first read, then supplied as an untracked Draft and is now tracked and approved; the repository still has no scaffold or checks; the plan references P13/P14 and §12 sections that are not in the supplied file.
+**Verified repository state:** branch `master` · baseline SHA `497fd08d964cba9b0797f9ae32433abb0aaeedfc` · tracks `origin/master` · clean worktree at the start of this update. PREP-0.9 adds `docs/platform-facts.md` and updates this ledger (see `git log -1`).
+**Last checks run:** `git status --short --branch` → `## master...origin/master` and clean before the PREP-0.9 edit; `git log -1` → `497fd08`; `node -v` → `v24.22.3`; `npm -v` → `11.19.1`; `forge --version` → `15.1.0` without the Node warning. Official pages opened and re-checked on 24 Nov 2026 are listed in `docs/platform-facts.md` §11. No test/lint/typecheck/build command exists yet, so none was run and none is claimed. `forge lint` has not been run (no manifest).
+**What was read:** `AGENTS.md` in full and all nine canonical files now present, each to its last line: `Idea.md`, `Hackathon.md`, `Winner Benchmarks.md`, `Tools and technologies.md`, `Architecture.md`, `Scope.md`, `Workflow and UI demo.md`, `Implementation plan.md`. For PREP-0.9, four read-only agents read `AGENTS.md` plus only their briefed sections; the orchestrator additionally read Architecture §18.2 and §13.2, plan §10 P0 and the official pages in facts §11. No canonical file content was edited.
+**Active task / branch:** PREP-0 on `master`; no implementation branch exists. PREP-0.9 is Completed. P0.B1–B4 are In review, not accepted, because the P0 phase gate has not opened.
+**Half-done work:** none — implementation has not started. `docs/platform-facts.md` is the research deliverable; P0.A1–A4, A3 and C/D tasks remain outstanding.
+**Next ready task:** PREP-0.12 cannot open until CF/OI rulings and locked inputs arrive. Owner actions P0.A3/D1–D4 are ready for the owner. **No implementation task is Ready** until PREP-0.5–PREP-0.8 are cleared.
+**Blockers:** PLAN-2–PLAN-5, CF-1–CF-7, OI-1–OI-10, WF-1–WF-16, missing locked inputs, absent Forge scaffold/`npm run check`, absent clean site and independent verifiers, plus PF-MP-1 (in-review code updates) and D-PF-1 (JSM write scope). PLAN-1 and PLAN-6 are Resolved; D-PF-3 is Reconciled.
+**Open questions for the owner:** rule on CF-1–CF-7 and OI-1–OI-10; supply the plan's §12 decision register and P13/P14 sections; supply locked rule-data files; decide D-PF-1 (JSM write scope), WF-1/WF-2 (panel/module choice), WF-5 (export mechanism) and PF-MP-1 (in-review updates); provide Forge access, an outside organisation and two independent verifier contexts (or decide under AGENTS §13.5). Already approved D-003–D-005.
+**Mismatch found:** the plan was absent at first read, then supplied as an untracked Draft and is now tracked and approved; the repository still has no scaffold or checks; the plan references P13/P14 and §12 sections that are not in the supplied file. Platform research found two document/platform discrepancies (D-PF-1, D-PF-2) and one agent disagreement reconciled by a direct official-page check (D-PF-3); none was silently smoothed over.
 
 ---
 **End of `TODO.md`.** Update on every status change; never record a claim here without evidence (AGENTS §14.4, §20.2).
