@@ -1,7 +1,7 @@
 {
-  "status": "Placeholder IDs — P1.B4 owner registers App A and App B in the Developer Console; replace both ids before the 1 Dec manifest freeze.",
+  "status": "App A ID recorded 24 Nov 2026 from the owner-created Forge app (evidence/P1/app-ids-2026-11-24.md). App B remains a placeholder pending the owner's second forge create (P1.B4).",
   "appA": {
-    "id": "app-a-placeholder",
+    "id": "ari:cloud:ecosystem::app/379ee125-304c-41a7-bbdc-81c40a27d957",
     "includeLicensing": false
   },
   "appB": {
