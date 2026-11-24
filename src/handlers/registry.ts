@@ -13,6 +13,7 @@ import {
   type HandlerRegistry,
 } from './authorisation';
 import { createAwarenessHandlers, type AwarenessDependencies } from './awareness';
+import { createDecisionHandlers, type DecisionDependencies } from './decision';
 import { createOperationHandlers } from './operations';
 
 function unavailable(): GatedHandler {
@@ -28,14 +29,19 @@ function unavailable(): GatedHandler {
 export function createHandlerRegistry(
   deps: AwarenessDependencies,
   operationDeps?: Parameters<typeof createOperationHandlers>[0],
+  decisionDeps?: DecisionDependencies,
 ): HandlerRegistry {
   const awareness = createAwarenessHandlers(deps);
   const operations = createOperationHandlers(operationDeps ?? { now: () => deps.now() });
+  const decisions = createDecisionHandlers(decisionDeps ?? { now: () => deps.now() });
   const missing = unavailable();
   const registry = Object.fromEntries(
     HANDLER_ACTIONS.map((action) => [
       action,
-      awareness[action as Action] ?? operations[action] ?? missing,
+      awareness[action as Action] ??
+        operations[action as Action] ??
+        decisions[action as keyof typeof decisions] ??
+        missing,
     ]),
   ) as unknown as HandlerRegistry;
   assertRegistryMatchesMatrix(registry);

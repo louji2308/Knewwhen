@@ -1,13 +1,19 @@
 import { makeResolver, type Request } from '@forge/resolver';
 import type { ShellModule, ShellStatus } from '../contracts/shell';
 import type { ResolverEnvelope } from '../contracts/envelope';
+import type { AwarenessDependencies } from '../handlers/awareness';
 import { createAwarenessDispatcher } from '../handlers/awareness-dispatch';
 import type { AuditSink } from '../handlers/authorisation';
+import type { DecisionDependencies } from '../handlers/decision';
+import { createOperationDispatcher } from '../handlers/operation-dispatch';
 import { shellStatus } from '../handlers/shell';
 import { audit, type AuditRepository } from '../services/audit';
+import { computeDeadlines } from '../services/deadline';
+import { createDecisionService } from '../services/decision';
 import type { HashKeyMaterial } from '../services/hash-key';
 import { createRepositories } from '../services/repositories';
 import { createTrailService } from '../services/trail';
+import { currentQuestionSet, runtimeRuleBundle } from './rule-data';
 import { createForgeSqlPort } from './forge-sql';
 
 /**
@@ -83,18 +89,57 @@ const recordAudit: AuditSink = async (event) => {
 
 const currentKey = async (): Promise<HashKeyMaterial | null> => null;
 const keyFor = async (): Promise<string | null> => null;
+const now = (): string => new Date().toISOString();
 
-const dispatchAwareness = createAwarenessDispatcher({
+const awarenessDependencies: AwarenessDependencies = {
   repositories,
   audit: auditRepository,
   trail,
   liveSegment: async () => ({ status: 'ISSUE_UNAVAILABLE' }),
   currentKey,
   keyFor,
-  now: () => new Date().toISOString(),
+  now,
   timeZone: null,
   resolveRoles: async () => [],
   recordAudit,
+};
+const dispatchAwareness = createAwarenessDispatcher(awarenessDependencies);
+
+const questionSet = currentQuestionSet();
+const decisionService =
+  questionSet === null
+    ? null
+    : createDecisionService({
+        repositories,
+        questionSet,
+        nowISO: now(),
+        rulesStatus: questionSet.status,
+      });
+const ruleBundle = runtimeRuleBundle;
+const computeDeadlinesPort =
+  ruleBundle === null
+    ? undefined
+    : (
+        input: Parameters<typeof computeDeadlines>[0],
+        candidates: Parameters<typeof computeDeadlines>[1],
+      ) => computeDeadlines(input, candidates, ruleBundle, repositories.deadline_calc);
+
+const decisionDependencies: DecisionDependencies = {
+  now,
+  getQuestionSet: currentQuestionSet,
+  ...(computeDeadlinesPort === undefined ? {} : { computeDeadlines: computeDeadlinesPort }),
+  ...(decisionService === null
+    ? {}
+    : {
+        startDraft: decisionService.startDraft,
+        finalise: decisionService.finalise,
+        supersede: decisionService.supersede,
+      }),
+};
+const dispatchOperations = createOperationDispatcher({
+  awareness: awarenessDependencies,
+  operations: { now },
+  decisions: decisionDependencies,
 });
 
 const handlers: Definition = {
@@ -107,15 +152,13 @@ const handlers: Definition = {
       canBrowseResource: false,
     });
   },
-  async knewwhenOperations() {
-    // No approved runtime scan/write-back ports exist yet. Fail closed rather
-    // than expose an unauthorised or hardcoded operation (I-11, §10.2).
-    return {
-      data: null,
-      roleHint: 'UNKNOWN',
-      correlationId: globalThis.crypto.randomUUID(),
-      code: 'NOT_FOUND',
-    } satisfies ResolverEnvelope<null>;
+  async knewwhenOperations(request) {
+    const payload: OperationsPayload = request.payload ?? {};
+    const context = request.context as PlatformContext;
+    return dispatchOperations(payload.action, payload.payload, {
+      accountId: readString(context['accountId']),
+      canBrowseResource: false,
+    });
   },
 };
 

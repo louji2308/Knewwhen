@@ -282,6 +282,5 @@ export async function enqueueWriteback(
     attempts: 0,
     last_error_code: null,
     comment_id: null,
-    created_at: ports.now(),
   });
 }
