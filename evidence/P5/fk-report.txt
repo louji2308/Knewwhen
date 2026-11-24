@@ -1,0 +1,30 @@
+P5.C1 / P5.C2 — evidence lifecycle and idempotency property reports (Arch §16.1, C-04.8–10, G-7)
+HEAD: 0dc6049139659ca9060d6d6553e49a2430774289
+Date: 24 Nov 2026
+
+Command: npx vitest run tests/p5-properties.test.ts
+Result: PASS — 11 tests, 0 failed.
+fast-check seed: 20261124
+Runs per property: 100 (11 properties = 1,100 generated cases)
+
+P5.C1 properties:
+- an unchanged generated quote stays VALID, with no audit event and the live slice returned;
+- a body edit elsewhere keeps the quote VALID but sets bodyEdited;
+- a moved quote is found within the capped window as RELOCATED and is audited;
+- a removed quote is MODIFIED and a deleted comment is UNAVAILABLE;
+- an issue-level DENIED or ISSUE_UNAVAILABLE result stays AMBIGUOUS and writes nothing;
+- an unreadable old key produces UNVERIFIABLE;
+- key rotation re-keys only after a successful unchanged validation.
+
+P5.C2 properties:
+- duplicate capture of the same pointer, offsets and span hash is idempotent;
+- concurrent case creation adopts one row by anchor_issue_id and case_seq;
+- a replayed confirmation is rejected with TRAIL_STATE and produces no second audit event;
+- candidate dates remain date-ordered under entry reordering, with no preselection.
+
+Canary and privacy proof (from tests/evidence.test.ts, same command family):
+- captureEvidence rejects a non-verbatim canary probe before any SQL;
+- fake bound values and stored rows contain no record text or quote;
+- audit detail fields are codes, ids and counts only (src/services/audit.ts guard).
+
+Not verified here: live Jira fetch/403/404, real Forge SQL races, demo-site role resolution and UI visibility. These remain PS-3 and require integration evidence before acceptance.

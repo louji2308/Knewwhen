@@ -77,7 +77,15 @@ export async function decide(
   return { allow: true, role };
 }
 
-export type GatedHandler = (context: GateContext) => Promise<unknown>;
+/**
+ * A handler receives the gate's allow decision, never a client-supplied role.
+ * The second argument is the authoritative server-side role for this call.
+ */
+export type GatedHandler = (
+  context: GateContext,
+  decision: Extract<GateDecision, { readonly allow: true }>,
+  payload: unknown,
+) => Promise<unknown>;
 export type HandlerRegistry = Readonly<Record<Action, GatedHandler>>;
 
 /** Matrix FK: the handler list and the role matrix must not drift apart. */
@@ -105,13 +113,15 @@ export function createGate(
   registry: HandlerRegistry,
   resolveRoles: RoleResolver,
   audit?: AuditSink,
-): { dispatch(action: Action, context: GateContext): Promise<GateOutcome> } {
+): {
+  dispatch(action: Action, context: GateContext, payload?: unknown): Promise<GateOutcome>;
+} {
   assertRegistryMatchesMatrix(registry);
   return {
-    async dispatch(action, context) {
+    async dispatch(action, context, payload = null) {
       const decision = await decide(context, action, resolveRoles, audit);
       if (!decision.allow) return { decision };
-      return { decision, result: await registry[action](context) };
+      return { decision, result: await registry[action](context, decision, payload) };
     },
   };
 }
