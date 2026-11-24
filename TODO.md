@@ -1,9 +1,9 @@
 # KnewWhen — TODO (execution ledger)
 
-**Version:** 0.4 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
+**Version:** 0.5 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
 **Authority:** built from the canonical documents in `docs/Project/` (read-only, AGENTS §2.7). This file records progress; it is **not** proof and **not** a source of scope (AGENTS §14.1).
 **Status words:** Not Started · Ready · In Progress · In review · Blocked · Completed (tasks, AGENTS §14.3). Phase status: Not started · Active · Awaiting verification · Accepted.
-**Verified baseline:** branch `master` · commit `497fd08d964cba9b0797f9ae32433abb0aaeedfc` · tracks `origin/master` · clean worktree at the start of the PREP-0.9 update. Platform-facts checkpoint is the next commit (see `git log -1`).
+**Verified baseline:** branch `master` · commit `b0b850c885ef5d7bf3734c4dad14dcf469c75726` · tracks `origin/master` · clean worktree at the start of the P1.A1–A4 update. The toolchain checkpoint is the next commit (see `git log -1`).
 
 ---
 
@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|---|---|
 | **PREP-0** | Bootstrap and contract readiness *(preparatory ledger phase; not an implementation phase)* | **Active** | Owner approved bootstrap and creation of this ledger | Repository state and capability gaps recorded; owner decisions on CF/OI and the missing plan/rule inputs either made or explicitly carried as Blocked; implementation index defined | Orchestrator | — | §2 |
 | **P0** | Bootstrap, capability proof, decision packet | **Not started** | Plan approved | Capability record, `docs/platform-facts.md`, decision packet, external-status record, `evidence/P0/` complete | ORC | Yes | §3.1 |
-| **P1** | Repository, toolchain, installable Forge shell | **Not started** | P0.A1, A2, A3, B2 | `npm run check` green; hook tested; shell deployed and installed; parity passes; `evidence/P1/` | BE-1 / FA | Yes | §3.2 |
+| **P1** | Repository, toolchain, installable Forge shell | **Active** *(partial: A1–A4 only; formal entry conditions still open)* | P0.A1, A2, A3, B2 | `npm run check` green; hook tested; shell deployed and installed; parity passes; `evidence/P1/` | BE-1 / FA | Yes | §3.2 |
 | **P2** | Platform foundation services | **Not started** | P1 shell deployed; P0.B1 facts; P2.D2 contracts pinned | Migrations, gate, Jira client, logger, settings/hash/audit; `evidence/P2/` | BE-1…BE-4 | Yes | §3.3 |
 | **P3** | Pure core A: evidence core and scenario generator | **Not started** | P1 toolchain; P3 contract tasks | Normaliser, validator, screener, corpus, generator; `evidence/P3/` | BE-1…BE-3 / TE | Feeder | §3.4 |
 | **P4** | Pure core B: deadline engine, rules loader, oracle | **Not started** | P1 toolchain; P4.A0 contract | Engine, independent oracle, ≥10,000-case differential run, golden cases; `evidence/P4/` | BE-1 / TE-O | Feeder | §3.5 |
@@ -89,10 +89,10 @@
 
 | ID | Req / ref | Depends | Owner | Status | Evidence required | Blockers |
 |---|---|---|---|---|---|---|
-| P1.A1 | AGENTS §12.1, N-06, I-10 | P0 | BE-1 | **Not Started** | Fresh `npm ci`; version/licence log | P0; DR-1/DR-2 |
-| P1.A2 | N-06, C-12 | A1 | BE-1 | **Not Started** | Green `npm run check` output | A1 |
-| P1.A3 | N-06, N-03(h), C-12.5 | A1 | SP + BE-1 | **Not Started** | Each static check fails on injected violation | A1 |
-| P1.A4 | AGENTS §6.5, §7.2 | A1, A2 | BE-1 | **Not Started** | Hook blocks violating scratch commit | A1, A2 |
+| P1.A1 | AGENTS §12.1, N-06, I-10 | P0 | BE-1 | **Completed** | `evidence/P1/check-2026-11-24T04-21-26-255Z.txt`; clean-dir `npm ci` exit 0; D-006 version/licence log | Formal P0 entry still open; work was owner-authorised early |
+| P1.A2 | N-06, C-12 | A1 | BE-1 | **Completed** | `npm run check` PASS: deps, imports, strict types, lint, format, 2 tests; SHA-stamped evidence in `evidence/P1/` | `forge lint` skipped honestly: no manifest yet |
+| P1.A3 | N-06, N-03(h), C-12.5 | A1 | SP + BE-1 | **Completed** | Injected violations each exit 1: runtime dep, `core/`→`@forge/api`, `.tsx` side-effect import, test/oracle under `src/`, non-exact pin; independent read-only review fixed 2 Major + 6 Minor findings | — |
+| P1.A4 | AGENTS §6.5, §7.2 | A1, A2 | BE-1 | **Completed** | Hook installed at `.git\hooks\pre-commit`; blocked staged `rules/` file and staged deletion of `docs/Project/Scope.md` (temp index probe); shim content verified | Scratch-branch commit method replaced by non-destructive probes; real-commit firing is the checkpoint verification |
 | P1.A5 | Tools §6, AGENTS §19 | A1 | ORC | **Not Started** | Harness support matrix with method/date | A1; `CLAUDE.md` approval resolved by D-004 |
 | P1.B1 | N-03(a), N-08 | A1, DR-2 | FA | **Not Started** | Parity passes; negative injection fails | A1; DR-2 |
 | P1.B2 | Arch §3.2, G-8 | A1, B1 | FA + BE-1 | **Not Started** | Install log; app under Apps | A1, B1; Forge access |
@@ -317,19 +317,36 @@ None. No implementation phase has been accepted: Verification A, Verification B 
 
 **PC-1** listing submission before Core; freeze the manifest at M-1. · **PC-2** entity-property aliases and multi-clock schema undefined; fix in P7.A0. · **PC-3** pure-phase Verification A needs DR-17. · **PC-4** lexicon location vs locked `rules/*.json`; use schema and fixtures. · **PC-5** missing `IMPLEMENTATION_PLAN.md` obligations T-03/T-04/T-05 mapped to P1.A5/P1.A1. · **PC-6** uploaded/canonical file-name mapping needed. · **PC-7** live LLM evidence needs DR-18.
 
+### 5.7 Task-review findings on P1.A1–A4 (Resolved 24 Nov 2026)
+
+Independent read-only review by a separate context, briefed on `AGENTS.md` and the 19 changed files only. It did not re-run the check; its PASS input was the orchestrator's claim, which is not treated as independent verification (AGENTS §20.2). All findings were fixed by the builder and each fix re-probed.
+
+| ID | Severity | Finding | Fix and proof |
+|---|---|---|---|
+| **RV-1** | Major | `.tsx`/`.mts`/`.cts` escaped both the static import check and ESLint. | `check-imports.mjs` now matches `\.[cm]?tsx?$`; ESLint patterns cover `{ts,tsx,mts,cts}`. Probe `src/core/Probe.tsx` with `import '@forge/ui'` exited 1 in both. |
+| **RV-2** | Major | Hook ignored staged deletions and renamed locked files (`--diff-filter=ACMR`). | Now `ACDMR --no-renames`; probe with a staged deletion of `docs/Project/Scope.md` in a temporary index exited 1. |
+| **RV-3** | Minor | Side-effect `@forge/*` imports missed by the regex. | Regex extended to bare `import '…'` and backticks; same probe as RV-1 caught it. |
+| **RV-4** | Minor | Tests under `src/adapters/` escaped the ban. | Test/oracle checks moved above the adapters exemption; probe exited 1. |
+| **RV-5** | Minor | Only `src/oracle/` was checked while the message overclaimed. | Any path segment matching `/oracle/i` under `src/` now fails; probe exited 1 and the PASS message was narrowed. |
+| **RV-6** | Minor | Pin check accepted `latest`, `1.2.x` and ranges. | Exact semver regex; probe with `eslint: "latest"` exited 1. |
+| **RV-7** | Minor | `engines.node` admitted Node 23 and early Node 24. | Set to `^22.23.4 \|\| ^24.22.1`; lockfile regenerated with `npm install --package-lock-only`. |
+| **RV-8** | Minor | `.gitignore` omitted `.env`, `.env.*`, `*.local`. | Added with `!.env.example` exception. |
+
+Reviewer found **no** defect in evidence writing, privacy wording, banned phrases or scope creep. No Blocker or Major remains open.
+
 ---
 
 ## 6. Handoff block (AGENTS §6.6)
 
-**Verified repository state:** branch `master` · baseline SHA `497fd08d964cba9b0797f9ae32433abb0aaeedfc` · tracks `origin/master` · clean worktree at the start of this update. PREP-0.9 adds `docs/platform-facts.md` and updates this ledger (see `git log -1`).
-**Last checks run:** `git status --short --branch` → `## master...origin/master` and clean before the PREP-0.9 edit; `git log -1` → `497fd08`; `node -v` → `v24.22.3`; `npm -v` → `11.19.1`; `forge --version` → `15.1.0` without the Node warning. Official pages opened and re-checked on 24 Nov 2026 are listed in `docs/platform-facts.md` §11. No test/lint/typecheck/build command exists yet, so none was run and none is claimed. `forge lint` has not been run (no manifest).
-**What was read:** `AGENTS.md` in full and all nine canonical files now present, each to its last line: `Idea.md`, `Hackathon.md`, `Winner Benchmarks.md`, `Tools and technologies.md`, `Architecture.md`, `Scope.md`, `Workflow and UI demo.md`, `Implementation plan.md`. For PREP-0.9, four read-only agents read `AGENTS.md` plus only their briefed sections; the orchestrator additionally read Architecture §18.2 and §13.2, plan §10 P0 and the official pages in facts §11. No canonical file content was edited.
-**Active task / branch:** PREP-0 on `master`; no implementation branch exists. PREP-0.9 is Completed. P0.B1–B4 are In review, not accepted, because the P0 phase gate has not opened.
-**Half-done work:** none — implementation has not started. `docs/platform-facts.md` is the research deliverable; P0.A1–A4, A3 and C/D tasks remain outstanding.
-**Next ready task:** PREP-0.12 cannot open until CF/OI rulings and locked inputs arrive. Owner actions P0.A3/D1–D4 are ready for the owner. **No implementation task is Ready** until PREP-0.5–PREP-0.8 are cleared.
-**Blockers:** PLAN-2–PLAN-5, CF-1–CF-7, OI-1–OI-10, WF-1–WF-16, missing locked inputs, absent Forge scaffold/`npm run check`, absent clean site and independent verifiers, plus PF-MP-1 (in-review code updates) and D-PF-1 (JSM write scope). PLAN-1 and PLAN-6 are Resolved; D-PF-3 is Reconciled.
-**Open questions for the owner:** rule on CF-1–CF-7 and OI-1–OI-10; supply the plan's §12 decision register and P13/P14 sections; supply locked rule-data files; decide D-PF-1 (JSM write scope), WF-1/WF-2 (panel/module choice), WF-5 (export mechanism) and PF-MP-1 (in-review updates); provide Forge access, an outside organisation and two independent verifier contexts (or decide under AGENTS §13.5). Already approved D-003–D-005.
-**Mismatch found:** the plan was absent at first read, then supplied as an untracked Draft and is now tracked and approved; the repository still has no scaffold or checks; the plan references P13/P14 and §12 sections that are not in the supplied file. Platform research found two document/platform discrepancies (D-PF-1, D-PF-2) and one agent disagreement reconciled by a direct official-page check (D-PF-3); none was silently smoothed over.
+**Verified repository state:** branch `master` · baseline SHA `b0b850c885ef5d7bf3734c4dad14dcf469c75726` · tracks `origin/master` · clean worktree at the start of this update. The toolchain checkpoint adds repo config, scripts, tests, decision-log entries and `evidence/P1/` (see `git log -1`).
+**Last checks run:** clean-directory `npm ci` → 132 packages, exit 0; `npm run check` → **PASS** with evidence `evidence/P1/check-2026-11-24T04-21-26-255Z.txt` (strict types, lint, format, 2 tests); eight injected-violation probes each exited 1; `npm run setup` → hook installed; staged-deletion probe blocked; `git diff --check` clean apart from LF→CRLF notices; secret scan of new files → no matches. `forge lint` skipped honestly (no `manifest.yml`). No deploy, install or phase acceptance is claimed.
+**What was read:** `AGENTS.md` in full and all nine canonical files now present, each to its last line, earlier in the conversation. For this task: `Hackathon.md` §5–§9, `Implementation plan.md` §10 P0/P1/P2, `Tools and technologies.md` in full, `Scope.md` §5.1–5.2, `Workflow and UI demo.md` §0, and `docs/08-decisions.md`. The independent reviewer read `AGENTS.md` in full plus the 19 changed files. No canonical file content was edited.
+**Active task / branch:** P1 toolchain work on `master`; no implementation branch. P1.A1–A4 are **Completed**; P1 is **Active** but not Accepted (formal entry conditions P0.A1–A3 remain open). P0.B1–B4 remain In review.
+**Half-done work:** none in P1.A1–A4. P1.A5 and P1.B1–B4 are Not Started. Four expert calls E-1–E-4 are recorded as **Proposed** baselines, not approvals; no new scope, module or rule content was added.
+**Next ready task:** P1.A5 (harness support matrix) and P1.B1 (manifest template) are blocked on DR-2 / the missing plan §12. Owner actions P0.A2/A3 and D1–D4 remain ready for the owner. No feature phase is Ready.
+**Blockers:** PLAN-2–PLAN-5, CF-1–CF-7, OI-1–OI-10, WF-1–WF-16, missing locked inputs, no Forge scaffold/deploy, no clean site and no independent verifiers; plus PF-MP-1 (in-review code updates) and D-PF-1 (JSM write scope). PLAN-1 and PLAN-6 are Resolved; D-PF-3 Reconciled; RV-1–RV-8 Resolved.
+**Open questions for the owner:** rule on CF-1–CF-7 and OI-1–OI-10; supply the plan's §12 register and P13/P14 sections and the locked rule-data files; ratify or reverse E-1–E-4 (each reversal is Type C); decide D-PF-1, WF-1/WF-2, WF-5 and PF-MP-1; provide Forge access, an outside organisation and two independent verifier contexts (or decide under AGENTS §13.5). Already approved D-003–D-006.
+**Mismatch found:** P1.A1–A4 were authorised and executed early although P1's formal entry conditions (P0.A1–A3) are not met; the ledger says so rather than claiming P1 acceptance. The reviewer found two Major boundary gaps and six Minor hardening gaps, all fixed and re-probed. The plan still references P13/P14 and §12 sections absent from the supplied file; platform research found D-PF-1, D-PF-2 and reconciled D-PF-3. None was silently smoothed over.
 
 ---
 **End of `TODO.md`.** Update on every status change; never record a claim here without evidence (AGENTS §14.4, §20.2).

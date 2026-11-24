@@ -89,3 +89,44 @@
 | `CLAUDE.md` | Present at repository root; one line `@AGENTS.md` | `Get-Content CLAUDE.md`, D-004 |
 | `Implementation plan.md` | Approved v0.1 and to be tracked in Git; content unchanged | D-003, `git status`, this decision log |
 | `npm run check` | Still absent; no Forge scaffold exists | `Test-Path package.json`, `git status`; solution belongs to plan P1 |
+
+---
+
+## D-006 — Repository toolchain and check harness (Approved)
+
+- **Date:** 24 Nov 2026
+- **Status:** Approved — owner reply quoted below. The enabler (plan P1.A1–A4) was approved at an earlier point in this conversation; its exact wording was not preserved in this log. This entry records the later instruction that authorised starting it.
+- **What:** create the repository layout, `package.json`, strict `tsconfig.json`, ESLint flat config with an import-boundary rule, Prettier, Vitest, fast-check, `npm run check`, `npm run setup`, the dependency and import static checks, and a plain Git pre-commit hook. One `PRODUCT_NAME` constant is included so a rename is cheap (plan R-9).
+- **Why needed:** the repository had no `package.json`, no check command and no commit guard; plan P1.A1–A4 is on the critical path and requires no Forge access, no new product decision and no regulatory content.
+- **Owner reply (24 Nov 2026):** "go ahead and proceed" — given after the expert decision report named P1.A1–A4 as the approved, dependency-free enabler being started.
+- **Licence / cost class:** free open-source, dev-only. Exact versions and licences **Verified 24 Nov 2026** from each installed `node_modules/<pkg>/package.json`:
+
+| Package | Version | Licence | Reason for pin |
+|---|---|---|---|
+| `typescript` | 6.0.3 | Apache-2.0 | `typescript-eslint` 8.74 declares peer `typescript >=4.8.4 <6.1.0`; TS 7.0.2 would violate it. |
+| `typescript-eslint` | 8.74.0 | MIT | Current release compatible with ESLint 10 and TS 6. |
+| `eslint` | 10.15.0 | MIT | Approved dev tool (Tools §5). |
+| `prettier` | 3.10.1 | MIT | Approved dev tool (Tools §5). |
+| `vitest` | 5.1.1 | MIT | Approved dev tool (Tools §5); seed lives at `test.sequence.seed`. |
+| `fast-check` | 4.11.0 | MIT | Approved dev tool (Tools §5). |
+| `@types/node` | 24.19.2 | MIT | Matches the locked Node 24.x runtime, not the local fallback 26.x. |
+
+- **Impact:** runtime `dependencies` is empty (I-10); all 132 installed packages are dev-only. No `docs/Project/` file, locked rule file, scope, module or product behaviour was changed. Evidence is written to `evidence/P1/`.
+- **Alternatives considered:** TypeScript 7.0.2 (latest) rejected for the peer-range conflict; `@types/node` 26.6.6 rejected as a runtime mismatch; newest-blindly policy rejected as unsafe. No new dependency outside Tools §5 was introduced.
+- **Verification (Verified 24 Nov 2026):** `npm install --no-audit --no-fund` → `added 132 packages`; a clean-directory `npm ci --no-audit --no-fund` using only `package.json` and `package-lock.json` → `added 132 packages`, exit 0; `npm run check` → **PASS** with 2 test files, 2 tests, strict typecheck, lint and format clean; evidence at `evidence/P1/check-2026-11-24T04-21-26-255Z.txt`. Negative probes each exited **1**: an injected runtime dependency, an injected `src/core/` import of `@forge/api` (caught by both the static check and ESLint), a `.tsx` side-effect import of `@forge/ui`, a test file and an oracle-named file under `src/`, a non-exact version pin, a staged file under `rules/`, and a staged deletion of `docs/Project/Scope.md` (temporary index, no canonical file touched). `npm run setup` → hook installed at `.git\hooks\pre-commit` and its shim content verified. An independent read-only review found 2 Major and 6 Minor gaps; all were fixed and re-probed (TODO §5.7).
+- **Not verified:** `forge lint` was skipped because no `manifest.yml` exists (P1.B1 owns it); no Forge deploy, install or phase acceptance is claimed; no independent verifier has yet reviewed this change.
+
+---
+
+## Expert baseline calls E-1 to E-4 (Proposed — no new scope taken)
+
+**Status: Proposed, not Approved.** The owner asked for expert decisions and to proceed. Under `AGENTS.md` §5.3 these four calls are either the *existing approved baseline* or a *technical choice inside it*: none adds a scope, module, tier, feature or regulatory content. They are recorded as **Proposed** because reversing them to the alternative **does** require a Type C decision (§7.4) and an owner approval tag. Proposer: orchestrator in the expert-engineer role, 24 Nov 2026.
+
+| ID | Question answered | Expert call and reason | What would need owner approval |
+|---|---|---|---|
+| **E-1** | May KnewWhen write an internal comment in a JSM request? | **Keep JSM write-back held.** The official API needs a JSM write scope that Architecture §13.2 does not request. Adding it before the manifest freeze is a permission change, not an implementation detail. Jira-only write-back proceeds. | Approve `write:servicedesk-request` or the granular equivalent, logged as Type C. |
+| **E-2** | Which module carries the nudge, given glance deprecation and edit-permission gating of `jira:issuePanel`? | **Baseline `jira:issuePanel` only + the manual "Show for all work items" admin step.** Pinning from app code would be a sixth Jira write outside the C-07.10 allow-list. No new module. | Approve `jira:issueContext` before the manifest freeze. |
+| **E-3** | How does the admin get the evidence CSV out of UI Kit? | **Show the CSV in a Code block for copy** (workflow option b). No native download mechanism was found; no Custom UI. It stays truthful and leaves the numbers computed on the judge's site. | Approve a verified download mechanism or the fixed pre-generated file before the guide is frozen. |
+| **E-4** | May code-only fixes be deployed while a Marketplace listing is under review? | **Assume no.** Freeze code at submission; publish a patched version after approval. No official statement grants the permission. | An official Atlassian answer (external contact needs §10.2 approval), or an explicit owner risk decision. |
+
+**Futuristic readiness, not futuristic scope.** No speculative feature was added: that would be Kind C scope creep and would consume the Core-only runway. Instead the seams that make later additions cheap were built or planned — the `PRODUCT_NAME` constant (R-9), rules-as-versioned-data (I-7), the import-boundary and dependency guards, and the planned manifest renderer with parity and scope-snapshot checks. The four calls above stay reversible until the manifest freeze.

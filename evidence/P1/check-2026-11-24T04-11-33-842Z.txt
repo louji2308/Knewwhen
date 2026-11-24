@@ -1,0 +1,84 @@
+KnewWhen - npm run check evidence (N-06, C-12.5)
+Date: 2026-11-24T04:11:33.844Z
+Node: v24.22.3 · npm: npm/11.19.1 node/v24.22.3 win32 x64 workspaces/false
+Git HEAD: b0b850c885ef5d7bf3734c4dad14dcf469c75726
+Test seed: 20261124
+
+--- npm run check:deps (exit 0) ---
+
+> knewwhen@0.1.0 check:deps C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-dependencies.mjs
+
+DEPENDENCY CHECK: PASS (0 runtime, 7 approved dev dependencies)
+
+--- npm run check:imports (exit 0) ---
+
+> knewwhen@0.1.0 check:imports C:\Users\LOUJAN B\Knewwhen
+> node scripts/check-imports.mjs
+
+IMPORT BOUNDARY CHECK: PASS (core imports no @forge/*; no tests or oracle under src/)
+
+--- npm run check:types (exit 1) ---
+
+> knewwhen@0.1.0 check:types C:\Users\LOUJAN B\Knewwhen
+> tsc --noEmit
+
+vitest.config.ts(8,5): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'seed' does not exist in type 'InlineConfig'.
+
+npm ERR! Windows_NT 10.0.26300
+npm ERR! argv "C:\\Users\\LOUJAN B\\AppData\\Local\\Author Software\\nvm\\installs\\v24.22.3\\node.exe" "C:\\Users\\LOUJAN B\\node_modules\\npm\\bin\\npm-cli.js" "run" "check:types"
+npm ERR! node v24.22.3
+npm ERR! npm  v2.15.12
+npm ERR! code ELIFECYCLE
+npm ERR! knewwhen@0.1.0 check:types: `tsc --noEmit`
+npm ERR! Exit status 2
+npm ERR! 
+npm ERR! Failed at the knewwhen@0.1.0 check:types script 'tsc --noEmit'.
+npm ERR! This is most likely a problem with the knewwhen package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     tsc --noEmit
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs knewwhen
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR! 
+npm ERR!     npm owner ls knewwhen
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     C:\Users\LOUJAN B\Knewwhen\npm-debug.log
+
+--- npm run check:lint (exit 0) ---
+
+> knewwhen@0.1.0 check:lint C:\Users\LOUJAN B\Knewwhen
+> eslint .
+
+--- npm run check:format (exit 0) ---
+
+> knewwhen@0.1.0 check:format C:\Users\LOUJAN B\Knewwhen
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+--- npm run check:tests (exit 0) ---
+
+> knewwhen@0.1.0 check:tests C:\Users\LOUJAN B\Knewwhen
+> vitest run
+
+
+ RUN  v5.1.1 C:/Users/LOUJAN B/Knewwhen
+
+ ✓ tests/smoke.test.ts (1 test) 9ms
+ ✓ tests/property.smoke.test.ts (1 test) 25ms
+
+ Test Files  2 passed (2)
+      Tests  2 passed (2)
+   Start at  09:42:05
+   Duration  578ms (import 52%, transform 31%, tests 10%, worker 7%)
+
+--- forge lint: SKIP (no manifest.yml yet; P1.B1 owns the manifest) ---
+
+RESULT: FAIL

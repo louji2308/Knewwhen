@@ -1,0 +1,30 @@
+{
+  "name": "knewwhen",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Decision support for adverse-event reporting clocks. Decision support, not a regulatory determination or legal advice.",
+  "engines": {
+    "node": "^22.23.4 || ^24.22.1"
+  },
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "check:deps": "node scripts/check-dependencies.mjs",
+    "check:imports": "node scripts/check-imports.mjs",
+    "check:types": "tsc --noEmit",
+    "check:lint": "eslint .",
+    "check:format": "prettier --check .",
+    "check:tests": "vitest run",
+    "setup": "node scripts/setup.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "eslint": "10.15.0",
+    "fast-check": "4.11.0",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.74.0",
+    "vitest": "5.1.1"
+  }
+}

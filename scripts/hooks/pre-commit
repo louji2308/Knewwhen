@@ -1,0 +1,4 @@
+#!/bin/sh
+# Installed by `npm run setup`. Calls the cross-platform implementation.
+node scripts/hooks/pre-commit.mjs
+exit $?
