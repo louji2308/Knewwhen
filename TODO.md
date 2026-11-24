@@ -1,6 +1,6 @@
 # KnewWhen — TODO (execution ledger)
 
-**Version:** 0.7 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
+**Version:** 0.8 · **Date:** 24 Nov 2026 · **Owner:** Orchestrator (single writer, AGENTS §9.2)
 **Authority:** built from the canonical documents in `docs/Project/` (read-only, AGENTS §2.7). This file records progress; it is **not** proof and **not** a source of scope (AGENTS §14.1).
 **Status words:** Not Started · Ready · In Progress · In review · Blocked · Completed (tasks, AGENTS §14.3). Phase status: Not started · Active · Awaiting verification · Accepted.
 **Verified baseline:** branch `master` · commit `b0b850c885ef5d7bf3734c4dad14dcf469c75726` · tracks `origin/master` · clean worktree at the start of the P1.A1–A4 update. The toolchain checkpoint is the next commit (see `git log -1`).
@@ -338,7 +338,7 @@ Reviewer found **no** defect in evidence writing, privacy wording, banned phrase
 
 ## 6. Handoff block (AGENTS §6.6)
 
-**Verified repository state:** branch `master` · last verified toolchain/harness checkpoint `3324c7c` (local, not pushed) · tracks `origin/master` at `b0b850c` · clean worktree after that commit. Official harness docs were read and `docs/harness-matrix.md` records the result.
+**Verified repository state:** branch `master` · last verified implementation checkpoint `212b655` (P1.A5 harness guards, local, not pushed) · tracks `origin/master` at `b0b850c` · clean worktree before this ledger update. Official harness docs were read and `docs/harness-matrix.md` records the result.
 **Last checks run:** clean-directory `npm ci` → 132 packages, exit 0; `npm run check` → **PASS** with evidence `evidence/P1/check-2026-11-24T04-38-12-186Z.txt` (strict types, lint, format, 2 tests); eight injected-violation probes each exited 1; installed hook fired via Git's shell → `PRE-COMMIT: PASS`, exit 0; `npm run setup` → hook + both OpenCode agents installed; removing an agent's `edit` deny made setup exit 1 and the restored source passed again (`evidence/P1/setup-probe-2026-11-24T04-36-33Z.txt`); `opencode debug agents/config` → agents and deny rules loaded; independent review found 0 Blocker/Major and 2 Minor, both fixed; `git diff --check` clean apart from LF→CRLF notices; secret scan of new files → no matches. `forge lint` skipped honestly (no `manifest.yml`). No deploy, install or phase acceptance is claimed.
 **What was read:** `AGENTS.md` in full and all nine canonical files now present, each to its last line, earlier in the conversation. For this task: `Hackathon.md` §5–§9, `Implementation plan.md` §10 P0/P1/P2, `Tools and technologies.md` in full, `Scope.md` §5.1–5.2, `Workflow and UI demo.md` §0, and `docs/08-decisions.md`. The independent reviewer read `AGENTS.md` in full plus the 19 changed files. No canonical file content was edited.
 **Active task / branch:** P1 harness/toolchain work on `master`; no implementation branch. P1.A1–A5 are **Completed**; P1 is **Active** but not Accepted (formal entry conditions P0.A1–A3 remain open). P0.B1–B4 remain In review.
