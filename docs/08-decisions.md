@@ -36,6 +36,37 @@
 - **Uninstall path (recorded, not executed):** remove the ignored `.opencode/` directory. No tracked project file depends on it. Any future hook disable/re-enable is a new §10.2 decision.
 - **Risks:** OpenCode ECC support is Beta; Windows-native defects remain open; hook scripts are third-party automation; behaviour overlap with existing skills; no functional hook firing was tested in this session, only installation, registration and ECC's own doctor check.
 
+## D-003 — Implementation plan v0.1 approved and tracked (Approved)
+
+- **Date:** 24 Nov 2026
+- **Status:** Approved — owner reply quoted below; recorded here under `AGENTS.md` §7.4.
+- **What:** approve `docs/Project/Implementation plan.md` Draft v0.1 as the execution blueprint and track that file in Git.
+- **Owner reply (24 Nov 2026):** "implementation plan must be tracked and i approve the v0.1".
+- **Impact:** phase index P0–P14 and task tables P0–P12 are now an Approved plan, not merely Proposed input. Implementation has not started. The file remains inside read-only `docs/Project/`; this decision records approval and tracking, not an edit to its contents.
+- **Still open:** the supplied plan's §12 decision register and its P13/P14 phase sections are absent; PLAN-2 and PLAN-3 in `TODO.md` remain Blocked. CF-1…CF-7 and OI-1…OI-10 remain owner decisions.
+- **Verification:** the file was read in full to line 682 on 23 Nov 2026; `git status` before this decision showed `?? docs/Project/Implementation plan.md`; the approval commit adds it to the repository without modifying the file.
+
+## D-004 — CLAUDE.md refers to AGENTS.md (Approved)
+
+- **Date:** 24 Nov 2026
+- **Status:** Approved — owner reply quoted below; recorded here under `AGENTS.md` §7.4 and the preamble requirement to verify `CLAUDE.md`.
+- **What:** create `CLAUDE.md` at repository root containing exactly one line: `@AGENTS.md`.
+- **Why needed:** the repository had no `CLAUDE.md`; Claude Code reads `CLAUDE.md`, while KnewWhen's operating rules live in `AGENTS.md` (Tools §6).
+- **Owner reply (24 Nov 2026):** "create the CLAUDE.md file with one line that refer to AGENTS.md".
+- **Impact:** Claude Code can load the same constitution without duplicating or forking it. No other instruction text was added.
+- **Verification:** `Get-Content CLAUDE.md` → `@AGENTS.md`; `git status` will show the new tracked file in the approval commit.
+
+## D-005 — Local Node 24.x selected (Approved)
+
+- **Date:** 24 Nov 2026
+- **Status:** Approved — owner reply quoted below; recorded here under `AGENTS.md` §0.1 and Tools §4.
+- **What:** replace the unsupported local Node v26.13.1 with the locked Node 24.x line via nvm.
+- **Why needed:** `Tools and technologies.md` §4 allows Node 22.23.4+ or 24.22.1+; Forge CLI 15.1.0 warned that it supports Node 22.x or 24.x. The local runtime was v26.13.1.
+- **Owner reply (24 Nov 2026):** "choose node 24.x change it currently i am using 26.x using nvm i think so. Update it to whatever that supports".
+- **Exact commands (Verified 24 Nov 2026):** `nvm install 24` → `Installed 1 version: 24.22.3`; `nvm use 24.22.3` → `Now using Node.js v24.22.3 by default.`; `nvm alias default 24.22.3` returned `cannot use "default" (reserved name)` and was not retried because `nvm use` already set the default.
+- **Verification:** `nvm list` → `* 24.22.3  (default)` with `26.13.1` still installed as a fallback; fresh-shell `node -v` → `v24.22.3`; fresh-shell `forge --version` → `15.1.0` with no Node-version warning in the output.
+- **Impact:** PREP-0.10 resolved. `npm -v` under the new runtime → `11.19.1`.
+
 ## Capability inventory (Verified 23 Nov 2026, `AGENTS.md` §19.1)
 
 | Item | Result | Method |
@@ -48,3 +79,13 @@
 | Project files created by ECC | `.opencode/` only; now ignored by `.gitignore` | `git status`, `git check-ignore -v` |
 | `docs/Project/` | Untouched (read-only) | `git status`, directory listing |
 | ECC hooks after D-002 | Installed, registered, doctor OK | see D-002 verification |
+
+## Capability changes (Verified 24 Nov 2026)
+
+| Item | Result | Method |
+|---|---|---|
+| Local Node runtime | `v24.22.3`, default via nvm; `v26.13.1` retained as fallback | `nvm install 24`, `nvm use 24.22.3`, `nvm list`, `node -v` |
+| Forge CLI under Node 24 | `15.1.0`; no Node-version warning in output | `forge --version` |
+| `CLAUDE.md` | Present at repository root; one line `@AGENTS.md` | `Get-Content CLAUDE.md`, D-004 |
+| `Implementation plan.md` | Approved v0.1 and to be tracked in Git; content unchanged | D-003, `git status`, this decision log |
+| `npm run check` | Still absent; no Forge scaffold exists | `Test-Path package.json`, `git status`; solution belongs to plan P1 |
