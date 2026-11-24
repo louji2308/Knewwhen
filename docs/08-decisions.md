@@ -363,6 +363,20 @@ No Forge token, developer site, clean install site, outside organisation, verifi
 
 ---
 
+## D-012 — Approval 1 of 4: Verification A arrangement (owner, 24 Nov 2026)
+
+- **Class:** owner approval under AGENTS §7.4 and §10.2. Recorded verbatim; the orchestrator must not expand its meaning.
+- **Owner's exact wording:** "I approved." (24 Nov 2026), in reply to the orchestrator's *Approval 1 of 4 — Verification A arrangement*, which asked for a ruling on (1) site + organisation, (2) mutating permission for the judge journey, and (3) verifier independence.
+- **What this grants (Proposed→Approved):** authority to perform a clean install and drive the mutating judge journey steps 1–9 using synthetic data only (I-12), and to mutate synthetic sample issues on a designated site. This clears the *permission* gate for the verifier.
+- **What this does NOT grant:** a clean site, an outside organisation, a second verifier on a different model family, a §13.5 exception, production deploy, listing, publish or share, or any scope/tier change. Approval is permission, **not** provision of the resources or a non-shell build.
+- **Two branch points remain Unresolved because the wording "I approved" does not select between the alternatives offered:**
+  1. **Site + organisation:** clean site **and** outside organisation, *or* `one-atlas-ttud` with a fresh synthetic project while "outside-org install" stays **Unresolved**.
+  2. **Independence (§8.3/§13.5):** provide a second verifier context on a different model family, *or* an explicit §13.5 exception accepting Verification A as **Blocked**.
+- **Structural dependency recorded, not smoothed over:** Verification A also remains **Blocked** on PF-V-3 because the deployed build is a shell with no sample loader, case surface or decision surface. Even with permission, a non-shell Core build must exist before the full journey can pass. P1 cannot be Accepted on this approval alone (§13.5).
+- **Next:** orchestrator to obtain the two branch selections; no irreversible action taken on the ambiguous parts.
+
+---
+
 ## VER-B-P1 — trigger event identifiers corrected (technical correction, 24 Nov 2026)
 
 - **Finding D-VB-01 (Major, Verification B initial report):** `TRIGGER_EVENTS` declared `avi:jira:created:comment`, `avi:jira:updated:comment` and `avi:jira:created:issue-link`, none of which Atlassian emits. The repo's own Verified facts PF-Q-3/PF-Q-4 and the canonical Workflow doc give `avi:jira:commented:issue` (creation **and** edit), `avi:jira:deleted:comment` and `avi:jira:created:issuelink`. Saved `forge lint` output did not detect this, so a linter pass is not evidence of event correctness (A-11).
