@@ -26,7 +26,7 @@ This pack makes the remaining work executable without pretending that it has alr
 - Baseline commit: `de6230c` (`docs(ledger): record P10 checkpoint SHA`); preparation checkpoint: `892a7b0` (`docs(prep): add verification preparation pack`).
 - Full gate before this pack: `evidence/P1/check-2026-11-25T06-14-01-910Z.txt` — PASS, 67 test files, 519 tests, strict types, ESLint, Prettier, manifest parity, import boundary and `forge lint` “No issues found”.
 - Full gate after adding this pack: `evidence/P1/check-2026-11-25T07-19-34-415Z.txt` — PASS with the same 67 files and 519 tests; no source or manifest changed.
-- Final gate after ledger reconciliation: `evidence/P1/check-2026-11-25T07-23-53-563Z.txt` — PASS, same 67 files and 519 tests; only documentation and this evidence pack changed.
+- Final gate on the ledger checkpoint `f5c3d1f`: `evidence/P1/check-2026-11-25T07-29-14-334Z.txt` — PASS, same 67 files and 519 tests; `forge lint` reported **No issues found**. Only documentation and this evidence pack changed.
 - Node `v24.22.3`; npm `11.19.1`; Forge CLI `15.1.0`.
 - Installed demo apps remain development shell builds: App A v2.2.0 and App B v2.1.0 on `one-atlas-ttud`. No current Core build has been deployed or installed.
 

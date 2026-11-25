@@ -20,7 +20,7 @@ This index states only what exists. It does not convert local tests into running
 
 | Required item | Evidence that exists | Status / gap |
 |---|---|---|
-| Commit SHA | `evidence/P1/check-2026-11-25T07-23-53-563Z.txt` records the verified preparation base `de6230c…`. | Partial — final release-candidate SHA must be stamped when the A/B-verified build is frozen. |
+| Commit SHA | `evidence/P1/check-2026-11-25T07-29-14-334Z.txt` records final local HEAD `f5c3d1f…`. | Partial — final release-candidate SHA must be stamped when the A/B-verified build is frozen. |
 | Engine, normaliser, lookback-profile versions | Version constants listed above. | Present in source; not yet assembled into a single release-candidate summary. |
 | SHA-256 of every rule file | No `rules/*.json` files exist. | **Missing** — blocked by OI-1; regulatory content may not be invented. |
 | Oracle seed and case count ≥ 10,000 | `evidence/P4/oracle-agreement.txt`; full check evidence, 10,000 cases with seed `20261206`. | Present. |
@@ -47,7 +47,7 @@ This index states only what exists. It does not convert local tests into running
 
 | Path | What it supports |
 |---|---|
-| `evidence/P1/check-2026-11-25T07-23-53-563Z.txt` | Final local gate after ledger reconciliation: 67 test files, 519 tests, strict types, ESLint, Prettier, dependencies, imports, manifest parity, `forge lint`. |
+| `evidence/P1/check-2026-11-25T07-29-14-334Z.txt` | Final local gate at `f5c3d1f`: 67 test files, 519 tests, strict types, ESLint, Prettier, dependencies, imports, manifest parity, `forge lint` (**No issues found**). |
 | `evidence/P1/eligibility-app-a-2026-11-24T10-14-44-987Z.txt` | Earlier `forge eligibility` result; not a prize claim. |
 | `evidence/P1/README.md` | P1 deploy/install/eligibility index and manifest candidate hashes; development shell only. |
 | `evidence/P3/screener-metrics.txt` | Rule-screener precision/recall on 7 synthetic segments. |
