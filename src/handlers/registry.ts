@@ -14,6 +14,7 @@ import {
 } from './authorisation';
 import { createAwarenessHandlers, type AwarenessDependencies } from './awareness';
 import { createDecisionHandlers, type DecisionDependencies } from './decision';
+import { createLookbackHandlers, type LookbackHandlerDependencies } from './lookback';
 import { createOperationHandlers } from './operations';
 
 function unavailable(): GatedHandler {
@@ -30,10 +31,12 @@ export function createHandlerRegistry(
   deps: AwarenessDependencies,
   operationDeps?: Parameters<typeof createOperationHandlers>[0],
   decisionDeps?: DecisionDependencies,
+  lookbackDeps?: LookbackHandlerDependencies,
 ): HandlerRegistry {
   const awareness = createAwarenessHandlers(deps);
   const operations = createOperationHandlers(operationDeps ?? { now: () => deps.now() });
   const decisions = createDecisionHandlers(decisionDeps ?? { now: () => deps.now() });
+  const lookback = createLookbackHandlers(lookbackDeps ?? {});
   const missing = unavailable();
   const registry = Object.fromEntries(
     HANDLER_ACTIONS.map((action) => [
@@ -41,6 +44,7 @@ export function createHandlerRegistry(
       awareness[action as Action] ??
         operations[action as Action] ??
         decisions[action as keyof typeof decisions] ??
+        lookback[action as keyof typeof lookback] ??
         missing,
     ]),
   ) as unknown as HandlerRegistry;

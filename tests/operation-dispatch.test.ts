@@ -53,12 +53,14 @@ function dispatcher(roles: readonly ('QUALIFIED_PERSON' | 'VIEWER')[] = ['QUALIF
 }
 
 describe('P9 operation dispatcher (Arch §13.3, I-4/I-11)', () => {
-  it('narrows the client action choice to the four operation actions', () => {
+  it('narrows the client action choice to the six operation actions', () => {
     expect(OPERATION_ACTIONS).toEqual([
       'MANUAL_SCAN',
       'RETRY_WRITEBACK',
       'COMPUTE_DEADLINES',
       'DECIDE',
+      'RUN_LOOKBACK',
+      'CONFIRM_SAME_EVENT',
     ]);
     expect(isOperationAction('DECIDE')).toBe(true);
     expect(isOperationAction('VIEW_CASE')).toBe(false);

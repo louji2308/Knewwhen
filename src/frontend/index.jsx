@@ -25,6 +25,12 @@ import {
 import { SCAN_UI_STRINGS, scanViewModel } from './scan-view';
 import { DEADLINES_UI_STRINGS, deadlinesViewModel } from './deadlines-view';
 import { DECISION_UI_STRINGS, decisionViewModel } from './decision-view';
+import {
+  groupLookbackCandidates,
+  LOOKBACK_UI_STRINGS,
+  lookbackAnchorEntryId,
+  lookbackViewModel,
+} from './lookback-view';
 
 const TRAIL_HEAD = {
   cells: [
@@ -41,6 +47,16 @@ const CANDIDATE_HEAD = {
     { key: 'date', content: AWARENESS_UI_STRINGS.headers.date, width: 240 },
     { key: 'entry', content: AWARENESS_UI_STRINGS.headers.entry, width: 160 },
     { key: 'strength', content: AWARENESS_UI_STRINGS.headers.strength, width: 150 },
+  ],
+};
+
+const LOOKBACK_HEAD = {
+  cells: [
+    { key: 'issueKey', content: 'Earlier record', width: 110 },
+    { key: 'recordTs', content: 'Record time', width: 210 },
+    { key: 'confidence', content: 'Signal', width: 110 },
+    { key: 'reasons', content: 'Reasons', width: 260 },
+    { key: 'state', content: 'State', width: 140 },
   ],
 };
 
@@ -64,6 +80,18 @@ const asRows = (rows, keys) =>
     })),
   }));
 
+const lookbackRows = (rows) =>
+  rows.map((row) => ({
+    key: row.id,
+    cells: [
+      { key: 'issueKey', content: <Text>{row.issueKey}</Text> },
+      { key: 'recordTs', content: <Text>{row.recordTs}</Text> },
+      { key: 'confidence', content: <Text>{row.confidence}</Text> },
+      { key: 'reasons', content: <Text>{row.reasons.join(' · ')}</Text> },
+      { key: 'state', content: <Text>{row.state}</Text> },
+    ],
+  }));
+
 function moduleFrom(context) {
   const type = context?.extension?.type;
   if (type === 'jira:adminPage') return 'adminPage';
@@ -80,8 +108,7 @@ function failedEnvelope(code) {
   };
 }
 
-const AwarenessSlice = ({ model, onAction }) => {
-  const [selected, setSelected] = useState('');
+const AwarenessSlice = ({ model, onAction, selected, onSelect }) => {
   const [modal, setModal] = useState(null);
   const [date, setDate] = useState('');
   const [note, setNote] = useState('');
@@ -149,7 +176,7 @@ const AwarenessSlice = ({ model, onAction }) => {
           label: `${entry.status} · ${entry.entryId}`,
           value: entry.entryId,
         }))}
-        onChange={(event) => setSelected(String(event.target?.value ?? ''))}
+        onChange={(event) => onSelect(String(event.target?.value ?? ''))}
       />
       <DynamicTable
         label={AWARENESS_UI_STRINGS.trailHeading}
@@ -412,6 +439,203 @@ const DecisionSlice = ({ model, onStart, onFinalise }) => {
   );
 };
 
+const LookbackSlice = ({ model, segments, decision, anchorEntryId, onRun, onShow, onDecide }) => {
+  const [showing, setShowing] = useState(null);
+  const [pendingDecision, setPendingDecision] = useState(null);
+  const [segmentKey, setSegmentKey] = useState('');
+  const [choiceMode, setChoiceMode] = useState('PHRASE');
+  const [phrase, setPhrase] = useState('');
+
+  const close = () => {
+    setShowing(null);
+    setPendingDecision(null);
+    setSegmentKey('');
+    setChoiceMode('PHRASE');
+    setPhrase('');
+  };
+
+  const openSegments = (candidateId, nextDecision = null) => {
+    setShowing(candidateId);
+    setPendingDecision(nextDecision);
+    setSegmentKey('');
+    setChoiceMode('PHRASE');
+    setPhrase('');
+    onShow(candidateId);
+  };
+
+  const record = (candidateId, nextDecision, choice) => {
+    onDecide(candidateId, nextDecision, choice);
+    close();
+  };
+
+  const chosenSegment =
+    segments.kind === 'SEGMENTS'
+      ? segments.segments.find((segment) => segment.key === segmentKey)
+      : undefined;
+  const wholeAllowed = chosenSegment?.wholeSegmentAllowed === true;
+  const canConfirmChoice =
+    segmentKey !== '' &&
+    ((choiceMode === 'WHOLE' && wholeAllowed) ||
+      (choiceMode === 'PHRASE' && phrase.trim().length > 0));
+  const groups = model.kind === 'RESULT' ? groupLookbackCandidates(model.candidates) : [];
+
+  return (
+    <Box>
+      <Text>{LOOKBACK_UI_STRINGS.title}</Text>
+      <Text>{LOOKBACK_UI_STRINGS.notice}</Text>
+      {model.kind === 'IDLE' ? (
+        <Text>
+          {anchorEntryId === null ? LOOKBACK_UI_STRINGS.noAnchor : LOOKBACK_UI_STRINGS.idle}
+        </Text>
+      ) : null}
+      {['UNAVAILABLE', 'ERROR'].includes(model.kind) ? <Text>{model.message}</Text> : null}
+      {decision.kind === 'DECISION' ? <Text>{decision.message}</Text> : null}
+
+      {model.kind === 'RESULT' ? (
+        <Box>
+          {model.message ? <Text>{model.message}</Text> : null}
+          {model.coverage.map((line, index) => (
+            <Text key={`lookback-coverage-${index}`}>{line}</Text>
+          ))}
+          <Text>{`Examined ${model.examined} records in ${model.searchCalls} searches.`}</Text>
+          {groups.length === 0 ? <Text>{LOOKBACK_UI_STRINGS.noCandidates}</Text> : null}
+          {groups.map((group) => (
+            <Box key={`lookback-group-${group.confidence}`}>
+              <Text>{`${group.confidence} · ${LOOKBACK_UI_STRINGS.confidence[group.confidence]}`}</Text>
+              <DynamicTable
+                label={`${group.confidence} earlier records`}
+                head={LOOKBACK_HEAD}
+                rows={lookbackRows(group.rows)}
+                emptyView={<Text>{LOOKBACK_UI_STRINGS.noCandidates}</Text>}
+              />
+              {group.rows.map((candidate) => (
+                <Box key={`lookback-candidate-${candidate.id}`}>
+                  <Text>{`${candidate.issueKey} · ${candidate.strength} · ${candidate.state} · ${candidate.confidenceHelp}`}</Text>
+                  <Button onClick={() => openSegments(candidate.id)}>
+                    {LOOKBACK_UI_STRINGS.segmentsTitle}
+                  </Button>
+                  {model.canAnswer && candidate.rawState === 'REJECTED' ? (
+                    <Button onClick={() => record(candidate.id, 'REOPEN', undefined)}>
+                      {LOOKBACK_UI_STRINGS.reopen}
+                    </Button>
+                  ) : null}
+                  {model.canAnswer && candidate.rawState !== 'REJECTED' ? (
+                    <RadioGroup
+                      name={`same-event-${candidate.id}`}
+                      label={LOOKBACK_UI_STRINGS.sameEvent}
+                      value=""
+                      options={[
+                        {
+                          name: `yes-${candidate.id}`,
+                          label: LOOKBACK_UI_STRINGS.yes,
+                          value: 'YES',
+                        },
+                        { name: `no-${candidate.id}`, label: LOOKBACK_UI_STRINGS.no, value: 'NO' },
+                        {
+                          name: `unsure-${candidate.id}`,
+                          label: LOOKBACK_UI_STRINGS.unsure,
+                          value: 'UNSURE',
+                        },
+                      ]}
+                      onChange={(event) => {
+                        const answer = String(event.target?.value ?? '');
+                        if (answer === 'YES') openSegments(candidate.id, 'YES');
+                        if (answer === 'NO' || answer === 'UNSURE') {
+                          record(candidate.id, answer, undefined);
+                        }
+                      }}
+                    />
+                  ) : null}
+                </Box>
+              ))}
+            </Box>
+          ))}
+          {!model.canAnswer && model.candidates.length > 0 ? (
+            <Text>{LOOKBACK_UI_STRINGS.restricted}</Text>
+          ) : null}
+          <Button
+            isDisabled={model.nextCursor === null}
+            onClick={() => onRun(model.nextCursor, null)}
+          >
+            {LOOKBACK_UI_STRINGS.continue}
+          </Button>
+        </Box>
+      ) : null}
+
+      {decision.kind === 'DECISION' && decision.newAnchorEntryId !== null ? (
+        <Button onClick={() => onRun(null, decision.newAnchorEntryId)}>
+          {LOOKBACK_UI_STRINGS.continue}
+        </Button>
+      ) : null}
+      <Button isDisabled={anchorEntryId === null} onClick={() => onRun(null, null)}>
+        {LOOKBACK_UI_STRINGS.run}
+      </Button>
+
+      {showing !== null ? (
+        <Modal title={LOOKBACK_UI_STRINGS.segmentsTitle} onClose={close} width="medium">
+          <ModalBody>
+            <Text>{LOOKBACK_UI_STRINGS.phraseWarning}</Text>
+            {segments.kind === 'SEGMENTS' && segments.segments.length > 0 ? (
+              <RadioGroup
+                name="lookback-segment"
+                label={LOOKBACK_UI_STRINGS.segmentsTitle}
+                value={segmentKey}
+                options={segments.segments.map((segment) => ({
+                  name: `segment-${segment.key}`,
+                  label: `${segment.key} · ${segment.strength} · ${segment.recordCreatedAt}`,
+                  value: segment.key,
+                }))}
+                onChange={(event) => {
+                  setSegmentKey(String(event.target?.value ?? ''));
+                  setChoiceMode('PHRASE');
+                }}
+              />
+            ) : (
+              <Text>{segments.message}</Text>
+            )}
+            {wholeAllowed ? (
+              <RadioGroup
+                name="lookback-choice-mode"
+                label="Basis for the answer"
+                value={choiceMode}
+                options={[
+                  { name: 'mode-phrase', label: LOOKBACK_UI_STRINGS.phrase, value: 'PHRASE' },
+                  { name: 'mode-whole', label: LOOKBACK_UI_STRINGS.wholeSegment, value: 'WHOLE' },
+                ]}
+                onChange={(event) => setChoiceMode(String(event.target?.value ?? 'PHRASE'))}
+              />
+            ) : null}
+            {choiceMode === 'PHRASE' ? (
+              <TextArea
+                label={LOOKBACK_UI_STRINGS.phrase}
+                value={phrase}
+                onChange={(event) => setPhrase(String(event.target?.value ?? ''))}
+              />
+            ) : null}
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={close}>{LOOKBACK_UI_STRINGS.cancel}</Button>
+            {pendingDecision === 'YES' ? (
+              <Button
+                appearance="primary"
+                isDisabled={!canConfirmChoice}
+                onClick={() =>
+                  record(showing, 'YES', {
+                    segmentKey,
+                    ...(choiceMode === 'WHOLE' ? { wholeSegment: true } : { quote: phrase.trim() }),
+                  })
+                }
+              >
+                {LOOKBACK_UI_STRINGS.confirmChoice}
+              </Button>
+            ) : null}
+          </ModalFooter>
+        </Modal>
+      ) : null}
+    </Box>
+  );
+};
+
 const App = () => {
   const context = useProductContext();
   const module = moduleFrom(context);
@@ -422,6 +646,10 @@ const App = () => {
   const [deadlineEnvelope, setDeadlineEnvelope] = useState(null);
   const [decisionEnvelope, setDecisionEnvelope] = useState(null);
   const [questionContext, setQuestionContext] = useState(null);
+  const [selectedEntryId, setSelectedEntryId] = useState('');
+  const [lookbackEnvelope, setLookbackEnvelope] = useState(null);
+  const [lookbackSegments, setLookbackSegments] = useState(null);
+  const [lookbackDecision, setLookbackDecision] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -449,6 +677,32 @@ const App = () => {
           reasonCode: candidate.reasonCode,
         }))
       : [];
+  const lookbackModel = lookbackViewModel(lookbackEnvelope);
+  const lookbackSegmentsModel = lookbackViewModel(lookbackSegments);
+  const lookbackDecisionModel = lookbackViewModel(lookbackDecision);
+  const awarenessEntries = awarenessModel.kind === 'CASE_VIEW' ? awarenessModel.entries : [];
+  const baseAnchor = lookbackAnchorEntryId(awarenessEntries, selectedEntryId || undefined);
+  const decisionData =
+    lookbackDecision?.code === 'OK' &&
+    typeof lookbackDecision.data === 'object' &&
+    lookbackDecision.data !== null
+      ? lookbackDecision.data
+      : null;
+  const decidedAnchor =
+    decisionData?.kind === 'LOOKBACK_DECISION' &&
+    typeof decisionData.trailEntryId === 'string' &&
+    decisionData.trailEntryId.length > 0
+      ? decisionData.trailEntryId
+      : null;
+  const lookbackAnchor = decidedAnchor ?? baseAnchor;
+
+  useEffect(() => {
+    setSelectedEntryId('');
+    setLookbackEnvelope(null);
+    setLookbackSegments(null);
+    setLookbackDecision(null);
+  }, [caseId]);
+
   const baseDecisionModel = decisionViewModel(decisionEnvelope);
   const decisionModel =
     questionContext !== null && ['DRAFT', 'FINAL'].includes(baseDecisionModel.kind)
@@ -555,6 +809,55 @@ const App = () => {
       .catch(() => setEnvelope(failedEnvelope('DEPENDENCY_FAILED')));
   };
 
+  const invokeLookback = (payload, setter) =>
+    invoke('knewwhenOperations', { action: 'RUN_LOOKBACK', payload })
+      .then(setter)
+      .catch(() => setter(failedEnvelope('DEPENDENCY_FAILED')));
+
+  const onRunLookback = (cursor, nextAnchor) => {
+    const anchor = nextAnchor ?? lookbackAnchor;
+    if (caseId === null || anchor === null || anchor === '') return;
+    setLookbackSegments(null);
+    setLookbackDecision(null);
+    invokeLookback(
+      {
+        caseId,
+        anchorEntryId: anchor,
+        ...(cursor === null || cursor === undefined ? {} : { cursor }),
+      },
+      setLookbackEnvelope,
+    );
+  };
+
+  const onShowLookback = (candidateId) => {
+    if (caseId === null) return;
+    invokeLookback({ caseId, candidateId, view: 'SHOW' }, setLookbackSegments);
+  };
+
+  const refreshLookbackList = () => invokeLookback({ caseId, view: 'LIST' }, setLookbackEnvelope);
+
+  const onDecideLookback = (candidateId, decision, choice) => {
+    if (caseId === null) return;
+    invoke('knewwhenOperations', {
+      action: 'CONFIRM_SAME_EVENT',
+      payload: {
+        caseId,
+        candidateId,
+        decision,
+        ...(choice === undefined ? {} : { choice }),
+      },
+    })
+      .then((result) => {
+        setLookbackDecision(result);
+        if (result.code !== 'OK') {
+          setLookbackEnvelope(failedEnvelope(result.code));
+          return;
+        }
+        refreshLookbackList();
+      })
+      .catch(() => setLookbackEnvelope(failedEnvelope('DEPENDENCY_FAILED')));
+  };
+
   if (failed || status?.state === 'error') {
     return (
       <SectionMessage appearance="error">
@@ -595,7 +898,21 @@ const App = () => {
         onStart={onStartDecision}
         onFinalise={onFinaliseDecision}
       />
-      <AwarenessSlice model={awarenessModel} onAction={onAction} />
+      <LookbackSlice
+        model={lookbackModel}
+        segments={lookbackSegmentsModel}
+        decision={lookbackDecisionModel}
+        anchorEntryId={lookbackAnchor}
+        onRun={onRunLookback}
+        onShow={onShowLookback}
+        onDecide={onDecideLookback}
+      />
+      <AwarenessSlice
+        model={awarenessModel}
+        onAction={onAction}
+        selected={selectedEntryId}
+        onSelect={setSelectedEntryId}
+      />
     </Box>
   );
 };

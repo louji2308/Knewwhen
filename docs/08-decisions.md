@@ -438,3 +438,23 @@ No Forge token, developer site, clean install site, outside organisation, verifi
 - **Operation dispatch:** `knewwhenOperations` narrows the client's action choice to `MANUAL_SCAN`, `RETRY_WRITEBACK`, `COMPUTE_DEADLINES` and `DECIDE`; every other frozen action is refused before dispatch. Manual scan and retry still fail closed while no approved live ports exist (I-11).
 - **Evidence:** `npm run check` PASS, 50 test files, 369 tests, strict types, lint, manifest parity, import boundary, Prettier and `forge lint` (**No issues found**); `evidence/P1/check-2026-11-24T17-05-57-160Z.txt`. Pre-commit gate re-ran the check green. Checkpoint commit `0431a81`.
 - **Not included:** no live rule data, deployed runtime, outside-org journey, phase acceptance, verification A/B, live model call, new dependency or submission action.
+
+---
+
+## D-016 — P8 lookback profile, caps and client contract (orchestrator, 25 Nov 2026)
+
+- **Class:** kind-B technical choices inside the approved architecture (`AGENTS.md` §5.3). **Not owner approval**, not a scope, tier, role, module, dependency or setting change. Proposer and implementer: orchestrator. D-008, D-009 and D-012 still govern.
+- **Profile:** `lookback-profile-v1` with `highOverlap = 0.34`, `moderateOverlap = 0.18`, `minDistinctiveTokens = 2`. These are frozen local ranking defaults, **not** regulatory values and **not** owner-approved. Changing them requires a new profile version once evidence exists under v1 (AGENTS §12.4).
+- **Caps:** `maxSearchCalls = 4`, `maxIssues = 40`, `maxCandidatesPerLabel = 10`, `depth = 2`. Hitting any cap sets an explicit coverage code; the panel says the search was incomplete and never claims that no earlier record exists (Arch §8.5.4, I-9).
+- **Client contract:** `RUN_LOOKBACK` accepts only `caseId`, `anchorEntryId`, optional `cursor`, or `view: 'LIST' | 'SHOW'`; `CONFIRM_SAME_EVENT` accepts only `caseId`, `candidateId`, `decision` and optional author-authored `choice`. No role, timestamp, token, project, relationship or Jira record text is accepted from the client (I-1, I-4, I-6).
+- **Service contract:** the anchor is resolved server-side; Jira search, segment metadata and the acceptance side-effect are injected ports. Candidate text is scored in memory and never written to SQL, logs, errors, envelopes or evidence. Rejected candidates persist and are not resurfaced on a finished-run reopen; only a Qualified person can reopen them (I-8, Arch §8.5.5).
+- **Operation actions:** the frozen twelve-action gate and registry now include six operation actions; the four unimplemented actions remain honest `NOT_FOUND` (I-11). Lookback handlers do not exist when no service is injected, so the deployed shell cannot show a hidden demo path.
+- **Evidence:** `npm run check` PASS, 56 test files, 399 tests, strict types, lint, manifest parity, import boundary, Prettier and `forge lint` (**No issues found**); `evidence/P8/check-2026-11-25T04-55-04Z.txt`. The P8 suites cover matcher, JQL, service, handlers, benchmark and view model; the rejected-candidate reopen defect was reproduced by a failing test before its fix.
+- **Not included:** no runtime Jira/SQL/acceptance adapters, live-site proof, outside-organisation install, phase acceptance, verification A/B, live model call, new dependency or submission action.
+
+## CF-P8-1 — Architecture §8.5 relationship-only cap (Unresolved)
+
+- **Statement A:** `docs/Project/Architecture.md` §8.5 example says `LINKED` alone may be `MEDIUM`.
+- **Statement B:** `docs/Project/Architecture.md` §8.5 fixed limit says relationship-only matches without text support are never above `LOW` (repeated at line 703).
+- **Effect:** a directly linked candidate with no distinctive-term support must not be shown as `MEDIUM`. The implemented matcher applies the fixed `LOW` cap; the example is not followed. No locked file or canonical document was edited.
+- **Proposed resolution:** the owner or independent engineer confirms that the fixed limit governs and the example is illustrative but wrong. Until then this remains **Unresolved** and affects only the confidence shown for relationship-only candidates (C-03.9, Arch §8.5).

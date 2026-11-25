@@ -1,8 +1,9 @@
 /**
- * P9 — the only entry point for the four operation actions. It reuses the same
- * twelve-action gate and registry as the Awareness slice, then narrows the
- * client's action choice to scan, retry, deadlines and decision. An action
- * outside this slice never reaches a handler (I-4, I-11, Arch §13.3).
+ * P8/P9 — the only entry point for the six interactive operation actions. It
+ * reuses the same twelve-action gate and registry as the Awareness slice, then
+ * narrows the client's action choice to scan, retry, deadlines, decision and
+ * the two lookback read/decision actions. An action outside this slice never
+ * reaches a handler (I-4, I-11, Arch §13.3).
  */
 
 import type { GateContext } from '../contracts/authorisation';
@@ -10,6 +11,7 @@ import type { ResolverEnvelope } from '../contracts/envelope';
 import type { AwarenessDependencies } from './awareness';
 import { createGate } from './authorisation';
 import type { DecisionDependencies } from './decision';
+import type { LookbackHandlerDependencies } from './lookback';
 import type { OperationDependencies } from './operations';
 import { createHandlerRegistry } from './registry';
 
@@ -18,6 +20,8 @@ export const OPERATION_ACTIONS = Object.freeze([
   'RETRY_WRITEBACK',
   'COMPUTE_DEADLINES',
   'DECIDE',
+  'RUN_LOOKBACK',
+  'CONFIRM_SAME_EVENT',
 ] as const);
 
 export type OperationAction = (typeof OPERATION_ACTIONS)[number];
@@ -30,6 +34,7 @@ export interface OperationDispatcherDependencies {
   readonly awareness: AwarenessDependencies;
   readonly operations?: OperationDependencies;
   readonly decisions?: DecisionDependencies;
+  readonly lookback?: LookbackHandlerDependencies;
 }
 
 function envelope(code: ResolverEnvelope<null>['code']): ResolverEnvelope<null> {
@@ -46,7 +51,7 @@ export function createOperationDispatcher(
   deps: OperationDispatcherDependencies,
 ): (action: unknown, payload: unknown, context: GateContext) => Promise<ResolverEnvelope<unknown>> {
   const gate = createGate(
-    createHandlerRegistry(deps.awareness, deps.operations, deps.decisions),
+    createHandlerRegistry(deps.awareness, deps.operations, deps.decisions, deps.lookback),
     deps.awareness.resolveRoles,
     deps.awareness.recordAudit,
   );
