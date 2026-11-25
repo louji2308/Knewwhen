@@ -20,6 +20,18 @@ export interface AuditInput {
   readonly at: string;
 }
 
+/**
+ * Translate the gate's structured actor field into the append-only row's
+ * actor columns. No actor id is placed in details_json or message text (I-6).
+ */
+export function actorFromAuditEvent(
+  event: Readonly<{ readonly actorAccountId?: string }>,
+): Pick<AuditInput, 'actorType' | 'actorAccountId'> {
+  return typeof event.actorAccountId === 'string' && event.actorAccountId.length > 0
+    ? { actorType: 'USER', actorAccountId: event.actorAccountId }
+    : { actorType: 'SYSTEM', actorAccountId: null };
+}
+
 export interface AuditStoredEvent {
   readonly id: string;
   readonly actorType: string;

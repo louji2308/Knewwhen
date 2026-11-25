@@ -2,7 +2,8 @@
  * P2.D1 — the single authorisation gate and handler registry (IF-7, Arch §13.3).
  * Deny by default. Identity and the browse result come from the platform; roles
  * are resolved server-side for each request and are never accepted from a
- * caller (I-4). Audit events carry only codes, never account ids as text (I-6).
+ * caller (I-4). Audit events carry codes and the caller's account id as a
+ * structured actor field, never inside message or details text (I-6, I-8).
  */
 
 import {
@@ -19,6 +20,8 @@ export type RoleResolver = (context: GateContext) => Promise<readonly Role[]>;
 export interface AuditEvent {
   readonly actionCode: string;
   readonly errorCode: string;
+  /** Structured actor field from GateContext only; never copied from payload. */
+  readonly actorAccountId?: string;
 }
 
 export type AuditSink = (event: AuditEvent) => Promise<void>;
@@ -56,7 +59,14 @@ export async function decide(
   audit?: AuditSink,
 ): Promise<GateDecision> {
   const deny = async (code: 'DENIED' | 'DEPENDENCY_FAILED'): Promise<GateDecision> => {
-    if (audit) await audit({ actionCode: String(action), errorCode: code });
+    if (audit) {
+      const actorAccountId = context.accountId || null;
+      await audit({
+        actionCode: String(action),
+        errorCode: code,
+        ...(actorAccountId === null ? {} : { actorAccountId }),
+      });
+    }
     return { allow: false, code };
   };
 

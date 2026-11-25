@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ForgeReconciler, {
   Box,
   Button,
@@ -16,6 +16,12 @@ import ForgeReconciler, {
 } from '@forge/react';
 import { invoke } from '@forge/bridge';
 import { SHELL_STRINGS } from '../contracts/shell';
+import { JUDGE_SEED, generateScenarios } from '../core/generator';
+import {
+  COMMENT_VISIBILITIES,
+  PRODUCT_IDENTITY_KINDS,
+  RULE_SET_STATUSES,
+} from '../services/admin-settings';
 import {
   AWARENESS_UI_STRINGS,
   awarenessViewModel,
@@ -31,6 +37,14 @@ import {
   lookbackAnchorEntryId,
   lookbackViewModel,
 } from './lookback-view';
+import { ADMIN_UI_STRINGS, adminViewModel } from './admin-view';
+import { formFromSettings, settingsFromForm } from './admin-form';
+import { HEALTH_UI_STRINGS, healthViewModel } from './health-view';
+import { SAMPLE_UI_STRINGS, csvCopyBlock, sampleViewModel } from './sample-view';
+import { CASE_HEADER_UI_STRINGS, caseHeaderViewModel } from './case-header-view';
+
+/** Fixed synthetic author for the copyable CSV; no platform account id is shown. */
+const SAMPLE_CSV_AUTHOR = 'synthetic-qa';
 
 const TRAIL_HEAD = {
   cells: [
@@ -636,6 +650,161 @@ const LookbackSlice = ({ model, segments, decision, anchorEntryId, onRun, onShow
   );
 };
 
+const ON_OFF_OPTIONS = Object.freeze([
+  { name: 'on', label: 'ON', value: 'ON' },
+  { name: 'off', label: 'OFF', value: 'OFF' },
+]);
+
+const PRODUCT_OPTIONS = Object.freeze([
+  { name: 'identity-none', label: 'NONE', value: '' },
+  ...PRODUCT_IDENTITY_KINDS.map((kind) => ({
+    name: `identity-${kind}`,
+    label: kind,
+    value: kind,
+  })),
+]);
+const RULE_STATUS_OPTIONS = Object.freeze(
+  RULE_SET_STATUSES.map((status) => ({ name: `rule-${status}`, label: status, value: status })),
+);
+const VISIBILITY_OPTIONS = Object.freeze(
+  COMMENT_VISIBILITIES.map((value) => ({ name: `visibility-${value}`, label: value, value })),
+);
+
+const AdminChecklistSlice = ({ steps }) => (
+  <Box>
+    <Text>{ADMIN_UI_STRINGS.getStarted}</Text>
+    {steps.map((step) => (
+      <Text key={step.id}>{`${step.label}: ${step.message}`}</Text>
+    ))}
+  </Box>
+);
+
+const AdminSettingsSlice = ({ model, form, message, saving, onField, onSave }) => {
+  const usable = model.state === 'READY' && form !== null;
+  const field = (key, label) => (
+    <TextArea
+      key={key}
+      label={label}
+      value={form[key]}
+      onChange={(event) => onField(key, String(event.target?.value ?? ''))}
+    />
+  );
+  const choice = (key, label, options) => (
+    <RadioGroup
+      key={key}
+      name={`admin-${key}`}
+      label={label}
+      value={form[key]}
+      options={options}
+      onChange={(event) => onField(key, String(event.target?.value ?? ''))}
+    />
+  );
+
+  return (
+    <Box>
+      <Text>{ADMIN_UI_STRINGS.formHeading}</Text>
+      <Text>{model.message}</Text>
+      <Text>{ADMIN_UI_STRINGS.notice}</Text>
+      {usable ? (
+        <Box>
+          <Text>{ADMIN_UI_STRINGS.disclosure}</Text>
+          {field('watchedProjects', ADMIN_UI_STRINGS.checklist.watchedProjects)}
+          {field('issueTypeExclusions', 'Issue type exclusions')}
+          {field('reviewerRoles', 'Reviewer roles')}
+          {field('qualifiedRoles', 'Qualified roles')}
+          {field('routingLabel', ADMIN_UI_STRINGS.checklist.routingLabel)}
+          {choice('aiEnabled', 'AI screening', ON_OFF_OPTIONS)}
+          {choice('killSwitch', 'AI kill switch', ON_OFF_OPTIONS)}
+          {choice('writeBackEnabled', 'Jira write-back', ON_OFF_OPTIONS)}
+          {choice('visibilityChosen', 'Comment visibility chosen', ON_OFF_OPTIONS)}
+          {field('perIssueCap', 'AI calls per issue')}
+          {field('perSiteCap', 'AI calls per site')}
+          {choice(
+            'productIdentityKind',
+            ADMIN_UI_STRINGS.checklist.productIdentity,
+            PRODUCT_OPTIONS,
+          )}
+          {field('productIdentityValue', 'Product identity value')}
+          {choice('commentVisibility', 'Comment visibility', VISIBILITY_OPTIONS)}
+          {field('commentVisibilityRef', 'Visibility group or role')}
+          {field('ruleSetVersion', 'Rule set version')}
+          {choice('ruleSetStatus', ADMIN_UI_STRINGS.checklist.ruleSetStatus, RULE_STATUS_OPTIONS)}
+        </Box>
+      ) : null}
+      {message !== '' ? <Text>{message}</Text> : null}
+      <Button isDisabled={!usable || saving} onClick={onSave}>
+        {ADMIN_UI_STRINGS.save}
+      </Button>
+    </Box>
+  );
+};
+
+const HealthSlice = ({ model }) => {
+  const counters = (values) =>
+    Object.entries(values)
+      .map(([key, value]) => `${key} ${value}`)
+      .join(' · ');
+  return (
+    <Box>
+      <Text>{HEALTH_UI_STRINGS.title}</Text>
+      <Text>{model.message}</Text>
+      <Text>{HEALTH_UI_STRINGS.notice}</Text>
+      {model.snapshot !== null ? (
+        <Box>
+          <Text>{`${HEALTH_UI_STRINGS.fields.scans}: ${counters(model.snapshot.scansByStatus)} / ${counters(model.snapshot.scansByResult)}`}</Text>
+          <Text>{`${HEALTH_UI_STRINGS.fields.evidence}: ${counters(model.snapshot.evidenceStateCounts)}`}</Text>
+          <Text>{`${HEALTH_UI_STRINGS.fields.writeback}: pending ${model.snapshot.writebackPending} · failed ${model.snapshot.writebackFailed}`}</Text>
+          <Text>{`${HEALTH_UI_STRINGS.fields.ai}: ${counters(model.snapshot.ai)}`}</Text>
+          <Text>{`${HEALTH_UI_STRINGS.fields.ruleSet}: ${model.snapshot.ruleSetVersion} · ${model.snapshot.ruleSetStatus}`}</Text>
+          <Text>{`${HEALTH_UI_STRINGS.fields.capsHit}: ${model.snapshot.capsHit}`}</Text>
+          <Text>{`${HEALTH_UI_STRINGS.fields.reconciler}: ${model.snapshot.lastReconcilerAt ?? HEALTH_UI_STRINGS.fields.none}`}</Text>
+        </Box>
+      ) : null}
+    </Box>
+  );
+};
+
+const SampleSlice = ({ model, csvCopy, projectKey, onLoad, onPrepareCsv }) => (
+  <Box>
+    <Text>{SAMPLE_UI_STRINGS.title}</Text>
+    <Text>{model.message}</Text>
+    <Text>{SAMPLE_UI_STRINGS.notice}</Text>
+    {projectKey === '' ? <Text>{SAMPLE_UI_STRINGS.projectMissing}</Text> : null}
+    <Button isDisabled={projectKey === ''} onClick={onLoad}>
+      {SAMPLE_UI_STRINGS.load}
+    </Button>
+    <Button onClick={onPrepareCsv}>{SAMPLE_UI_STRINGS.csvHeading}</Button>
+    {csvCopy !== null ? <Text>{csvCopy.text}</Text> : null}
+  </Box>
+);
+
+const CaseHeaderSlice = ({ model }) => (
+  <Box>
+    <Text>{CASE_HEADER_UI_STRINGS.title}</Text>
+    <Text>{CASE_HEADER_UI_STRINGS.notice}</Text>
+    <Text>{model.message}</Text>
+    {model.canShowCaseHeader ? (
+      <Box>
+        <Text>{`${CASE_HEADER_UI_STRINGS.roleView}: ${model.roleView}`}</Text>
+        <Text>{CASE_HEADER_UI_STRINGS.chipsLabel}</Text>
+        {model.chips.map((chip) => (
+          <Text key={chip.code}>{chip.text}</Text>
+        ))}
+        {model.banners.length > 0 ? <Text>{CASE_HEADER_UI_STRINGS.bannersLabel}</Text> : null}
+        {model.banners.map((banner) => (
+          <Text key={banner.code}>{banner.text}</Text>
+        ))}
+        <Text>
+          {model.nextStep === null
+            ? CASE_HEADER_UI_STRINGS.noNextStep
+            : `${CASE_HEADER_UI_STRINGS.nextStepLabel}: ${model.nextStep.text}`}
+        </Text>
+        <Text>{`${CASE_HEADER_UI_STRINGS.actionsLabel}: ${model.actions.join(' · ')}`}</Text>
+      </Box>
+    ) : null}
+  </Box>
+);
+
 const App = () => {
   const context = useProductContext();
   const module = moduleFrom(context);
@@ -650,6 +819,14 @@ const App = () => {
   const [lookbackEnvelope, setLookbackEnvelope] = useState(null);
   const [lookbackSegments, setLookbackSegments] = useState(null);
   const [lookbackDecision, setLookbackDecision] = useState(null);
+  const [adminEnvelope, setAdminEnvelope] = useState(null);
+  const [healthEnvelope, setHealthEnvelope] = useState(null);
+  const [sampleEnvelope, setSampleEnvelope] = useState(null);
+  const [adminForm, setAdminForm] = useState(null);
+  const [adminMessage, setAdminMessage] = useState('');
+  const [adminSaving, setAdminSaving] = useState(false);
+  const adminSaveInFlight = useRef(false);
+  const [csvCopy, setCsvCopy] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -665,7 +842,35 @@ const App = () => {
     };
   }, [module]);
 
+  useEffect(() => {
+    if (module !== 'adminPage' || status?.state !== 'ready') return;
+    let active = true;
+    const call = (action) =>
+      invoke('knewwhenOperations', { action: 'ADMIN_SETTINGS', payload: { action } })
+        .then((result) => {
+          if (active) setAdminEnvelope(result);
+        })
+        .catch(() => {
+          if (active) setAdminEnvelope(failedEnvelope('DEPENDENCY_FAILED'));
+        });
+    call('GET_SETTINGS');
+    invoke('knewwhenOperations', { action: 'ADMIN_SETTINGS', payload: { action: 'GET_HEALTH' } })
+      .then((result) => {
+        if (active) setHealthEnvelope(result);
+      })
+      .catch(() => {
+        if (active) setHealthEnvelope(failedEnvelope('DEPENDENCY_FAILED'));
+      });
+    return () => {
+      active = false;
+    };
+  }, [module, status?.state]);
+
   const issueKey = status?.issueKey ?? null;
+  const adminModel = adminViewModel(adminEnvelope);
+  const healthModel = healthViewModel(healthEnvelope);
+  const sampleModel = sampleViewModel(sampleEnvelope);
+  const isCaseModule = module === 'issuePanel' || module === 'issueContext';
   const awarenessModel = awarenessViewModel(envelope);
   const caseId = awarenessModel.kind === 'CASE_VIEW' ? awarenessModel.caseId : null;
   const candidates =
@@ -695,6 +900,11 @@ const App = () => {
       ? decisionData.trailEntryId
       : null;
   const lookbackAnchor = decidedAnchor ?? baseAnchor;
+
+  useEffect(() => {
+    if (adminEnvelope?.code !== 'OK') return;
+    setAdminForm(formFromSettings(adminViewModel(adminEnvelope)));
+  }, [adminEnvelope]);
 
   useEffect(() => {
     setSelectedEntryId('');
@@ -737,7 +947,7 @@ const App = () => {
       .catch(() => setScanEnvelope(failedEnvelope('DEPENDENCY_FAILED')));
   };
   useEffect(() => {
-    if (module !== 'issuePanel' || status?.state !== 'ready' || issueKey === null) return;
+    if (!isCaseModule || status?.state !== 'ready' || issueKey === null) return;
     let active = true;
     invoke('knewwhenAwareness', { action: 'VIEW_CASE', payload: { issueKey } })
       .then((result) => {
@@ -752,7 +962,7 @@ const App = () => {
   }, [issueKey, module, status?.state]);
 
   useEffect(() => {
-    if (module !== 'issuePanel' || status?.state !== 'ready') return;
+    if (!isCaseModule || status?.state !== 'ready') return;
     let active = true;
     invoke('knewwhenOperations', { action: 'DECIDE', payload: { action: 'GET_QUESTIONS' } })
       .then((result) => {
@@ -858,6 +1068,70 @@ const App = () => {
       .catch(() => setLookbackEnvelope(failedEnvelope('DEPENDENCY_FAILED')));
   };
 
+  const onAdminField = (key, value) =>
+    setAdminForm((current) => (current === null ? current : { ...current, [key]: value }));
+
+  const onAdminSave = () => {
+    if (adminForm === null || adminSaveInFlight.current) return;
+    const settings = settingsFromForm(adminForm);
+    if (settings === null) {
+      setAdminMessage(ADMIN_UI_STRINGS.saveInvalid);
+      return;
+    }
+    adminSaveInFlight.current = true;
+    setAdminSaving(true);
+    setAdminMessage('');
+    invoke('knewwhenOperations', {
+      action: 'ADMIN_SETTINGS',
+      payload: { action: 'SAVE_SETTINGS', settings },
+    })
+      .then((result) => {
+        setAdminEnvelope(result);
+        setAdminMessage(
+          result.code === 'OK' ? ADMIN_UI_STRINGS.saveSaved : ADMIN_UI_STRINGS.saveFailed,
+        );
+      })
+      .catch(() => setAdminMessage(ADMIN_UI_STRINGS.saveFailed))
+      .finally(() => {
+        adminSaveInFlight.current = false;
+        setAdminSaving(false);
+      });
+  };
+
+  const onLoadSample = () => {
+    const projectKey = adminModel.watchedProjects[0] ?? '';
+    if (projectKey === '') return;
+    invoke('knewwhenOperations', {
+      action: 'ADMIN_SETTINGS',
+      payload: { action: 'LOAD_SAMPLE', projectKey },
+    })
+      .then(setSampleEnvelope)
+      .catch(() => setSampleEnvelope(failedEnvelope('DEPENDENCY_FAILED')));
+  };
+
+  const onPrepareCsv = () => {
+    try {
+      const generated = generateScenarios({
+        seed: JUDGE_SEED,
+        anchorDateISO: new Date().toISOString().slice(0, 10),
+        authorAccountId: SAMPLE_CSV_AUTHOR,
+      });
+      setCsvCopy(csvCopyBlock(generated.csv));
+    } catch {
+      setCsvCopy(csvCopyBlock(null));
+    }
+  };
+
+  const caseHeaderModel = caseHeaderViewModel({
+    roleHint:
+      envelope?.roleHint ?? scanEnvelope?.roleHint ?? decisionEnvelope?.roleHint ?? 'UNKNOWN',
+    caseView: envelope,
+    scan: scanEnvelope,
+    lookback: lookbackEnvelope,
+    decision: decisionEnvelope,
+    writeback: null,
+  });
+
   if (failed || status?.state === 'error') {
     return (
       <SectionMessage appearance="error">
@@ -874,6 +1148,34 @@ const App = () => {
         <Text>{SHELL_STRINGS.loading}</Text>
       </>
     );
+  }
+
+  if (module === 'adminPage') {
+    return (
+      <Box>
+        <AdminChecklistSlice steps={adminModel.getStarted} />
+        <AdminSettingsSlice
+          model={adminModel}
+          form={adminForm}
+          message={adminMessage}
+          saving={adminSaving}
+          onField={onAdminField}
+          onSave={onAdminSave}
+        />
+        <HealthSlice model={healthModel} />
+        <SampleSlice
+          model={sampleModel}
+          csvCopy={csvCopy}
+          projectKey={adminModel.watchedProjects[0] ?? ''}
+          onLoad={onLoadSample}
+          onPrepareCsv={onPrepareCsv}
+        />
+      </Box>
+    );
+  }
+
+  if (module === 'issueContext') {
+    return <CaseHeaderSlice model={caseHeaderModel} />;
   }
 
   if (module !== 'issuePanel') {

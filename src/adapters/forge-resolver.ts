@@ -1,13 +1,14 @@
 import { makeResolver, type Request } from '@forge/resolver';
 import type { ShellModule, ShellStatus } from '../contracts/shell';
 import type { ResolverEnvelope } from '../contracts/envelope';
+import { createAdminDispatcher, isAdminAction } from '../handlers/admin-dispatch';
 import type { AwarenessDependencies } from '../handlers/awareness';
 import { createAwarenessDispatcher } from '../handlers/awareness-dispatch';
 import type { AuditSink } from '../handlers/authorisation';
 import type { DecisionDependencies } from '../handlers/decision';
 import { createOperationDispatcher } from '../handlers/operation-dispatch';
 import { shellStatus } from '../handlers/shell';
-import { audit, type AuditRepository } from '../services/audit';
+import { actorFromAuditEvent, audit, type AuditRepository } from '../services/audit';
 import { computeDeadlines } from '../services/deadline';
 import { createDecisionService } from '../services/decision';
 import type { HashKeyMaterial } from '../services/hash-key';
@@ -77,8 +78,7 @@ const trail = createTrailService(
 );
 const recordAudit: AuditSink = async (event) => {
   await audit(auditRepository, {
-    actorType: 'SYSTEM',
-    actorAccountId: null,
+    ...actorFromAuditEvent(event),
     actionCode: event.actionCode,
     targetType: 'authorisation',
     targetId: null,
@@ -141,6 +141,18 @@ const dispatchOperations = createOperationDispatcher({
   operations: { now },
   decisions: decisionDependencies,
 });
+/**
+ * P10 admin ports are not injected: no KVS settings store, Jira create-issue
+ * adapter, health query port or reconciler port is approved in the locked
+ * stack. The gate denies before any port is consulted, so the live resolver
+ * returns honest NOT_PERMITTED, never a demo configuration or hidden sample
+ * path (I-11). The no-port registry's NOT_FOUND is the intended state once
+ * browse/role adapters are approved.
+ */
+const dispatchAdmin = createAdminDispatcher({
+  resolveRoles: async () => [],
+  recordAudit,
+});
 
 const handlers: Definition = {
   knewwhenShell: (request) => shellStatus(request.payload, request.context as PlatformContext),
@@ -155,10 +167,14 @@ const handlers: Definition = {
   async knewwhenOperations(request) {
     const payload: OperationsPayload = request.payload ?? {};
     const context = request.context as PlatformContext;
-    return dispatchOperations(payload.action, payload.payload, {
+    const gateContext = {
       accountId: readString(context['accountId']),
       canBrowseResource: false,
-    });
+    };
+    if (isAdminAction(payload.action)) {
+      return dispatchAdmin(payload.action, payload.payload, gateContext);
+    }
+    return dispatchOperations(payload.action, payload.payload, gateContext);
   },
 };
 

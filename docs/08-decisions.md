@@ -458,3 +458,34 @@ No Forge token, developer site, clean install site, outside organisation, verifi
 - **Statement B:** `docs/Project/Architecture.md` §8.5 fixed limit says relationship-only matches without text support are never above `LOW` (repeated at line 703).
 - **Effect:** a directly linked candidate with no distinctive-term support must not be shown as `MEDIUM`. The implemented matcher applies the fixed `LOW` cap; the example is not followed. No locked file or canonical document was edited.
 - **Proposed resolution:** the owner or independent engineer confirms that the fixed limit governs and the example is illustrative but wrong. Until then this remains **Unresolved** and affects only the confidence shown for relationship-only candidates (C-03.9, Arch §8.5).
+
+---
+
+## D-017 — P10 admin code ceiling (orchestrator, 25 Nov 2026)
+
+- **Class:** kind-B technical choice inside the approved architecture (`AGENTS.md` §5.3). **Not owner approval**, not a regulatory value and not a scope or setting change. Proposer and implementer: orchestrator.
+- **What:** `ADMIN_CAP_CEILING = 1000` in `src/services/admin-settings.ts`. Admin per-issue and per-site AI caps must be integers from 1 to this ceiling inclusive. The ceiling is a code-level hard limit required by Architecture §7.5 and C-10.1; Architecture §U-10 says the numeric values are to be set and does not supply one.
+- **Why needed:** without a ceiling, an admin could configure unbounded model spend on a judge site. The value is deliberately engineered, not derived from FDA/EU content (I-7).
+- **Impact:** invalid or unsafe settings are rejected before persistence and are audited with change codes only. No live model call, billing change or deployed setting follows from this record. Changing the ceiling after evidence exists requires a new version, not an edit to an applied configuration (AGENTS §12.4).
+- **Verification basis:** `tests/admin-settings.test.ts` covers defaults, safe configuration, non-positive caps, caps above the ceiling, visibility consistency, strict parsing and code-only audit. Full-project evidence is recorded in `evidence/P10/`.
+
+## D-018 — P10 second sample load (orchestrator, 25 Nov 2026)
+
+- **Class:** kind-B technical choice implementing the C-08.9 requirement that a second load must not fail silently. **Not owner approval** of PA-4 and not a new product tier. Proposer and implementer: orchestrator.
+- **What:** when labelled `knewwhen-sample` issues already exist in the chosen project, `loadSampleScenario` returns `ALREADY_LOADED` and creates nothing. It never deletes issues, never duplicates the sample and never invents an automatic replacement rule.
+- **Why needed:** PA-4 is an open item (Scope §OI-10), so neither silent overwrite nor silent duplication is acceptable. C-08.7 already documents admin cleanup by JQL; the app does not delete.
+- **Impact:** judge step 2b remains a manual, visible action. A second load produces an explicit code in the admin UI; no record text or account id is stored in the result.
+- **Verification basis:** `tests/sample-loader.test.ts` covers first load, unwatched project refusal, second-load refusal and a no-prose result contract. Full-project evidence is recorded in `evidence/P1/`; P10 review dispositions in `evidence/P10/`.
+
+---
+
+## D-019 — P10 local integration and review dispositions (orchestrator, 25 Nov 2026)
+
+- **Class:** kind-B technical choices inside the approved architecture (`AGENTS.md` §5.3). **Not owner approval**, not a tier, scope, module, dependency, role or setting change. Proposer and implementer: orchestrator. D-008, D-012, D-015, D-017 and D-018 still govern.
+- **What:** P10 local slices are wired end to end in the resolver/UI boundary: strict admin-form translation, gated admin handlers/dispatcher, settings store and health/sample/reconciler services, scheduled handler, admin/health/sample/case-header view models, and UI surfaces for checklist, settings, health and sample loading. No Jira create, KVS, health query or reconciler port is injected in production; the gate denies before any port is consulted, so the live resolver returns `NOT_PERMITTED` and never a hidden demo path (I-11, C-10.5).
+- **Audit attribution:** the single gate emits the caller's account id as a structured `AuditEvent.actorAccountId`, copied only from `GateContext`. The adapter maps it through `actorFromAuditEvent` to `actorType: 'USER'` and `actor_account_id`; an absent actor remains `SYSTEM` with a null id. No account id is placed in details JSON, message text, logs, evidence or reports (I-6, I-8, G-5, N-07; Arch §491).
+- **Health and reconciler honesty:** a required scan-count source now propagates any failure as `HEALTH_DEPENDENCY_FAILED`; optional sources still degrade to zero/unknown. Health queries only columns in the frozen migration (`scan.started_at`, `audit_event.at`, `usage_counter.count`) and reads an allow-listed `RECONCILER_RUN` event that the reconciler emits on completion. Stored cursors and returned ids are shape-validated before they can become durable state (N-01(c), N-09, I-6, G-8).
+- **Admin boundary:** identity and version labels are bounded and printable/code-shaped; stored settings are re-parsed on read so an oversized value cannot be echoed or saved back truncated. The save button has an in-flight guard and the second sample load carries a fixed `ALREADY_LOADED` result code to a distinct UI message (C-10.1–4, C-08.9, I-6).
+- **Independent task-review dispositions:** two separate read-only contexts found no Blocker. RV-19 (Major), RV-20 (Minor) and RV-21 (Minor) were fixed after the first review; RV-22 to RV-25 (Major) and RV-26 (Minor) were fixed after the second review, each with regression tests where a unit boundary exists. The in-flight UI fix has source-level evidence only; no browser test was run. No new dependency, locked-file edit or record text in logs/errors/UI was found. Evidence: `evidence/P10/task-review.md`.
+- **Verification basis:** final `npm run check` PASS after all fixes: 67 test files, **519 tests**, strict types, ESLint, Prettier, manifest parity, import boundary and `forge lint` (**No issues found**); `evidence/P1/check-2026-11-25T06-14-01-910Z.txt`.
+- **Not included:** no owner approval, deploy, outside-organisation install, live Jira/SQL/KVS port, phase acceptance, Verification A/B, live model call, new dependency or submission action.

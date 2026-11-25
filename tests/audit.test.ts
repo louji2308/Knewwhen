@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
-import { audit, type AuditInput, type AuditRepository } from '../src/services/audit';
+import {
+  actorFromAuditEvent,
+  audit,
+  type AuditInput,
+  type AuditRepository,
+} from '../src/services/audit';
 
 const INPUT: AuditInput = {
   actorType: 'USER',
@@ -27,6 +32,26 @@ describe('P2.C2 single append-only audit function (Arch §12, §5.3; G-5, I-8, I
         targetId: 'uuid-123',
         at: '2026-11-24T12:00:00.000Z',
       }),
+    );
+  });
+
+  it('maps a gate actor to a USER row and an absent actor to SYSTEM', async () => {
+    const userRepo = repo();
+    await audit(userRepo, {
+      ...INPUT,
+      ...actorFromAuditEvent({ actorAccountId: 'acct-admin-1' }),
+    });
+    expect(userRepo.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ actorType: 'USER', actorAccountId: 'acct-admin-1' }),
+    );
+
+    const systemRepo = repo();
+    await audit(systemRepo, {
+      ...INPUT,
+      ...actorFromAuditEvent({}),
+    });
+    expect(systemRepo.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ actorType: 'SYSTEM', actorAccountId: null }),
     );
   });
 

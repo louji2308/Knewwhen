@@ -1,7 +1,7 @@
 import { runSchemaMigration } from './adapters/forge-sql';
 import { resolverHandler } from './adapters/forge-resolver';
 import { noop, type NoopResult } from './handlers/noop';
-import type { MigrationOutcome } from './handlers/migration';
+import { runScheduled, type ScheduledOutcome } from './handlers/scheduled';
 
 /** Manifest function handlers: index.resolver, index.trigger, index.scanConsumer,
  * index.writebackConsumer and index.scheduled (P1.B2, Arch §3.2). */
@@ -20,7 +20,11 @@ export function writebackConsumer(_event: unknown): NoopResult {
   return noop('writeback');
 }
 
-/** Daily scheduled trigger: official empty migration runner (P1.B2). */
-export async function scheduled(): Promise<MigrationOutcome> {
-  return runSchemaMigration();
+/**
+ * Daily scheduled trigger. Migration always runs first; the reconciler is not
+ * injected until its SQL/KVS ports are approved, so the deployed job reports
+ * `reconciler: null` rather than inventing a sweep (P10.B2, N-01(c)).
+ */
+export function scheduled(): Promise<ScheduledOutcome> {
+  return runScheduled(runSchemaMigration);
 }

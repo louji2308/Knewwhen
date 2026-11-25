@@ -3,6 +3,7 @@ import {
   assertRegistryMatchesMatrix,
   contextFromPlatform,
   createGate,
+  type AuditEvent,
   type AuditSink,
   type GatedHandler,
   type HandlerRegistry,
@@ -38,8 +39,8 @@ describe('P2.D1 authorisation gate (G-4, I-4; Arch §13.3)', () => {
     expect(result.allow).toBe(true);
   });
 
-  it('denies an action the role does not have, and writes a code-only audit event', async () => {
-    const events: Array<Record<string, string>> = [];
+  it('denies an action the role does not have and attributes the code-only audit event', async () => {
+    const events: AuditEvent[] = [];
     const sink: AuditSink = async (event) => {
       events.push({ ...event });
     };
@@ -48,7 +49,9 @@ describe('P2.D1 authorisation gate (G-4, I-4; Arch §13.3)', () => {
     expect(events).toHaveLength(1);
     expect(events[0]!.actionCode).toBe('DECIDE');
     expect(events[0]!.errorCode).toBe('DENIED');
-    expect(JSON.stringify(events)).not.toContain('acct-check-1');
+    expect(events[0]!.actorAccountId).toBe('acct-check-1');
+    const codes = { actionCode: events[0]!.actionCode, errorCode: events[0]!.errorCode };
+    expect(JSON.stringify(codes)).not.toContain('acct-check-1');
   });
 
   it('denies when the caller cannot browse the resource', async () => {
@@ -65,6 +68,19 @@ describe('P2.D1 authorisation gate (G-4, I-4; Arch §13.3)', () => {
     const result = await decide(ctx(), 'SEE_SIGNAL', broken);
     expect(result.allow).toBe(false);
     if (!result.allow) expect(result.code).toBe('DEPENDENCY_FAILED');
+  });
+
+  it('attributes a dependency-failure denial to the caller, never to SYSTEM', async () => {
+    const events: AuditEvent[] = [];
+    const broken: RoleResolver = async () => {
+      throw new Error('dependency down');
+    };
+    await decide(ctx(), 'SEE_SIGNAL', broken, async (event) => {
+      events.push(event);
+    });
+    expect(events).toHaveLength(1);
+    expect(events[0]!.errorCode).toBe('DEPENDENCY_FAILED');
+    expect(events[0]!.actorAccountId).toBe('acct-check-1');
   });
 
   it('fails closed on an empty role set (first-run state)', async () => {
