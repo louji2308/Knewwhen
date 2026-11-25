@@ -1,6 +1,6 @@
 # C-12 evidence-pack index — current state
 
-**Date:** 25 Nov 2026 · **Baseline commit:** `de6230c` · **Status:** Partial; release pack **not complete** · **Requirement:** C-12 AC1–6
+**Date:** 25 Nov 2026 · **Baseline commit:** `de6230c` · **Preparation checkpoint:** `892a7b0` · **Status:** Partial; release pack **not complete** · **Requirement:** C-12 AC1–6
 
 This index states only what exists. It does not convert local tests into running-product proof.
 

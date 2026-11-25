@@ -23,7 +23,7 @@ This pack makes the remaining work executable without pretending that it has alr
 ## Verified baseline used for this pack
 
 - Branch: `master`; repository clean at preparation start.
-- Baseline commit: `de6230c` (`docs(ledger): record P10 checkpoint SHA`).
+- Baseline commit: `de6230c` (`docs(ledger): record P10 checkpoint SHA`); preparation checkpoint: `892a7b0` (`docs(prep): add verification preparation pack`).
 - Full gate before this pack: `evidence/P1/check-2026-11-25T06-14-01-910Z.txt` — PASS, 67 test files, 519 tests, strict types, ESLint, Prettier, manifest parity, import boundary and `forge lint` “No issues found”.
 - Full gate after adding this pack: `evidence/P1/check-2026-11-25T07-19-34-415Z.txt` — PASS with the same 67 files and 519 tests; no source or manifest changed.
 - Final gate after ledger reconciliation: `evidence/P1/check-2026-11-25T07-23-53-563Z.txt` — PASS, same 67 files and 519 tests; only documentation and this evidence pack changed.
